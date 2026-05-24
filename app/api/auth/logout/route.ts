@@ -1,0 +1,19 @@
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+    const cookieStore = cookies();
+    
+    // Clear all authentication-related cookies with matching options
+    cookieStore.delete('dashboard-auth');
+
+    cookieStore.delete('needs-onboarding');
+
+    cookieStore.delete('currentPaymentIntent');
+
+    // cookieStore.delete('next-auth.session-token');
+
+    return new NextResponse(null, { status: 200 });
+}
+
+export { GET as POST }; 

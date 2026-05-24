@@ -1,0 +1,245 @@
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/db"
+import { NextResponse } from "next/server"
+import { deleteFile } from '@/lib/s3';
+
+export async function GET(
+    req: Request,
+    { params }: { params: { courseId: string; moduleId: string; chapterId: string } }
+) {
+    try {
+        const session = await auth();
+        if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
+
+        const chapter = await prisma.chapter.findUnique({
+            where: {
+                id: params.chapterId,
+                moduleId: params.moduleId,
+            },
+            include: {
+                assignments: {
+                    include: {
+                        questions: {
+                            include: {
+                                options: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!chapter) {
+            return new NextResponse("Not found", { status: 404 });
+        }
+
+        return NextResponse.json(chapter);
+
+    } catch (error) {
+        console.log("[CHAPTER_GET]", error);
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}
+
+export async function DELETE(
+    req: Request,
+    { params }: { params: { courseId: string, moduleId: string, chapterId: string } }
+) {
+    try {
+        const session = await auth();
+        if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
+
+        const chapter = await prisma.chapter.findUnique({
+            where: {
+                id: params.chapterId,
+                moduleId: params.moduleId,
+            },
+            include: {
+                assignments: true
+            }
+        });
+
+        if (!chapter) {
+            return new NextResponse("Not Found", { status: 404 });
+        }
+
+        // Delete files from S3 if they exist
+        const filesToDelete = [
+            chapter.videoUrl,
+            chapter.pdfUrl,
+            chapter.imageUrl
+        ].filter(Boolean);
+
+        for (const fileUrl of filesToDelete) {
+            try {
+                await deleteFile(fileUrl as string);
+            } catch (error) {
+                console.error("Error deleting file from S3:", error);
+            }
+        }
+
+        // Use transaction to handle related records deletion
+        const deletedChapter = await prisma.$transaction(async (tx) => {
+            // First delete all related assignment records
+            if (chapter.assignments.length > 0) {
+                await tx.answer.deleteMany({
+                    where: {
+                        question: {
+                            assignment: {
+                                chapterId: params.chapterId
+                            }
+                        }
+                    }
+                });
+
+                await tx.questionOption.deleteMany({
+                    where: {
+                        question: {
+                            assignment: {
+                                chapterId: params.chapterId
+                            }
+                        }
+                    }
+                });
+
+                await tx.question.deleteMany({
+                    where: {
+                        assignment: {
+                            chapterId: params.chapterId
+                        }
+                    }
+                });
+
+                await tx.studentAssignmentScore.deleteMany({
+                    where: {
+                        assignment: {
+                            chapterId: params.chapterId
+                        }
+                    }
+                });
+
+                await tx.assignment.deleteMany({
+                    where: {
+                        chapterId: params.chapterId
+                    }
+                });
+            }
+
+            // Finally delete the chapter
+            return tx.chapter.delete({
+                where: {
+                    id: params.chapterId
+                }
+            });
+        });
+
+        return NextResponse.json(deletedChapter);
+        
+    } catch (error) {
+        console.log("CHAPTER_ID_DELETE", error);
+        return new NextResponse("Internal Error", { status: 500 });
+    }
+}
+
+export async function PATCH(
+    req: Request,
+    { params }: { params: { courseId: string, moduleId: string, chapterId: string } }
+) {
+    try {
+        const session = await auth()
+        const { isIntro, ...values } = await req.json()
+
+        if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
+
+        const existingChapter = await prisma.chapter.findUnique({
+            where: {
+                id: params.chapterId,
+            },
+        });
+
+        if (!existingChapter) {
+            return new NextResponse("Chapter not found", { status: 404 });
+        }
+
+        // if(values.videoUrl && values.videoUrl !== existingChapter.videoUrl){
+        //     try {
+        //         await deleteFile(existingChapter.videoUrl as string);
+        //     } catch (error) {
+        //         console.error("Error deleting file from S3:", error);
+        //     }
+
+
+        // }
+
+        if (values.videoUrl && values.videoUrl !== existingChapter.videoUrl) {
+            // Delete old video if it exists
+            if (existingChapter.videoUrl) {
+                try {
+                    await deleteFile(existingChapter.videoUrl);
+                } catch (error) {
+                    console.error("Error deleting old video from S3:", error);
+                }
+            }
+
+            // Delete any existing PDF since we can't have both
+            if (existingChapter.pdfUrl) {
+                try {
+                    await deleteFile(existingChapter.pdfUrl);
+                } catch (error) {
+                    console.error("Error deleting PDF from S3:", error);
+                }
+            }
+            values.pdfUrl = null;
+        }
+
+        // Handle PDF changes
+        if (values.pdfUrl && values.pdfUrl !== existingChapter.pdfUrl) {
+            // Delete old PDF if it exists
+            if (existingChapter.pdfUrl) {
+                try {
+                    await deleteFile(existingChapter.pdfUrl);
+                } catch (error) {
+                    console.error("Error deleting old PDF from S3:", error);
+                }
+            }
+
+            // Delete any existing video since we can't have both
+            if (existingChapter.videoUrl) {
+                try {
+                    await deleteFile(existingChapter.videoUrl);
+                } catch (error) {
+                    console.error("Error deleting video from S3:", error);
+                }
+            }
+            values.videoUrl = null; // Clear video URL from database
+        }
+
+        if (values.imageUrl && values.imageUrl !== existingChapter.imageUrl) {
+            // Delete the old image from S3
+            if (existingChapter.imageUrl) {
+                try {
+                    await deleteFile(existingChapter.imageUrl);
+                } catch (error) {
+                    console.error("Error deleting old image from S3:", error);
+                }
+            }
+        }
+        
+
+        const chapter = await prisma.chapter.update({
+            where: {
+                id: params.chapterId,
+            },
+            data: {
+                isIntro,
+                ...values
+            }
+        });
+
+        return NextResponse.json(chapter)
+
+    } catch (error) {
+        console.log("[COURSES_CHAPTER_ID]", error)
+        return new NextResponse("Internal Error", { status: 500 })
+    }
+}

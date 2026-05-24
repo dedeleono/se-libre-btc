@@ -1,0 +1,134 @@
+{
+  "Primaria Acelerada": [
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Primer Sábado del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Segundo Primaria"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Primer Sábado del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Segundo Primaria"
+    },
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Primer Sábado del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Tercero Primaria"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Primer Sábado del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Tercero Primaria"
+    },
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Segundo Sábado del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Cuarto Primaria"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Segundo Sábado del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Cuarto Primaria"
+    },
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Segundo Sábado del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Quinto Primaria"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Segundo Sábado del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Quinto Primaria"
+    },
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Tercer Sábado del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Sexto Primaria"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Tercer Sábado del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Sexto Primaria"
+    }
+  ],
+  "Básicos Regular / Básicos por Madurez": [
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Tercer Sábado del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Primero Básico Regular / Primero Básico por Madurez"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Tercer Sábado del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Primero Básico Regular / Primero Básico por Madurez"
+    },
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Cuarto Sábado del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Segundo Básico Regular"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Cuarto Sábado del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Segundo Básico Regular"
+    },
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Cuarto Sábado del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Tercero Básico Regular / Segundo Básico por Madurez"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Cuarto Sábado del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Tercero Básico Regular / Segundo Básico por Madurez"
+    }
+  ],
+  "Bachillerato por Madurez": [
+    {
+      "no": 1,
+      "actividad": "Taller del área Científica",
+      "fecha": "Primer Domingo del Mes",
+      "hora": "08:00 a 12:00 hrs",
+      "grado": "Bachillerato por Madurez"
+    },
+    {
+      "no": 2,
+      "actividad": "Taller del área Humanística",
+      "fecha": "Primer Domingo del Mes",
+      "hora": "14:00 a 16:00 hrs",
+      "grado": "Bachillerato por Madurez"
+    }
+  ]
+}

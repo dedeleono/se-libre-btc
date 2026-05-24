@@ -1,0 +1,215 @@
+.editor-container {
+  position: relative;
+  background: #fff;
+  min-height: 400px; /* Reduced from 800px for better flexibility */
+  max-height: 80vh; /* Limit maximum height to 80% of viewport height */
+  height: auto;
+  overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbars */
+  border: 1px solid #ccc;
+  border-radius: 10px; /* Changed to have rounded corners on all sides */
+  resize: vertical; /* Allow vertical resizing */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure toolbar is visible and properly connected */
+.toolbar {
+  display: flex !important; /* Force display */
+  margin-bottom: 0; /* Remove margin to connect with editor container */
+  background: #fff;
+  padding: 4px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  vertical-align: middle;
+  overflow: auto;
+  height: 36px;
+  border: 1px solid #ccc;
+  border-bottom: none; /* Remove bottom border to connect with editor container */
+  position: sticky; /* Make toolbar sticky */
+  top: 0;
+  z-index: 10; /* Ensure toolbar is above other elements */
+  flex-shrink: 0; /* Prevent toolbar from shrinking */
+  /* Hide scrollbar but keep scroll functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.editor-scroller {
+  flex: 1; /* Take remaining space */
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  /* Ensure content starts from the top */
+  padding-top: 0;
+  margin-top: 0;
+  /* Force scroll to top when needed */
+  scroll-padding-top: 0;
+  /* Ensure content can scroll to bottom */
+  padding-bottom: 20px; /* Add padding at bottom for better scrolling */
+}
+
+.editor {
+  position: relative;
+  min-height: 300px; /* Minimum height instead of fixed */
+  height: 100%; /* Changed to 100% to fill container */
+  overflow: hidden; /* Prevent overflow here */
+}
+
+.ContentEditable__root {
+  min-height: 280px; /* Minimum height for content area */
+  height: auto; /* Changed to auto to allow content to expand */
+  resize: none;
+  font-size: 15px;
+  caret-color: rgb(5, 5, 5);
+  position: relative;
+  tab-size: 1;
+  outline: 0;
+  padding: 15px 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: visible; /* Changed to visible to allow content to expand */
+  /* Ensure content is scrollable from top */
+  scroll-behavior: smooth;
+  /* Force scroll to top when needed */
+  scroll-padding-top: 0;
+}
+
+/* Ensure the first line is visible when scrolling to top */
+.editor-scroller::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-scroller::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.editor-scroller::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.editor-scroller::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Additional fix for content positioning */
+.ContentEditable__root > *:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.placeholder {
+  color: #999;
+  overflow: hidden;
+  position: absolute;
+  text-overflow: ellipsis;
+  top: 15px;
+  left: 10px;
+  font-size: 15px;
+  user-select: none;
+  display: inline-block;
+  pointer-events: none;
+}
+
+/* List Styles */
+.ContentEditable__root ul,
+.PlaygroundEditorTheme__ul {
+  list-style-type: disc;
+  margin: 0;
+  padding: 0 0 0 20px;
+  color: inherit;
+}
+
+.ContentEditable__root ol,
+.PlaygroundEditorTheme__ol1 {
+  list-style-type: decimal;
+  margin: 0;
+  padding: 0 0 0 20px;
+  color: inherit;
+}
+
+.ContentEditable__root li,
+.PlaygroundEditorTheme__listItem {
+  margin: 8px 0;
+  color: inherit;
+}
+
+/* Nested list styles */
+.ContentEditable__root ul ul,
+.ContentEditable__root ol ul,
+.PlaygroundEditorTheme__ul .PlaygroundEditorTheme__ul {
+  list-style-type: circle;
+}
+
+.ContentEditable__root ul ul ul,
+.ContentEditable__root ol ul ul,
+.ContentEditable__root ol ol ul,
+.ContentEditable__root ul ol ul,
+.PlaygroundEditorTheme__ul .PlaygroundEditorTheme__ul .PlaygroundEditorTheme__ul {
+  list-style-type: square;
+}
+
+/* Ordered list depth styles */
+.PlaygroundEditorTheme__ol2 {
+  list-style-type: upper-alpha;
+}
+
+.PlaygroundEditorTheme__ol3 {
+  list-style-type: lower-alpha;
+}
+
+.PlaygroundEditorTheme__ol4 {
+  list-style-type: upper-roman;
+}
+
+.PlaygroundEditorTheme__ol5 {
+  list-style-type: lower-roman;
+}
+
+/* Checklist styles */
+.ContentEditable__root .list-check,
+.PlaygroundEditorTheme__listItemUnchecked,
+.PlaygroundEditorTheme__listItemChecked {
+  position: relative;
+  padding-left: 25px;
+  list-style-type: none;
+}
+
+.ContentEditable__root .list-check::before,
+.PlaygroundEditorTheme__listItemUnchecked::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #999;
+  border-radius: 2px;
+}
+
+.ContentEditable__root .list-check.checked::before,
+.PlaygroundEditorTheme__listItemChecked::before {
+  background-color: #3d87f5;
+  border-color: #3d87f5;
+}
+
+.ContentEditable__root .list-check.checked::after,
+.PlaygroundEditorTheme__listItemChecked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
