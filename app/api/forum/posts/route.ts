@@ -13,20 +13,22 @@ export async function POST(req: Request) {
             where: { email: session.user.email! },
         });
 
-        if (!user || (user.role !== "ADMIN" && user.role !== "TEACHER")) {
+        if (!user || user.role !== "ADMIN") {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { title, content, levelId, courseId, meetLink } = await req.json();
+        const { title, content, learningPathId, cohortId, courseId, meetingLink, meetingDate } = await req.json();
 
         const post = await prisma.forumPost.create({
             data: {
                 title,
                 content,
                 authorId: user.id,
-                levelId: levelId || null,
+                learningPathId: learningPathId || null,
+                cohortId: cohortId || null,
                 courseId: courseId || null,
-                meetingLink: meetLink || null,
+                meetingLink: meetingLink || null,
+                meetingDate: meetingDate ? new Date(meetingDate) : null,
             },
         });
 

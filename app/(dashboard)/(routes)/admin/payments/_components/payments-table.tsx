@@ -146,6 +146,7 @@ export function PaymentsTable() {
             <TableRow>
               <TableHead className="text-primary font-bold ">Fecha</TableHead>
               <TableHead className="text-primary font-bold ">Estudiante</TableHead>
+              <TableHead className="text-primary font-bold ">Producto</TableHead>
               
               <TableHead className="text-primary font-bold ">Monto</TableHead>
               <TableHead className="text-primary font-bold ">Estado</TableHead>
@@ -179,6 +180,14 @@ export function PaymentsTable() {
                       <span className="font-medium">{payment.user.name}</span>
                       <span className="text-xs text-muted-foreground">
                         {payment.user.email}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="sm:text-sm text-xs">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{payment.productName}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {payment.productType?.replace("_", " ").toLowerCase()}
                       </span>
                     </div>
                   </TableCell>

@@ -1,6 +1,7 @@
 import { Category, Course } from "@prisma/client";
-import { prisma } from "@/lib/db";
+
 import { getProgress } from "@/actions/get-progress";
+import { prisma } from "@/lib/db";
 
 type CourseWithProgressWithCategory = Course & {
     category?: Category | null;
@@ -19,52 +20,28 @@ export const getCourses = async ({ userId, categoryId, title }: GetCourses): Pro
         const courses = await prisma.course.findMany({
             where: {
                 isPublished: true,
-                title: {
-                    contains: title,
-                    mode: 'insensitive',
-                },
-                courseCategory: categoryId ? {
-                    some: {
-                        categoryId: categoryId,
-                    }
-                } : undefined,
+                title: title ? { contains: title, mode: 'insensitive' } : undefined,
+                courseCategory: categoryId ? { some: { categoryId } } : undefined,
             },
             include: {
-                courseCategory: {
-                    include: {
-                        category: true,
-                    }
-                },
+                courseCategory: { include: { category: true } },
                 modules: {
                     include: {
                         chapters: {
-                            where: {
-                                isPublished: true,
-                            },
-                            orderBy: {
-                                position: 'asc',
-                            },
-                            select: {
-                                id: true,
-                            }
+                            where: { isPublished: true },
+                            orderBy: { position: 'asc' },
+                            select: { id: true },
                         },
                     },
-                    orderBy: {
-                        createdAt: 'desc',
-                    },
+                    orderBy: { createdAt: 'desc' },
                 },
             }
         });
 
-        const coursesWithProgress: CourseWithProgressWithCategory[] = await Promise.all(courses.map(async (course) => { 
-            const progress = await getProgress(userId, course.id);
-            return {
-                ...course,
-                progress: progress,
-            }
-        }));
-
-        return coursesWithProgress;
+        return Promise.all(courses.map(async (course) => ({
+            ...course,
+            progress: await getProgress(userId, course.id),
+        })));
     } catch (error) {
         console.log("[GET_COURSES]", error);
         return [];

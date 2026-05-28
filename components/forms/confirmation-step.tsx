@@ -24,7 +24,7 @@ export default function ConfirmationStep({
       </div>
       <div>
         <h3 className="font-semibold">Selected Course</h3>
-        <p>{formData.levelSelection.levelName}</p>
+        <p>{formData.productSelection.productName}</p>
       </div>
       <div>
         <h3 className="font-semibold">Payment Information</h3>

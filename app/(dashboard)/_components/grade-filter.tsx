@@ -37,7 +37,7 @@ export function GradeFilter({
           <SelectItem value="all">All</SelectItem>
           <SelectItem value="students">Students</SelectItem>
           <SelectItem value="courses">Courses</SelectItem>
-          <SelectItem value="levels">Levels</SelectItem>
+          <SelectItem value="learning-paths">Learning paths</SelectItem>
         </SelectContent>
       </Select>
     </div>

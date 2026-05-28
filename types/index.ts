@@ -1,7 +1,10 @@
-import { User, Level, Course, LevelTeacher, LevelCourse } from "@prisma/client"
+import { Course, CourseEnrollment, LearningPath, LearningPathCourse, LearningPathEnrollment } from "@prisma/client"
 
-export type LevelWithRelations = Level & {
-    students: User[]
-    teacherLevels: (LevelTeacher & { teacher: User })[]
-    levelCourses: (LevelCourse & { course: Course })[]
+export type LearningPathWithRelations = LearningPath & {
+    enrollments: LearningPathEnrollment[]
+    courses: (LearningPathCourse & { course: Course })[]
+}
+
+export type CourseWithEnrollments = Course & {
+    enrollments: CourseEnrollment[]
 }

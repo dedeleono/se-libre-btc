@@ -1,28 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Helper function to validate environment variables
-function validateEnvVar(name: string, value: string | undefined): string {
-    if (!value) {
-        throw new Error(`Missing environment variable: ${name}`);
-    }
-    return value;
-}
-
-// Validate and get environment variables
-const supabaseUrl = validateEnvVar(
-    'SUPABASE_URL',
-    process.env.SUPABASE_URL
-);
-
-const supabaseAnonKey = validateEnvVar(
-    'SUPABASE_ANON_KEY',
-    process.env.SUPABASE_ANON_KEY
-);
-
-const supabaseServiceRoleKey = validateEnvVar(
-    'SUPABASE_SERVICE_ROLE_KEY',
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabaseUrl = process.env.SUPABASE_URL || 'http://127.0.0.1:54321';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'missing-anon-key';
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'missing-service-role-key';
 
 // Create a client for client-side operations
 export const supabase = createClient(

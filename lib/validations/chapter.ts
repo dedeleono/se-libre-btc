@@ -1,4 +1,4 @@
-import { Chapter, ChapterType, QuestionType } from "@prisma/client";
+import { ChapterType, Quiz, QuizQuestion, QuizOption } from "@prisma/client";
 
 interface ChapterValidation {
     id: string;
@@ -9,22 +9,11 @@ interface ChapterValidation {
     pdfUrl: string | null;
     richContent: string | null;
     youtubeUrl: string | null;
-    assignments: {
-        id: string;
-        title: string;
-        description: string | null;
-        isQuiz: boolean;
-        isOnline: boolean;
-        questions: {
-            id: string;
-            type: QuestionType;
-            content: string;
-            options: {
-                id: string;
-                content: string;
-            }[];
-        }[];
-    }[];
+    quiz?: (Quiz & {
+        questions: (QuizQuestion & {
+            options: QuizOption[];
+        })[];
+    }) | null;
 }
 
 export const validateChapterForPublishing = (chapter: ChapterValidation): { isValid: boolean; message: string } => {
@@ -32,61 +21,48 @@ export const validateChapterForPublishing = (chapter: ChapterValidation): { isVa
         return { isValid: false, message: "Title is required" };
     }
 
-    if (chapter.type === ChapterType.LESSON) {
-        if (!chapter.description) {
-            return { isValid: false, message: "Description is required for lessons" };
+    if (chapter.type === ChapterType.QUIZ) {
+        if (!chapter.quiz) {
+            return { isValid: false, message: "Quiz configuration is required" };
         }
 
-        // Check for multiple content types
-        const contentTypes = [
-            chapter.videoUrl,
-            chapter.youtubeUrl,
-            chapter.pdfUrl,
-            chapter.richContent
-        ].filter(Boolean);
-
-        if (contentTypes.length > 1) {
-            return { isValid: false, message: "Chapter can only have one type of content" };
+        if (chapter.quiz.questions.length === 0) {
+            return { isValid: false, message: "Quiz requires at least one question" };
         }
 
-        if (contentTypes.length === 0) {
-            return { isValid: false, message: "Either video, YouTube URL, PDF, or rich text content is required" };
+        const invalidQuestion = chapter.quiz.questions.find((question) => {
+            if (!question.prompt) return true;
+            if (question.type === "MULTIPLE_CHOICE" || question.type === "TRUE_FALSE") {
+                return question.options.length < 2 || !question.options.some((option) => option.isCorrect);
+            }
+            return false;
+        });
+
+        if (invalidQuestion) {
+            return { isValid: false, message: "Quiz questions need prompts, valid options, and a correct answer" };
         }
 
         return { isValid: true, message: "" };
     }
 
-    // For QUIZ or ASSIGNMENT
-    if (!chapter.assignments || chapter.assignments.length === 0) {
-        return { isValid: false, message: "Assignment configuration is required" };
+    if (chapter.type === ChapterType.RESOURCE) {
+        return chapter.pdfUrl || chapter.richContent
+            ? { isValid: true, message: "" }
+            : { isValid: false, message: "Resource chapters require a PDF or rich content" };
     }
 
-    const assignment = chapter.assignments[0];
-
-    if (!assignment.title) {
-        return { isValid: false, message: "Assignment title is required" };
+    if (chapter.type === ChapterType.LIVE_SESSION) {
+        return { isValid: true, message: "" };
     }
 
-    // if (!assignment.description) {
-    //     return { isValid: false, message: "Assignment description is required" };
-    // }
+    const contentTypes = [chapter.videoUrl, chapter.youtubeUrl, chapter.pdfUrl, chapter.richContent].filter(Boolean);
 
-    // Online submission validation (both Quiz and Assignment)
-    if (assignment.isOnline) {
-        if (!assignment.questions || assignment.questions.length === 0) {
-            return { isValid: false, message: "Online submissions require at least one question" };
-        }
+    if (contentTypes.length > 1) {
+        return { isValid: false, message: "Chapter can only have one primary content type" };
+    }
 
-        const invalidQuestion = assignment.questions.find(q => {
-            if (q.type === QuestionType.MULTIPLE_CHOICE) {
-                return !q.options || q.options.length < 2;
-            }
-            return !q.content;
-        });
-
-        if (invalidQuestion) {
-            return { isValid: false, message: "Multiple choice questions must have at least 2 options and all questions must have content" };
-        }
+    if (contentTypes.length === 0) {
+        return { isValid: false, message: "Either video, YouTube URL, PDF, or rich text content is required" };
     }
 
     return { isValid: true, message: "" };

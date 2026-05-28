@@ -1,166 +1,74 @@
-import { Suspense } from "react";
-import { prisma } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { StudentCoursesView } from "./_components/student-courses-view";
-import { withTransaction } from "@/lib/db/transaction";
-import DatabaseErrorBoundary from "@/components/database-error-boundary";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { LayoutGrid, List } from "lucide-react";
-import { StudentCoursesTable } from "./_components/student-courses-table";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-async function syncStudentLevelCourses(studentId: string, levelId: string) {
-  try {
-    await prisma.$transaction(async (tx) => {
-      // 1. Get all courses assigned to the level
-      const levelCourses = await tx.levelCourse.findMany({
-        where: { levelId },
-        select: { courseId: true },
-      });
-
-      // 2. Create StudentCourse entries for any missing courses
-      const createPromises = levelCourses.map((lc) =>
-        tx.studentCourse.upsert({
-          where: {
-            studentId_courseId: {
-              studentId: studentId,
-              courseId: lc.courseId,
-            },
-          },
-          create: {
-            studentId: studentId,
-            courseId: lc.courseId,
-            isAssignedByLevel: true,
-          },
-          update: {
-            isAssignedByLevel: true,
-          },
-        })
-      );
-
-      await Promise.all(createPromises);
-    });
-  } catch (error) {
-    console.error("Error syncing student level courses:", error);
-  }
-}
-
 export default async function StudentCoursesPage() {
   const session = await auth();
 
-  if (!session?.user) {
-    return redirect("/sign-in");
+  if (!session?.user?.id) {
+    redirect("/sign-in");
   }
+
+  const enrollments = await prisma.courseEnrollment.findMany({
+    where: { userId: session.user.id },
+    include: {
+      course: {
+        include: {
+          modules: { include: { chapters: { where: { isPublished: true } } } },
+        },
+      },
+    },
+    orderBy: { lastAccessedAt: "desc" },
+  });
 
   return (
     <ScrollArea className="h-full">
-      <DatabaseErrorBoundary>
-        <Suspense fallback={<CoursesLoadingSkeleton />}>
-          <StudentCoursesContent userEmail={session.user.email!} />
-        </Suspense>
-      </DatabaseErrorBoundary>
-    </ScrollArea>
-  );
-}
+      <div className="flex-1 space-y-6 p-4 pt-6 md:p-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">My Learning</h1>
+          <p className="text-sm text-muted-foreground">Continue your Bitcoin courses and track completion.</p>
+        </div>
 
-async function StudentCoursesContent({ userEmail }: { userEmail: string }) {
-  const studentData = await withTransaction(async (tx) => {
-    const student = await tx.user.findUnique({
-      where: {
-        email: userEmail,
-      },
-      include: {
-        studentLevel: {
-          select: {
-            id: true,
-            name: true,
-            price: true,
-            inscriptionPrice: true,
-            inscriptionPaid: true,
-          }
-        },
-        studentCourses: {
-          include: {
-            course: {
-              include: {
-                teacher: true,
-                modules: {
-                  include: {
-                    chapters: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {enrollments.map(({ course }) => {
+            const totalChapters = course.modules.reduce((total, module) => total + module.chapters.length, 0);
 
-    if (student?.studentLevel?.id) {
-      await syncStudentLevelCourses(student.id, student.studentLevel.id);
-    }
+            return (
+              <Card key={course.id}>
+                <CardHeader>
+                  <CardTitle>{course.title}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{course.shortDescription || "Continue learning."}</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="text-sm text-muted-foreground">{totalChapters} published chapters</div>
+                  <Button asChild className="w-full">
+                    <Link href={`/courses/${course.id}`}>Continue</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
 
-    return student;
-  }, {
-    timeout: 15000,
-    maxWait: 20000,
-  });
-
-  if (!studentData) {
-    return redirect("/");
-  }
-
-  return (
-    <div className="flex-1 space-y-6 p-4 pt-6 md:p-8">
-      <StudentCoursesView
-        level={{
-          id: studentData?.studentLevel?.id || "",
-          name: studentData?.studentLevel?.name || "",
-          price: studentData?.studentLevel?.price || null,
-          inscriptionPrice: studentData?.studentLevel?.inscriptionPrice || null,
-          inscriptionPaid: studentData?.studentLevel?.inscriptionPaid || false,
-        }}
-        courses={studentData?.studentCourses || []}
-      />
-    </div>
-  );
-}
-
-function CoursesLoadingSkeleton() {
-  return (
-    <div className="flex-1 space-y-6 p-4 pt-6 md:p-8">
-      <Card className="border-2 border-primary/20">
-        <CardHeader>
-          <div className="flex items-center gap-x-2">
-            <Skeleton className="h-8 w-8 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-72" />
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="bg-card rounded-lg p-4 space-y-4 border shadow-sm"
-          >
-            <div className="aspect-video bg-muted animate-pulse rounded-md" />
-            <div className="space-y-2">
-              <div className="h-4 w-3/4 bg-muted animate-pulse rounded-md" />
-              <div className="h-4 w-1/2 bg-muted animate-pulse rounded-md" />
-            </div>
-          </div>
-        ))}
+          {enrollments.length === 0 && (
+            <Card className="md:col-span-2 xl:col-span-3">
+              <CardContent className="space-y-4 p-8 text-center">
+                <p className="text-sm text-muted-foreground">You are not enrolled in any courses yet.</p>
+                <Button asChild>
+                  <Link href="/student/browse">Browse courses</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 }

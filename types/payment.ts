@@ -1,4 +1,6 @@
 // types/payment.ts
+import { PaymentProductType } from "@prisma/client";
+
 export interface PaymentIntent {
     id: string;
     amount: number;
@@ -9,9 +11,12 @@ export interface PaymentIntent {
 }
 
 export interface CreatePaymentIntentRequest {
-    levelId: string;
     customerEmail: string;
     baseUrl: string;
+    amount: number;
+    productType: PaymentProductType;
+    courseId?: string;
+    learningPathId?: string;
 }
 
 export interface PaymentFormData {
@@ -23,9 +28,10 @@ export interface FormData {
         name: string;
         email: string;
     };
-    levelSelection: {
-        levelId: string;
-        levelName: string;
+    productSelection: {
+        productId: string;
+        productName: string;
+        productType: PaymentProductType;
         price: number;
     };
     payment: PaymentFormData;

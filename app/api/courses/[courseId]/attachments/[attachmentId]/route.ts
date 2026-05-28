@@ -14,10 +14,23 @@ export async function DELETE(
             return new NextResponse("Unauthorized: ", { status: 401 })
         }
 
-        const courseOwner = await prisma.course.findUnique({
+        const dbUser = await prisma.user.findUnique({
+            where: {
+                id: session.user.id,
+            }
+        })
+
+        if (!dbUser) {
+            return new NextResponse("Unauthorized: ", { status: 401 })
+        }
+
+        const courseOwner = await prisma.course.findFirst({
             where: {
                 id: params.courseId,
-                teacherId: session?.user?.id
+                OR: [
+                    { contributors: { some: { userId: dbUser.id } } },
+                    ...(dbUser.role === "ADMIN" ? [{}] : []),
+                ],
             }
         })
 

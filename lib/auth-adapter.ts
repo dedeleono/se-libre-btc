@@ -2,7 +2,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import { UserRole } from "@prisma/client";
 import { Adapter, AdapterUser, AdapterAccount } from "@auth/core/adapters";
-import { generateCarnet } from "@/lib/actions";
 
 
 declare module "@auth/core/adapters" {
@@ -15,12 +14,10 @@ declare module "@auth/core/adapters" {
 export const customPrismaAdapter: Adapter = {
   ...PrismaAdapter(prisma),
   createUser: async (data: Omit<AdapterUser, "id">) => {
-    const isStudent = data.role === "STUDENT";
     const user = await prisma.user.create({
       data: {
         ...data,
-        role: data.role,
-        carnet: isStudent ? await generateCarnet() : undefined,
+        role: data.role ?? "STUDENT",
       },
     });
     return user as AdapterUser;

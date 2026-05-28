@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
 import { PaymentStatus } from "@prisma/client";
-import { UserRoundIcon } from "lucide-react";
+
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 export const dynamic = 'force-dynamic';
 
@@ -13,14 +13,14 @@ export async function GET(request: Request) {
         const status = searchParams.get("status") as PaymentStatus | "all" | null;
 
         const session = await auth()
-        const userEmail = session?.user?.email as string
+
+        if (!session?.user?.id) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
 
         const payments = await prisma.payment.findMany({
-
             where: {
-
-                userEmail, // Fetch only the payments belonging to the student
-
+                userId: session.user.id,
                 AND: [
                     status && status !== "all"
                         ? { status: status as PaymentStatus }
@@ -39,13 +39,19 @@ export async function GET(request: Request) {
                 user: {
                     select: { name: true, email: true },
                 },
+                course: { select: { title: true } },
+                learningPath: { select: { title: true } },
             },
             orderBy: {
                 paymentDate: "desc",
             },
         });
 
-        return NextResponse.json(payments);
+        return NextResponse.json(payments.map((payment) => ({
+            ...payment,
+            amount: payment.amount.toString(),
+            productName: payment.course?.title || payment.learningPath?.title || "Subscription",
+        })));
     } catch (error) {
         console.error("[PAYMENTS_GET]", error);
         return new NextResponse("Internal Error", { status: 500 });

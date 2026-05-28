@@ -88,7 +88,7 @@ export const getOverviewData = createCachedFunction(async () => {
 
         return {
           name: month,
-          revenue: revenue._sum.amount || 0,
+          revenue: Number(revenue._sum.amount || 0),
           students: newStudents,
           courses: newCourses,
         };

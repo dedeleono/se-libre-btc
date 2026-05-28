@@ -41,12 +41,12 @@ export async function POST(
 
     // Check if user has access to this chapter
     if (user.role === "STUDENT") {
-      const hasAccess = await prisma.user.findFirst({
+      const hasAccess = await prisma.courseEnrollment.findUnique({
         where: {
-          id: user.id,
-          studentCourses: {
-            some: { courseId: chapter.module.course.id },
-          },
+          userId_courseId: {
+            userId: user.id,
+            courseId: chapter.module.course.id,
+          }
         },
       });
 

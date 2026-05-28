@@ -4,13 +4,41 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL
+function getDatabaseUrl() {
+  const databaseUrl = process.env.DATABASE_URL
+
+  if (!databaseUrl) {
+    return undefined
+  }
+
+  try {
+    const url = new URL(databaseUrl)
+    const isSupabasePooler =
+      url.hostname.includes('pooler.supabase.com') || url.port === '6543'
+
+    // Prisma's PgBouncer flag is case-sensitive. Supabase examples/old envs
+    // sometimes end up with `pgBouncer=true`, which Prisma ignores and then
+    // crashes behind the transaction pooler with "prepared statement ... does not exist".
+    if (url.searchParams.has('pgBouncer')) {
+      url.searchParams.delete('pgBouncer')
+      url.searchParams.set('pgbouncer', 'true')
     }
-  },
-  log: ['query', 'error', 'warn']
+
+    if (isSupabasePooler && !url.searchParams.has('pgbouncer')) {
+      url.searchParams.set('pgbouncer', 'true')
+    }
+
+    return url.toString()
+  } catch {
+    return databaseUrl
+  }
+}
+
+const databaseUrl = getDatabaseUrl()
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  log: ['query', 'error', 'warn'],
+  ...(databaseUrl ? { datasources: { db: { url: databaseUrl } } } : {}),
 })
 
 if (process.env.NODE_ENV !== 'production') {

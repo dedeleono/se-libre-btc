@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { IconBadge } from "@/components/icon-badge";
 import { BookOpen, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { EnrollmentButton } from "@/components/enrollment-button";
 
 interface CourseCardProps {
   id: string;
@@ -20,9 +22,11 @@ export const CourseCard = ({
   progress,
   category,
 }: CourseCardProps) => {
+  const isEnrolled = progress !== null;
+
   return (
-    <Link href={`/courses/${id}`}>
-      <div className="group hover:shadow-sm transition overflow-hidden border rounded-md p-3 h-full w-full">
+      <div className="group hover:shadow-sm transition overflow-hidden border rounded-md p-3 h-full w-full flex flex-col">
+        <Link href={isEnrolled ? `/courses/${id}` : `/courses/preview/${id}`}>
         <div className="relative w-full aspect-video rounded-md overflow-hidden">
           {imageUrl ? (
             <Image src={imageUrl} alt={title} fill className="object-cover" />
@@ -30,12 +34,15 @@ export const CourseCard = ({
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
               <span className="text-gray-500">No image</span>
             </div>
-          )}
+            )}
         </div>
+        </Link>
         <div className="flex flex-col pt-2">
+          <Link href={isEnrolled ? `/courses/${id}` : `/courses/preview/${id}`}>
             <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition line-clamp-2">
                 {title}
             </div>
+          </Link>
             <p className="text-muted-foreground text-xs">
                 {category}
             </p>
@@ -55,8 +62,24 @@ export const CourseCard = ({
                     </p>
                 </div>
             )}
+            <div className="mt-auto pt-3">
+              {isEnrolled ? (
+                <Button asChild className="w-full" size="sm">
+                  <Link href={`/courses/${id}`}>Continue</Link>
+                </Button>
+              ) : (
+                <EnrollmentButton
+                  productId={id}
+                  productType="course"
+                  redirectTo={`/courses/${id}`}
+                  className="w-full"
+                  size="sm"
+                >
+                  Enroll for free
+                </EnrollmentButton>
+              )}
+            </div>
         </div>
       </div>
-    </Link>
   );
 };

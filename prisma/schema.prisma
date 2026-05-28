@@ -13,58 +13,42 @@ datasource db {
 }
 
 model User {
-  id                  String    @id @default(cuid())
+  id                  String   @id @default(cuid())
   name                String?
-  role                UserRole  @default(STUDENT)
-  email               String    @unique
+  role                UserRole @default(STUDENT)
+  email               String   @unique
   emailVerified       DateTime?
   firstName           String?
   lastName            String?
   phone               String?
   image               String?
-  onboardingCompleted Boolean   @default(false)
-  isDeleted           Boolean   @default(false)
-  isBanned            Boolean   @default(false)
-  carnet              String?   @unique
-  mineducId           String?   @unique
+  onboardingCompleted Boolean  @default(false)
+  isDeleted           Boolean  @default(false)
+  isBanned            Boolean  @default(false)
 
   accounts Account[]
   sessions Session[]
-  payments Payment[]
 
-  levelId          String?
-  teacherCourses   Course[]                 @relation("TeacherCourses")
-  studentCourses   StudentCourse[]
-  teacherLevels    LevelTeacher[]
-  studentLevel     Level?                   @relation(fields: [levelId], references: [id])
-  assignmentScores StudentAssignmentScore[]
-  courseScores     StudentCourseScore[]
-  levelScores      StudentLevelScore[]
-  moduleScores     StudentModuleScore[]
-  academicYears    StudentAcademicYear[]
+  payments                Payment[]
+  uploadedAttachments     Attachment[]
+  courseEnrollments       CourseEnrollment[]
+  learningPathEnrollments LearningPathEnrollment[]
+  cohortEnrollments       CohortEnrollment[]
+  quizAttempts            QuizAttempt[]
+  courseContributions     CourseContributor[]
+  chapterProgress         ChapterProgress[]
+
+  forumPosts         ForumPost[]
+  forumReplies       ForumReply[]
+  forumViews         ForumView[]
+  notes              StudentNote[]
+  chapterDiscussions ChapterDiscussion[]
+
+  sentNotifications     Notification[] @relation("SentNotifications")
+  receivedNotifications Notification[] @relation("ReceivedNotifications")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  submissions         Submission[]
-  createdAssignments  Assignment[] @relation("CreatedAssignments")
-  uploadedAttachments Attachment[]
-
-  assignments Assignment[]
-
-  forumPosts   ForumPost[]
-  forumReplies ForumReply[]
-  forumViews   ForumView[]
-
-  sentNotifications     Notifications[] @relation("SentNotifications")
-  receivedNotifications Notifications[] @relation("ReceivedNotifications")
-
-  gradesGiven    GradeHistory[] @relation("TeacherGradeHistory")
-  gradesApproved GradeHistory[] @relation("AdminGradeApproval")
-
-  notes StudentNote[]
-
-  chapterDiscussions ChapterDiscussion[]
 
   @@index([role])
 }
@@ -75,16 +59,26 @@ model PendingInvitation {
   name      String
   firstName String
   lastName  String
-  role      UserRole
+  role      UserRole @default(STUDENT)
   phone     String?
   token     String   @unique
   expires   DateTime
+  metadata  Json?
+
+  paymentId      String? @unique
+  payment        Payment? @relation(fields: [paymentId], references: [id])
+  courseId       String?
+  course         Course? @relation(fields: [courseId], references: [id])
+  learningPathId String?
+  learningPath   LearningPath? @relation(fields: [learningPathId], references: [id])
+  cohortId       String?
+  cohort         Cohort? @relation(fields: [cohortId], references: [id])
+
   createdAt DateTime @default(now())
-  metadata  Json? // Store additional information like levelId and payment requirements
-  paymentId String?  @unique
-  payment   Payment? @relation(fields: [paymentId], references: [id])
-  levelId   String?
-  level     Level?   @relation(fields: [levelId], references: [id])
+
+  @@index([courseId])
+  @@index([learningPathId])
+  @@index([cohortId])
 }
 
 model Account {
@@ -126,313 +120,102 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-model Assignment {
-  id          String    @id @default(uuid())
-  title       String
-  description String?   @db.Text
-  isQuiz      Boolean   @default(false)
-  isOnline    Boolean   @default(true)
-  maxPoints   Float? // Add this field for file-based submissions
-  timer       Int? // Time in minutes
-  deadline    DateTime?
+model Course {
+  id                String             @id @default(uuid())
+  title             String             @db.Text
+  slug              String             @unique
+  shortDescription  String?            @db.Text
+  description       String?            @db.Text
+  imageUrl          String?            @db.Text
+  difficulty        CourseDifficulty   @default(BEGINNER)
+  deliveryMode      CourseDeliveryMode @default(SELF_PACED)
+  estimatedDuration String?
+  lessonDuration    String?
+  isFree            Boolean            @default(true)
+  price             Decimal?           @db.Decimal(10, 2)
+  isPublished       Boolean            @default(false)
+  publishedAt       DateTime?
 
-  chapterId String
-  chapter   Chapter @relation(fields: [chapterId], references: [id])
-
-  questions   Question[]
-  submissions Submission[]
-
-  createdById String
-  creator     User   @relation(fields: [createdById], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  studentAssignmentScores StudentAssignmentScore[]
-
-  User User[] @relation("CreatedAssignments")
-
-  @@index([createdAt])
-  @@index([chapterId])
-  @@index([title])
-}
-
-model Question {
-  id       String       @id @default(uuid())
-  position Int
-  content  String       @db.Text
-  type     QuestionType
-  points   Float // Points for this specific question
-
-  // For multiple choice questions
-  options       QuestionOption[]
-  correctOption String? // ID of the correct option for multiple choice
-
-  assignmentId String
-  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-
-  // Track student answers
-  answers Answer[]
-
-  // Matching-specific config
-  matchingConfig MatchingConfig?
-  matchingPrompts MatchingPrompt[]
-  matchingChoices MatchingChoice[]
-  matchingPairs MatchingPair[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model QuestionOption {
-  id              String   @id @default(uuid())
-  content         String
-  hasBlank        Boolean  @default(false) // Indicates if this option has fillable blanks
-  blankPlaceholder String? // Placeholder text for the blank (e.g., "points")
-  correctBlankText String? // Expected answer for the blank (for auto-grading)
-  questionId      String
-  question        Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-}
-
-model Submission {
-  id              String           @id @default(uuid())
-  studentId       String
-  assignmentId    String
-  status          SubmissionStatus @default(PENDING)
-  score           Float? // Final score
-  startedAt       DateTime         @default(now())
-  submittedAt     DateTime?
-  teacherFeedback String?
-
-  // For file uploads
-  fileUrl  String?
-  fileType FileType?
-
-  answers     Answer[]
-  student     User         @relation(fields: [studentId], references: [id])
-  assignment  Assignment   @relation(fields: [assignmentId], references: [id])
-  attachments Attachment[]
+  courseCategory     CourseCategory[]
+  modules            CourseModule[]
+  attachments        Attachment[]
+  payments           Payment[]
+  contributors       CourseContributor[]
+  enrollments        CourseEnrollment[]
+  learningPaths      LearningPathCourse[]
+  cohorts            Cohort[]
+  liveSessions       LiveSession[]
+  forumPosts         ForumPost[]
+  studentNotes       StudentNote[]
+  notifications      Notification[]
+  pendingInvitations PendingInvitation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  notifications Notifications[]
-
-  gradeHistory   GradeHistory[]
-  lastGradedBy   String? // User ID of teacher who last graded it
-  regradePending Boolean        @default(false)
-  regradeReason  String? // Reason for requesting regrade
-
-  @@unique([studentId, assignmentId])
-  @@index([status, score])
-  @@index([assignmentId])
+  @@index([isPublished])
+  @@index([difficulty])
+  @@index([deliveryMode])
 }
 
-model Answer {
-  id            String   @id @default(uuid())
-  content       String   @db.Text
-  isCorrect     Boolean? // For multiple choice or teacher-graded
-  score         Float? // Points awarded for this answer
-  
-  // For fillable multiple choice questions
-  selectedOptions String[] // Array of selected option IDs
-  blankAnswers   Json? // JSON object storing blank text answers: { optionId: "text" }
+model CourseContributor {
+  id       String                @id @default(uuid())
+  userId   String
+  courseId String
+  role     CourseContributorRole @default(EDITOR)
 
-  submissionId String
-  questionId   String
-  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  question     Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  // NEW: student-selected pairs for matching questions
-  matchingPairs AnswerMatchingPair[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model StudentAssignmentScore {
-  id          String   @id @default(uuid())
-  score       Float
-  maxScore    Float // Store the max possible score when the assignment was taken
-  submittedAt DateTime @default(now())
-
-  studentId    String
-  assignmentId String
-  student      User       @relation(fields: [studentId], references: [id])
-  assignment   Assignment @relation(fields: [assignmentId], references: [id])
-
-  @@unique([studentId, assignmentId])
-}
-
-model StudentCourseScore {
-  id          String @id @default(uuid())
-  score       Float  @default(0)
-  totalPoints Float  @default(100) // Usually 100, but could be configurable
-
-  studentId String
-  courseId  String
-  student   User   @relation(fields: [studentId], references: [id])
-  course    Course @relation(fields: [courseId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([studentId, courseId])
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
 }
 
-model StudentLevelScore {
-  id    String @id @default(uuid())
-  score Float  @default(0)
+model CourseEnrollment {
+  id             String           @id @default(uuid())
+  userId         String
+  courseId       String
+  status         EnrollmentStatus @default(ACTIVE)
+  source         EnrollmentSource @default(FREE)
+  isPaid         Boolean          @default(false)
+  enrolledAt     DateTime         @default(now())
+  completedAt    DateTime?
+  lastAccessedAt DateTime?
 
-  studentId String
-  levelId   String
-  student   User   @relation(fields: [studentId], references: [id])
-  level     Level  @relation(fields: [levelId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([studentId, levelId])
-}
-
-model Attachment {
-  id         String @id @default(uuid())
-  name       String
-  url        String @db.Text
-  uploaderId String // Who uploaded the file
-  uploader   User   @relation(fields: [uploaderId], references: [id])
-
-  courseId     String?
-  chapterId    String?
-  submissionId String? // For student assignment submissions
-  course       Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  chapter      Chapter?    @relation(fields: [chapterId], references: [id])
-  submission   Submission? @relation(fields: [submissionId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([uploaderId])
-  @@index([submissionId])
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([status])
 }
 
 model Category {
-  id   String @id @unique @default(uuid())
+  id   String @id @default(uuid())
   name String @unique
 
   courses CourseCategory[]
 }
 
 model CourseCategory {
-  id String @id @default(uuid())
+  id         String @id @default(uuid())
+  courseId   String
+  categoryId String
 
-  courseId   String?
-  categoryId String?
-  course     Course?   @relation(fields: [courseId], references: [id])
-  category   Category? @relation(fields: [categoryId], references: [id])
-}
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-model Level {
-  id               String  @id @default(uuid())
-  name             String
-  position         Int     @default(0)
-  price            Float?
-  inscriptionPrice Float?
-  inscriptionPaid  Boolean @default(false)
-
-  levelCourses         LevelCourse[]
-  students             User[]
-  teacherLevels        LevelTeacher[]
-  studentScores        StudentLevelScore[]
-  payments             Payment[]
-  pendingInvitations   PendingInvitation[]
-  studentAcademicYears StudentAcademicYear[]
-
-  forumPosts ForumPost[]
-}
-
-model LevelTeacher {
-  id        String @id @default(uuid())
-  levelId   String
-  teacherId String
-
-  level   Level @relation(fields: [levelId], references: [id])
-  teacher User  @relation(fields: [teacherId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([levelId, teacherId])
-  @@index([levelId])
-  @@index([teacherId])
-}
-
-model Course {
-  id              String    @id @unique @default(uuid())
-  title           String    @db.Text
-  description     String?   @db.Text
-  imageUrl        String?   @db.Text
-  isPublished     Boolean   @default(false)
-  isFreelance     Boolean   @default(false)
-  courseStartDate DateTime?
-  courseEndDate   DateTime?
-  lessonDuration  String?
-
-  courseCategory CourseCategory[]
-  modules        CourseModule[]
-  attachments    Attachment[]
-  payments       Payment[]
-
-  teacherId String?
-  teacher   User?   @relation(name: "TeacherCourses", fields: [teacherId], references: [id])
-
-  levelCourses   LevelCourse[]
-  studentCourses StudentCourse[]
-  studentScores  StudentCourseScore[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  forumPosts ForumPost[]
-
-  studentNotes StudentNote[]
-
-  @@index([teacherId])
-  @@index([isPublished])
-}
-
-model LevelCourse {
-  id       String @id @default(uuid())
-  levelId  String
-  courseId String
-
-  level  Level  @relation(fields: [levelId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([levelId, courseId])
-  @@index([levelId])
+  @@unique([courseId, categoryId])
   @@index([courseId])
-}
-
-model StudentCourse {
-  id                String  @id @default(uuid())
-  studentId         String
-  courseId          String
-  isPaid            Boolean @default(false)
-  isAssignedByLevel Boolean @default(false)
-
-  student User   @relation(fields: [studentId], references: [id])
-  course  Course @relation(fields: [courseId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([studentId, courseId], name: "studentId_courseId")
-  @@index([studentId])
-  @@index([courseId])
+  @@index([categoryId])
 }
 
 model CourseModule {
@@ -440,15 +223,13 @@ model CourseModule {
   title       String
   description String? @db.Text
   position    Int
+  courseId    String
 
+  course   Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
   chapters Chapter[]
 
-  courseId String
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  studentModuleScores StudentModuleScore[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([courseId])
 }
@@ -456,107 +237,370 @@ model CourseModule {
 model Chapter {
   id          String      @id @default(uuid())
   title       String
+  slug        String?
   type        ChapterType @default(LESSON)
   isIntro     Boolean     @default(false)
-  description String?
+  description String?     @db.Text
   startTime   DateTime?
   endTime     DateTime?
-
   position    Int
-  isPublished Boolean @default(false)
+  isPublished Boolean     @default(false)
 
-  imageUrl    String?
-  videoUrl    String?
-  pdfUrl      String?
-  richContent String?
-  youtubeUrl  String?
+  imageUrl    String? @db.Text
+  videoUrl    String? @db.Text
+  pdfUrl      String? @db.Text
+  richContent String? @db.Text
+  youtubeUrl  String? @db.Text
 
+  moduleId      String
+  liveSessionId String? @unique
+
+  module          CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  liveSession     LiveSession? @relation(fields: [liveSessionId], references: [id])
+  quiz            Quiz?
   attachments     Attachment[]
-  assignments     Assignment[]
   studentProgress ChapterProgress[]
-
-  moduleId String
-  module   CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  studentNotes    StudentNote[]
+  discussions     ChapterDiscussion[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  studentNotes StudentNote[]
-
-  discussions ChapterDiscussion[]
-
   @@index([moduleId])
+  @@index([type])
 }
 
 model ChapterProgress {
-  id     String @id @default(uuid())
-  userId String
+  id          String   @id @default(uuid())
+  userId      String
+  chapterId   String
+  isCompleted Boolean  @default(false)
+  completedAt DateTime?
 
-  chapterId String
-  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-  isCompleted Boolean @default(false)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([userId, chapterId])
+  @@index([userId])
   @@index([chapterId])
 }
 
-model Payment {
-  id             String        @id @default(uuid())
-  amount         Float
-  status         PaymentStatus @default(PENDING)
-  paymentMethod  String?
-  paymentDate    DateTime      @default(now())
-  metadata       Json? // For storing payment provider specific data
-  paymentType    String? // Type of payment: "INSCRIPTION", "MONTHLY", etc.
-  academicYearId String? // Link to the academic year this payment is for
-  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id])
+model LearningPath {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String?  @db.Text
+  imageUrl    String?  @db.Text
+  position    Int      @default(0)
+  isPublished Boolean  @default(false)
+  isFree      Boolean  @default(true)
+  price       Decimal? @db.Decimal(10, 2)
+  publishedAt DateTime?
 
-  // Relations
-  userEmail           String
-  user                User                 @relation(fields: [userEmail], references: [email])
-  levelId             String?
-  level               Level?               @relation(fields: [levelId], references: [id])
-  courseId            String?
-  course              Course?              @relation(fields: [courseId], references: [id])
-  pendingInvitation   PendingInvitation?
-  studentAcademicYear StudentAcademicYear?
+  courses            LearningPathCourse[]
+  enrollments        LearningPathEnrollment[]
+  cohorts            Cohort[]
+  liveSessions       LiveSession[]
+  payments           Payment[]
+  forumPosts         ForumPost[]
+  notifications      Notification[]
+  pendingInvitations PendingInvitation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  notifications Notifications[]
+  @@index([isPublished])
+  @@index([position])
+}
 
-  @@index([userEmail])
-  @@index([academicYearId])
+model LearningPathCourse {
+  id             String @id @default(uuid())
+  learningPathId String
+  courseId       String
+  position       Int    @default(0)
+
+  learningPath LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([learningPathId, courseId])
+  @@index([learningPathId])
+  @@index([courseId])
+}
+
+model LearningPathEnrollment {
+  id             String           @id @default(uuid())
+  userId         String
+  learningPathId String
+  status         EnrollmentStatus @default(ACTIVE)
+  source         EnrollmentSource @default(FREE)
+  isPaid         Boolean          @default(false)
+  enrolledAt     DateTime         @default(now())
+  completedAt    DateTime?
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learningPath LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, learningPathId])
+  @@index([userId])
+  @@index([learningPathId])
+  @@index([status])
+}
+
+model Cohort {
+  id             String       @id @default(uuid())
+  title          String
+  slug           String       @unique
+  description    String?      @db.Text
+  status         CohortStatus @default(DRAFT)
+  capacity       Int?
+  startDate      DateTime?
+  endDate        DateTime?
+  courseId       String?
+  learningPathId String?
+
+  course             Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  learningPath       LearningPath? @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  enrollments        CohortEnrollment[]
+  liveSessions       LiveSession[]
+  forumPosts         ForumPost[]
+  notifications      Notification[]
+  pendingInvitations PendingInvitation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
+  @@index([learningPathId])
+  @@index([status])
+}
+
+model CohortEnrollment {
+  id          String           @id @default(uuid())
+  userId      String
+  cohortId    String
+  status      EnrollmentStatus @default(ACTIVE)
+  source      EnrollmentSource @default(COHORT)
+  enrolledAt  DateTime         @default(now())
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cohort Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, cohortId])
+  @@index([userId])
+  @@index([cohortId])
+  @@index([status])
+}
+
+model LiveSession {
+  id             String            @id @default(uuid())
+  title          String
+  description    String?           @db.Text
+  status         LiveSessionStatus @default(SCHEDULED)
+  startsAt       DateTime
+  endsAt         DateTime?
+  meetingUrl     String?           @db.Text
+  recordingUrl   String?           @db.Text
+  cohortId       String?
+  courseId       String?
+  learningPathId String?
+
+  cohort       Cohort?       @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  course       Course?       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  learningPath LearningPath? @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  chapter      Chapter?
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([cohortId])
+  @@index([courseId])
+  @@index([learningPathId])
+  @@index([startsAt])
+  @@index([status])
+}
+
+model Quiz {
+  id                 String  @id @default(uuid())
+  title              String
+  description        String? @db.Text
+  passingScore       Int     @default(70)
+  allowRetries       Boolean @default(true)
+  showCorrectAnswers Boolean @default(true)
+  chapterId          String  @unique
+
+  chapter   Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  questions QuizQuestion[]
+  attempts  QuizAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuizQuestion {
+  id          String           @id @default(uuid())
+  quizId      String
+  position    Int
+  type        QuizQuestionType
+  prompt      String           @db.Text
+  explanation String?          @db.Text
+  points      Int              @default(1)
+  metadata    Json?
+
+  quiz           Quiz                @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options        QuizOption[]
+  attemptAnswers QuizAttemptAnswer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([quizId])
+}
+
+model QuizOption {
+  id         String  @id @default(uuid())
+  questionId String
+  content    String  @db.Text
+  isCorrect  Boolean @default(false)
+  position   Int
+
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([questionId])
+}
+
+model QuizAttempt {
+  id           String            @id @default(uuid())
+  quizId       String
+  userId       String
+  status       QuizAttemptStatus @default(IN_PROGRESS)
+  scorePercent Float?
+  passed       Boolean?
+  startedAt    DateTime          @default(now())
+  completedAt  DateTime?
+
+  quiz          Quiz                @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers       QuizAttemptAnswer[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([quizId])
+  @@index([userId])
+  @@index([status])
+}
+
+model QuizAttemptAnswer {
+  id                String   @id @default(uuid())
+  attemptId         String
+  questionId        String
+  selectedOptionIds String[]
+  textAnswer        String?  @db.Text
+  isCorrect         Boolean?
+
+  attempt  QuizAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([attemptId, questionId])
+  @@index([attemptId])
+  @@index([questionId])
+}
+
+model Attachment {
+  id         String @id @default(uuid())
+  name       String
+  url        String @db.Text
+  uploaderId String
+  courseId   String?
+  chapterId  String?
+
+  uploader User    @relation(fields: [uploaderId], references: [id])
+  course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  chapter  Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([uploaderId])
+  @@index([courseId])
+  @@index([chapterId])
+}
+
+model Payment {
+  id             String             @id @default(uuid())
+  amount         Decimal            @db.Decimal(10, 2)
+  status         PaymentStatus      @default(PENDING)
+  productType    PaymentProductType
+  paymentMethod  String?
+  paymentDate    DateTime           @default(now())
+  metadata       Json?
+  userId         String
+  courseId       String?
+  learningPathId String?
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course            Course?            @relation(fields: [courseId], references: [id])
+  learningPath      LearningPath?      @relation(fields: [learningPathId], references: [id])
+  pendingInvitation PendingInvitation?
+  notifications     Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([courseId])
+  @@index([learningPathId])
+  @@index([status])
+  @@index([productType])
 }
 
 model ForumPost {
-  id          String    @id @default(cuid())
-  title       String
-  content     String    @db.Text
-  authorId    String
-  levelId     String?
-  courseId    String?
-  meetingLink String? // Changed from meetLink to meetingLink for consistency
-  meetingDate DateTime? // Added meetingDate
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             String   @id @default(cuid())
+  title          String
+  content        String   @db.Text
+  authorId       String
+  courseId       String?
+  learningPathId String?
+  cohortId       String?
+  meetingLink    String?
+  meetingDate    DateTime?
 
-  author   User         @relation(fields: [authorId], references: [id])
-  level    Level?       @relation(fields: [levelId], references: [id])
-  course   Course?      @relation(fields: [courseId], references: [id])
-  comments ForumReply[]
-  views    ForumView[]
+  author       User          @relation(fields: [authorId], references: [id])
+  course       Course?       @relation(fields: [courseId], references: [id])
+  learningPath LearningPath? @relation(fields: [learningPathId], references: [id])
+  cohort       Cohort?       @relation(fields: [cohortId], references: [id])
+  comments     ForumReply[]
+  views        ForumView[]
+  notifications Notification[]
 
-  notifications Notifications[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([authorId])
-  @@index([levelId])
   @@index([courseId])
+  @@index([learningPathId])
+  @@index([cohortId])
 }
 
 model ForumReply {
@@ -564,14 +608,15 @@ model ForumReply {
   content   String   @db.Text
   authorId  String
   postId    String
-  parentId  String? // Added for nested replies
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  parentId  String?
 
   author  User         @relation(fields: [authorId], references: [id])
   post    ForumPost    @relation(fields: [postId], references: [id], onDelete: Cascade)
   parent  ForumReply?  @relation("ReplyToReply", fields: [parentId], references: [id], onDelete: Cascade)
   replies ForumReply[] @relation("ReplyToReply")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([authorId])
   @@index([postId])
@@ -585,72 +630,11 @@ model ForumView {
   viewedAt DateTime @default(now())
 
   post ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user User      @relation(fields: [userId], references: [id])
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId])
   @@index([postId])
   @@index([userId])
-}
-
-model StudentModuleScore {
-  id          String @id @default(uuid())
-  score       Float  @default(0)
-  totalPoints Float  @default(100)
-
-  studentId String
-  moduleId  String
-  student   User         @relation(fields: [studentId], references: [id])
-  module    CourseModule @relation(fields: [moduleId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([studentId, moduleId])
-}
-
-model Notifications {
-  id     String           @id @default(uuid())
-  type   NotificationType
-  title  String
-  body   String           @db.Text
-  isRead Boolean          @default(false)
-
-  senderId String?
-  sender   User?   @relation("SentNotifications", fields: [senderId], references: [id])
-
-  receiverId String
-  receiver   User   @relation("ReceivedNotifications", fields: [receiverId], references: [id])
-
-  // Optional relations for different notification types
-  paymentId String?
-  payment   Payment? @relation(fields: [paymentId], references: [id])
-
-  submissionId String?
-  submission   Submission? @relation(fields: [submissionId], references: [id])
-
-  forumPostId String?
-  forumPost   ForumPost? @relation(fields: [forumPostId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([receiverId])
-  @@index([type])
-  @@index([isRead])
-}
-
-model GradeHistory {
-  id           String     @id @default(uuid())
-  submissionId String
-  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  score        Float
-  gradedBy     String // User ID of teacher
-  teacher      User       @relation("TeacherGradeHistory", fields: [gradedBy], references: [id])
-  gradedAt     DateTime   @default(now())
-  approved     Boolean    @default(false)
-  approvedBy   String? // User ID of admin who approved
-  approver     User?      @relation("AdminGradeApproval", fields: [approvedBy], references: [id])
-  approvedAt   DateTime?
 }
 
 model StudentNote {
@@ -674,66 +658,112 @@ model StudentNote {
 }
 
 model ChapterDiscussion {
-  id        String   @id @default(cuid())
-  content   String   @db.Text
+  id        String @id @default(cuid())
+  content   String @db.Text
   authorId  String
   chapterId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   author  User    @relation(fields: [authorId], references: [id])
   chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([authorId])
   @@index([chapterId])
 }
 
-model AcademicYear {
-  id        String   @id @default(uuid())
-  name      String // e.g., "2023-2024"
-  startDate DateTime
-  endDate   DateTime
-  isActive  Boolean  @default(false)
+model Notification {
+  id     String           @id @default(uuid())
+  type   NotificationType
+  title  String
+  body   String           @db.Text
+  isRead Boolean          @default(false)
 
-  studentAcademicYears StudentAcademicYear[]
-  payments             Payment[]
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-}
+  senderId   String?
+  sender     User?   @relation("SentNotifications", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User    @relation("ReceivedNotifications", fields: [receiverId], references: [id], onDelete: Cascade)
 
-model StudentAcademicYear {
-  id             String         @id @default(uuid())
-  studentId      String
-  student        User           @relation(fields: [studentId], references: [id])
-  academicYearId String
-  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id])
-  levelId        String
-  level          Level          @relation(fields: [levelId], references: [id])
-  status         AcademicStatus @default(ACTIVE)
-  finalGrade     Float?
-  isPaid         Boolean        @default(false)
-  paymentId      String?        @unique
-  payment        Payment?       @relation(fields: [paymentId], references: [id])
+  paymentId      String?
+  payment        Payment? @relation(fields: [paymentId], references: [id])
+  forumPostId    String?
+  forumPost      ForumPost? @relation(fields: [forumPostId], references: [id])
+  courseId       String?
+  course         Course? @relation(fields: [courseId], references: [id])
+  learningPathId String?
+  learningPath   LearningPath? @relation(fields: [learningPathId], references: [id])
+  cohortId       String?
+  cohort         Cohort? @relation(fields: [cohortId], references: [id])
+  liveSessionId  String?
+  liveSession    LiveSession? @relation(fields: [liveSessionId], references: [id])
+  quizAttemptId  String?
+  quizAttempt    QuizAttempt? @relation(fields: [quizAttemptId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([studentId, academicYearId])
-  @@index([studentId])
-  @@index([academicYearId])
-  @@index([levelId])
-}
-
-enum AcademicStatus {
-  ACTIVE
-  COMPLETED
-  FAILED
+  @@index([receiverId])
+  @@index([type])
+  @@index([isRead])
+  @@index([courseId])
+  @@index([learningPathId])
+  @@index([cohortId])
 }
 
 enum UserRole {
   ADMIN
-  TEACHER
   STUDENT
+}
+
+enum CourseDeliveryMode {
+  SELF_PACED
+  COHORT
+  HYBRID
+}
+
+enum CourseDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum EnrollmentSource {
+  FREE
+  PAYMENT
+  ADMIN
+  COHORT
+  LEARNING_PATH
+  INVITATION
+}
+
+enum CourseContributorRole {
+  OWNER
+  EDITOR
+  REVIEWER
+  INSTRUCTOR
+}
+
+enum CohortStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum LiveSessionStatus {
+  SCHEDULED
+  LIVE
+  COMPLETED
+  CANCELLED
 }
 
 enum PaymentStatus {
@@ -743,18 +773,22 @@ enum PaymentStatus {
   REFUNDED
 }
 
-enum QuestionType {
-  MULTIPLE_CHOICE
-  OPEN_ENDED
-  OPEN_ENDED_WITH_FILE
-  FILL_IN_THE_BLANK
-  MATCHING
+enum PaymentProductType {
+  COURSE
+  LEARNING_PATH
+  SUBSCRIPTION
 }
 
-enum SubmissionStatus {
-  PENDING
-  SUBMITTED
-  GRADED
+enum QuizQuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  FILL_IN_THE_BLANK
+}
+
+enum QuizAttemptStatus {
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
 }
 
 enum FileType {
@@ -766,99 +800,21 @@ enum FileType {
 enum ChapterType {
   LESSON
   QUIZ
-  ASSIGNMENT
-}
-
-enum SubscriptionPeriod {
-  MONTHLY
-  SEMI_ANNUAL
-  ANNUAL
+  RESOURCE
+  LIVE_SESSION
 }
 
 enum NotificationType {
   PAYMENT_RECEIVED
   PAYMENT_PENDING
-  ASSIGNMENT_SUBMISSION
-  ASSIGNMENT_GRADED
   USER_SIGNUP
   FORUM_POST
   FORUM_REPLY
-}
-
-enum ScoringPolicy {
-  ALL_OR_NOTHING
-  PARTIAL_PER_PAIR
-  PARTIAL_WITH_PENALTY
-}
-
-model MatchingConfig {
-  id             String        @id @default(uuid())
-  questionId     String        @unique
-  question       Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  scoringPolicy  ScoringPolicy @default(PARTIAL_PER_PAIR)
-  allowReuse     Boolean       @default(false) // if true, a choice can match multiple prompts
-  shuffleChoices Boolean       @default(true)
-}
-
-model MatchingPrompt {
-  id         String   @id @default(uuid())
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  content    String   @db.Text
-  position   Int      @default(0)
-
-  // One prompt can have exactly one correct choice in 1:1 mode.
-  correctPair MatchingPair?
-
-  @@index([questionId])
-}
-
-model MatchingChoice {
-  id         String   @id @default(uuid())
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  content    String   @db.Text
-  position   Int      @default(0)
-  
-  // Relation to matching pairs
-  pairs      MatchingPair[]
-
-  @@index([questionId])
-}
-
-model MatchingPair {
-  id         String          @id @default(uuid())
-  questionId String
-  question   Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
-
-  promptId String @unique    // enforce 1:1 by default
-  prompt   MatchingPrompt    @relation(fields: [promptId], references: [id], onDelete: Cascade)
-
-  choiceId String
-  choice   MatchingChoice    @relation(fields: [choiceId], references: [id], onDelete: Cascade)
-
-  // Student answers
-  answerPairs AnswerMatchingPair[]
-
-  @@index([questionId])
-  @@unique([questionId, promptId, choiceId])
-}
-
-model AnswerMatchingPair {
-  id        String @id @default(uuid())
-  answerId  String
-  answer    Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
-
-  promptId  String
-  choiceId  String
-  
-  // Reference to the correct pair (optional)
-  matchingPairId String?
-  matchingPair   MatchingPair? @relation(fields: [matchingPairId], references: [id])
-
-  // Optional denormalization for audit/debug
-  isCorrect Boolean?
-
-  @@index([answerId])
-  @@unique([answerId, promptId]) // one chosen choice per prompt in this answer
+  COURSE_ENROLLED
+  LEARNING_PATH_ENROLLED
+  COHORT_ENROLLED
+  COURSE_COMPLETED
+  QUIZ_COMPLETED
+  LIVE_SESSION_REMINDER
+  ANNOUNCEMENT
 }

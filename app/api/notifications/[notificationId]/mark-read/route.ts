@@ -13,7 +13,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const notification = await prisma.notifications.update({
+    await prisma.notification.updateMany({
       where: {
         id: params.notificationId,
         receiverId: session.user.id,
@@ -24,7 +24,7 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json(notification);
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("[NOTIFICATION_MARK_READ]", error);
     return new NextResponse("Internal Error", { status: 500 });

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Stepper, Step, useStepper } from "@/components/stepper";
 import PersonalInfoForm from "@/components/forms/personal-info-form";
-import LevelSelectionForm from "@/components/forms/level-selection-form";
+import LearningPathSelectionForm from "@/components/forms/learning-path-selection-form";
 import PaymentForm from "@/components/forms/payment-form";
 import ConfirmationStep from "@/components/forms/confirmation-step";
 import { motion } from "framer-motion";
@@ -31,10 +31,10 @@ const steps: CheckoutStep[] = [
     description: "Cuéntanos sobre ti"
   },
   {
-    id: "level-selection",
-    label: "Nivel de estudio",
+    id: "product-selection",
+    label: "Learning path",
     icon: GraduationCap,
-    description: "Elige tu nivel de estudio"
+    description: "Choose your learning path"
   },
   {
     id: "payment",
@@ -94,13 +94,11 @@ interface CheckoutStepperProps {
     id: string;
     email: string;
     name: string;
-    level: {
+    learningPath: {
       id: string;
-      name: string;
+      title: string;
       position: number;
       price: number | null;
-      inscriptionPrice: number | null;
-      inscriptionPaid: boolean;
     } | null;
     payment: {
       id: string;
@@ -120,12 +118,11 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
         phone: "",
         dpi: "",
       },
-      levelSelection: {
-        levelId: pendingInvitation?.level?.id || "",
-        levelName: pendingInvitation?.level?.name || "",
-        price: pendingInvitation?.level?.price || 0,
-        inscriptionPrice: pendingInvitation?.level?.inscriptionPrice || null,
-        inscriptionPaid: pendingInvitation?.level?.inscriptionPaid || false,
+      productSelection: {
+        productId: pendingInvitation?.learningPath?.id || "",
+        productName: pendingInvitation?.learningPath?.title || "",
+        productType: "LEARNING_PATH",
+        price: pendingInvitation?.learningPath?.price || 0,
       },
       payment: {
         paymentIntentId: "",
@@ -143,7 +140,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
     [key: string]: 'idle' | 'loading' | 'success' | 'error'
   }>({
     personalInfo: 'idle',
-    levelSelection: 'idle',
+    productSelection: 'idle',
     payment: 'idle',
     confirmation: 'idle'
   });
@@ -340,9 +337,9 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
               </motion.div>
             </Step>
             <Step
-              label="Nivel de estudio"
+              label="Learning path"
               icon={GraduationCap}
-              description="Elige al grado que quieres estudiar"
+              description="Choose the learning path you want to study"
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -351,9 +348,9 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="bg-white dark:bg-black/40 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-white/[0.05]"
               >
-                <LevelSelectionForm
-                  initialData={formData.levelSelection}
-                  onSubmit={(data) => handleStepSubmit("levelSelection", data)}
+                <LearningPathSelectionForm
+                  initialData={formData.productSelection}
+                  onSubmit={(data) => handleStepSubmit("productSelection", data)}
                   onBack={handleStepBack}
                 />
               </motion.div>
@@ -370,12 +367,11 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
               >
                 <PaymentForm
                   customerEmail={formData.personalInfo.email}
-                  levelId={formData.levelSelection.levelId}
-                  amount={formData.levelSelection.price}
-                  levelName={formData.levelSelection.levelName}
+                  productId={formData.productSelection.productId}
+                  amount={formData.productSelection.price}
+                  productName={formData.productSelection.productName}
+                  productType={formData.productSelection.productType}
                   onBack={handleStepBack}
-                  inscriptionAmount={formData.levelSelection.inscriptionPrice}
-                  isFirstTimeStudent={!formData.levelSelection.inscriptionPaid}
                 />
               </motion.div>
             </Step>

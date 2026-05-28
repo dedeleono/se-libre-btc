@@ -1,101 +1,34 @@
 import { prisma } from "@/lib/db";
 
-export async function getAnalytics() {
+export async function getAnalytics(): Promise<Analytics> {
     try {
-        // Get total revenue from payments using Prisma query builder
-        const totalRevenue = await prisma.payment.aggregate({
-            _sum: {
-                amount: true,
-            },
-            where: {
-                status: "COMPLETED",
-            },
-        });
-
-        // Get monthly change data
         const lastMonth = new Date();
         lastMonth.setMonth(lastMonth.getMonth() - 1);
 
-        const currentMonthRevenue = await prisma.payment.aggregate({
-            _sum: {
-                amount: true,
-            },
-            where: {
-                status: "COMPLETED",
-                paymentDate: {
-                    gte: lastMonth,
-                },
-            },
-        });
-
-        // Get total counts
-        const totalSales = await prisma.payment.count({
-            where: {
-                status: "COMPLETED",
-            },
-        });
-
-        const totalCourses = await prisma.course.count();
-
-        const totalStudents = await prisma.user.count({
-            where: {
-                role: "STUDENT",
-            },
-        });
-
-        const totalTeachers = await prisma.user.count({
-            where: {
-                role: "TEACHER",
-            },
-        });
-
-        // Get monthly changes
-        const lastMonthSales = await prisma.payment.count({
-            where: {
-                status: "COMPLETED",
-                paymentDate: {
-                    gte: lastMonth,
-                },
-            },
-        });
-
-        const lastMonthTeachers = await prisma.user.count({
-            where: {
-                role: "TEACHER",
-                createdAt: {
-                    gte: lastMonth,
-                },
-            },
-        });
-
-        const lastMonthCourses = await prisma.course.count({
-            where: {
-                createdAt: {
-                    gte: lastMonth,
-                },
-            },
-        });
-
-        const lastMonthStudents = await prisma.user.count({
-            where: {
-                role: "STUDENT",
-                createdAt: {
-                    gte: lastMonth,
-                },
-            },
-        });
+        const [totalRevenue, currentMonthRevenue, totalSales, totalCourses, totalLearningPaths, totalStudents, lastMonthSales, lastMonthCourses, lastMonthLearningPaths, lastMonthStudents] = await Promise.all([
+            prisma.payment.aggregate({ _sum: { amount: true }, where: { status: "COMPLETED" } }),
+            prisma.payment.aggregate({ _sum: { amount: true }, where: { status: "COMPLETED", paymentDate: { gte: lastMonth } } }),
+            prisma.payment.count({ where: { status: "COMPLETED" } }),
+            prisma.course.count(),
+            prisma.learningPath.count(),
+            prisma.user.count({ where: { role: "STUDENT" } }),
+            prisma.payment.count({ where: { status: "COMPLETED", paymentDate: { gte: lastMonth } } }),
+            prisma.course.count({ where: { createdAt: { gte: lastMonth } } }),
+            prisma.learningPath.count({ where: { createdAt: { gte: lastMonth } } }),
+            prisma.user.count({ where: { role: "STUDENT", createdAt: { gte: lastMonth } } }),
+        ]);
 
         return {
-            totalRevenue: totalRevenue._sum.amount ?? 0,
+            totalRevenue: Number(totalRevenue._sum.amount ?? 0),
             totalSales,
             totalCourses,
-            totalTeachers,
+            totalLearningPaths,
             totalStudents,
             monthlyChange: {
-                revenue: currentMonthRevenue._sum.amount ?? 0,
+                revenue: Number(currentMonthRevenue._sum.amount ?? 0),
                 sales: lastMonthSales,
                 courses: lastMonthCourses,
-                teachers: lastMonthTeachers,
+                learningPaths: lastMonthLearningPaths,
                 students: lastMonthStudents,
             },
         };
@@ -105,13 +38,13 @@ export async function getAnalytics() {
             totalRevenue: 0,
             totalSales: 0,
             totalCourses: 0,
-            totalTeachers: 0,
+            totalLearningPaths: 0,
             totalStudents: 0,
             monthlyChange: {
                 revenue: 0,
                 sales: 0,
                 courses: 0,
-                teachers: 0,
+                learningPaths: 0,
                 students: 0,
             },
         };
@@ -122,13 +55,13 @@ export type Analytics = {
     totalRevenue: number;
     totalSales: number;
     totalCourses: number;
-    totalTeachers: number;
+    totalLearningPaths: number;
     totalStudents: number;
     monthlyChange: {
         revenue: number;
         sales: number;
         courses: number;
-        teachers: number;
+        learningPaths: number;
         students: number;
     };
 };

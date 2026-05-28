@@ -8,6 +8,7 @@ export async function POST(req: Request) {
     if (!session?.user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+    const userId = session.user.id;
 
     const body = await req.json();
     const { invitationId } = body;
@@ -22,7 +23,9 @@ export async function POST(req: Request) {
       },
       include: {
         payment: true,
-        level: true,
+        course: true,
+        learningPath: { include: { courses: true } },
+        cohort: true,
       },
     });
 
@@ -30,20 +33,46 @@ export async function POST(req: Request) {
       return new NextResponse("Invitation not found", { status: 404 });
     }
 
-    if (!pendingInvitation.payment || pendingInvitation.payment.status !== "COMPLETED") {
+    if (pendingInvitation.payment && pendingInvitation.payment.status !== "COMPLETED") {
       return new NextResponse("Payment not completed", { status: 400 });
     }
 
-    // Update user with level assignment
-    if (pendingInvitation.level) {
-      await prisma.user.update({
-        where: {
-          id: session.user.id,
-        },
-        data: {
-          levelId: pendingInvitation.level.id,
-        },
+    const operations = [];
+
+    if (pendingInvitation.courseId) {
+      operations.push(prisma.courseEnrollment.upsert({
+        where: { userId_courseId: { userId, courseId: pendingInvitation.courseId } },
+        create: { userId, courseId: pendingInvitation.courseId, source: "INVITATION" },
+        update: { status: "ACTIVE" },
+      }));
+    }
+
+    if (pendingInvitation.learningPathId) {
+      operations.push(prisma.learningPathEnrollment.upsert({
+        where: { userId_learningPathId: { userId, learningPathId: pendingInvitation.learningPathId } },
+        create: { userId, learningPathId: pendingInvitation.learningPathId, source: "INVITATION" },
+        update: { status: "ACTIVE" },
+      }));
+
+      pendingInvitation.learningPath?.courses.forEach((pathCourse) => {
+        operations.push(prisma.courseEnrollment.upsert({
+          where: { userId_courseId: { userId, courseId: pathCourse.courseId } },
+          create: { userId, courseId: pathCourse.courseId, source: "LEARNING_PATH" },
+          update: { status: "ACTIVE" },
+        }));
       });
+    }
+
+    if (pendingInvitation.cohortId) {
+      operations.push(prisma.cohortEnrollment.upsert({
+        where: { userId_cohortId: { userId, cohortId: pendingInvitation.cohortId } },
+        create: { userId, cohortId: pendingInvitation.cohortId, source: "INVITATION" },
+        update: { status: "ACTIVE" },
+      }));
+    }
+
+    if (operations.length > 0) {
+      await prisma.$transaction(operations);
     }
 
     // Delete the pending invitation

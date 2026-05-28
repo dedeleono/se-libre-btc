@@ -17,11 +17,11 @@ export async function POST(req: Request) {
     }
 
     // Verify user is enrolled in the course
-    const studentCourse = await prisma.studentCourse.findUnique({
+    const studentCourse = await prisma.courseEnrollment.findUnique({
       where: {
-        studentId_courseId: {
-          studentId: session.user.id,
-          courseId: courseId,
+        userId_courseId: {
+          userId: session.user.id,
+          courseId,
         },
       },
     });

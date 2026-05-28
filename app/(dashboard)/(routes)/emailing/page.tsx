@@ -10,7 +10,7 @@ import { Mail, Sparkles } from "lucide-react";
 export default async function EmailingPage() {
   const session = await auth();
 
-  if (!session?.user || !["ADMIN", "TEACHER"].includes(session.user.role)) {
+  if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/");
   }
 
@@ -24,22 +24,44 @@ export default async function EmailingPage() {
       email: true,
       firstName: true,
       lastName: true,
-      studentLevel: {
+      courseEnrollments: {
         select: {
-          id: true,
-          name: true,
+          courseId: true,
+          course: {
+            select: {
+              title: true,
+            }
+          }
         }
-      }
+      },
+      learningPathEnrollments: {
+        select: {
+          learningPathId: true,
+          learningPath: {
+            select: {
+              title: true,
+            }
+          }
+        }
+      },
+      cohortEnrollments: {
+        select: {
+          cohortId: true,
+          cohort: {
+            select: {
+              title: true,
+            }
+          }
+        }
+      },
     }
   });
 
-  const levels = await prisma.level.findMany({
-    select: {
-      id: true,
-      name: true,
-      position: true,
-    }
-  });
+  const [courses, learningPaths, cohorts] = await Promise.all([
+    prisma.course.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }),
+    prisma.learningPath.findMany({ select: { id: true, title: true, position: true }, orderBy: { position: "asc" } }),
+    prisma.cohort.findMany({ select: { id: true, title: true }, orderBy: { title: "asc" } }),
+  ]);
 
   return (
     <ScrollArea className="h-full">
@@ -63,13 +85,6 @@ export default async function EmailingPage() {
             </div>
           </div>
           
-          {/* <div className="flex items-center gap-3 flex-col">
-            <div className="hidden md:flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-lg border w-full">
-              <Sparkles className="h-3.5 w-3.5" />
-              Plantillas Rápidas
-            </div>
-            <EmailingForm students={students} levels={levels} />
-          </div> */}
         </div>
 
         <GradientDivider className="my-4 md:my-6 dark:opacity-20" />
@@ -80,7 +95,35 @@ export default async function EmailingPage() {
               dark:backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]
               dark:hover:shadow-[0_8px_32px_rgba(3,65,127,0.25)] transition-all duration-300">
               <div className="p-4 sm:p-6">
-                <EmailingForm students={students} levels={levels} />
+                <EmailingForm
+                  students={students}
+                  groups={[
+                    ...learningPaths.map((path) => ({
+                      id: `learning-path:${path.id}`,
+                      name: path.title,
+                      position: path.position,
+                      studentEmails: students
+                        .filter((student) => student.learningPathEnrollments.some((enrollment) => enrollment.learningPathId === path.id))
+                        .map((student) => student.email),
+                    })),
+                    ...courses.map((course, index) => ({
+                      id: `course:${course.id}`,
+                      name: course.title,
+                      position: 1000 + index,
+                      studentEmails: students
+                        .filter((student) => student.courseEnrollments.some((enrollment) => enrollment.courseId === course.id))
+                        .map((student) => student.email),
+                    })),
+                    ...cohorts.map((cohort, index) => ({
+                      id: `cohort:${cohort.id}`,
+                      name: cohort.title,
+                      position: 2000 + index,
+                      studentEmails: students
+                        .filter((student) => student.cohortEnrollments.some((enrollment) => enrollment.cohortId === cohort.id))
+                        .map((student) => student.email),
+                    })),
+                  ]}
+                />
               </div>
             </div>
           </div>

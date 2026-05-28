@@ -2,14 +2,14 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { ForumClient } from "./_components/forum-client";
-import { ForumPost, Level, Course } from "@prisma/client";
+import { ForumPost } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
 
-type CourseWithLevel = {
+type CourseWithPath = {
   id: string;
   title: string;
-  levelCourses: {
-    levelId: string;
+  learningPaths: {
+    learningPathId: string;
   }[];
 };
 
@@ -22,17 +22,14 @@ export default async function Forum() {
   const user = await prisma.user.findUnique({
     where: { email: session.user.email! },
     include: {
-      studentLevel: {
-        select: {
-          id: true,
-          name: true,
-          position: true,
-        }
+      learningPathEnrollments: {
+        select: { learningPathId: true }
       },
-      studentCourses: {
-        select: {
-          courseId: true
-        }
+      courseEnrollments: {
+        select: { courseId: true }
+      },
+      cohortEnrollments: {
+        select: { cohortId: true }
       }
     },
   });
@@ -43,9 +40,13 @@ export default async function Forum() {
 
   type PostWithRelations = ForumPost & {
     author: { id: string; name: string | null };
-    level: {
+    learningPath: {
       id: string;
-      name: string;
+      title: string;
+    } | null;
+    cohort: {
+      id: string;
+      title: string;
     } | null;
     course: {
       id: string;
@@ -60,7 +61,7 @@ export default async function Forum() {
 
   let posts: PostWithRelations[] = [];
   
-  if (user.role === "ADMIN" || user.role === "TEACHER") {
+  if (user.role === "ADMIN") {
     posts = await prisma.forumPost.findMany({
       include: {
         author: {
@@ -69,11 +70,11 @@ export default async function Forum() {
             name: true,
           }
         },
-        level: {
-          select: {
-            id: true,
-            name: true,
-          }
+        learningPath: {
+          select: { id: true, title: true }
+        },
+        cohort: {
+          select: { id: true, title: true }
         },
         course: {
           select: {
@@ -101,12 +102,9 @@ export default async function Forum() {
     posts = await prisma.forumPost.findMany({
       where: {
         OR: [
-          { levelId: user.studentLevel?.id },
-          {
-            courseId: {
-              in: user.studentCourses.map((sc) => sc.courseId),
-            },
-          },
+          { learningPathId: { in: user.learningPathEnrollments.map((enrollment) => enrollment.learningPathId) } },
+          { cohortId: { in: user.cohortEnrollments.map((enrollment) => enrollment.cohortId) } },
+          { courseId: { in: user.courseEnrollments.map((enrollment) => enrollment.courseId) } },
         ],
       },
       include: {
@@ -116,11 +114,11 @@ export default async function Forum() {
             name: true,
           }
         },
-        level: {
-          select: {
-            id: true,
-            name: true,
-          }
+        learningPath: {
+          select: { id: true, title: true }
+        },
+        cohort: {
+          select: { id: true, title: true }
         },
         course: {
           select: {
@@ -146,40 +144,48 @@ export default async function Forum() {
     });
   }
 
-  let levels: { id: string; name: string }[] = [];
-  let courses: CourseWithLevel[] = [];
+  let learningPaths: { id: string; name: string }[] = [];
+  let cohorts: { id: string; name: string }[] = [];
+  let courses: CourseWithPath[] = [];
   try {
-    [levels, courses] = await Promise.all([
-      prisma.level.findMany({
+    [learningPaths, courses, cohorts] = await Promise.all([
+      prisma.learningPath.findMany({
         select: {
           id: true,
-          name: true,
+          title: true,
         }
-      }),
+      }).then((paths) => paths.map((path) => ({ id: path.id, name: path.title }))),
       prisma.course.findMany({
         select: {
           id: true,
           title: true,
-          levelCourses: {
+          learningPaths: {
             select: {
-              levelId: true
+              learningPathId: true
             },
             take: 1
           }
         }
       }),
+      prisma.cohort.findMany({
+        select: {
+          id: true,
+          title: true,
+        },
+        orderBy: { title: "asc" },
+      }).then((items) => items.map((cohort) => ({ id: cohort.id, name: cohort.title }))),
     ]);
   } catch (error) {
-    console.error("Error fetching levels/courses:", error);
+    console.error("Error fetching forum filters:", error);
   }
 
-  const transformedCourses = courses.map((course: CourseWithLevel) => ({
+  const transformedCourses = courses.map((course: CourseWithPath) => ({
     id: course.id,
     title: course.title,
-    levelId: course.levelCourses[0]?.levelId || null
+    learningPathId: course.learningPaths[0]?.learningPathId || null
   }));
 
-  const canCreatePosts = user.role === "ADMIN" || user.role === "TEACHER";
+  const canCreatePosts = user.role === "ADMIN";
 
   return (
     <div className="flex-1 space-y-4 p-4 sm:p-6 md:p-8 pt-4 sm:pt-6">
@@ -216,7 +222,8 @@ export default async function Forum() {
           <ForumClient
             posts={posts}
             currentUser={user}
-            levels={levels}
+            learningPaths={learningPaths}
+            cohorts={cohorts}
             courses={transformedCourses}
             canCreatePosts={canCreatePosts}
           />

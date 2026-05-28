@@ -1,41 +1,38 @@
-interface StudentScore {
-    score: number;
-    submittedAt: Date;
-    assignment: {
-        title: string;
-        maxPoints: number;
-    };
-}
-
-interface StudentLevel {
+export interface DashboardCourseSummary {
     id: string;
-    name: string;
-    position: number;
+    title: string;
+    completedChapters: number;
+    totalChapters: number;
 }
 
-interface StudentData {
+export interface DashboardLearningPathSummary {
+    id: string;
+    title: string;
+    completedCourses: number;
+    totalCourses: number;
+}
+
+export interface DashboardCohortSummary {
+    id: string;
+    title: string;
+    upcomingLiveSessions: number;
+}
+
+export interface DashboardQuizAttemptSummary {
+    id: string;
+    quizTitle: string;
+    scorePercent: number | null;
+    passed: boolean | null;
+    completedAt: Date | null;
+}
+
+export interface StudentDashboardData {
     id: string;
     firstName: string | null;
     name: string | null;
     email: string;
-    studentCourses: {
-        course: {
-            id: string;
-            title: string;
-        };
-    }[];
-    submissions: {
-        id: string;
-        status: "PENDING" | "SUBMITTED" | "GRADED";
-        assignment: {
-            id: string;
-            title: string;
-        };
-    }[];
-    assignmentScores: StudentScore[];
-    studentLevel: StudentLevel | null;
-    levelScores: {
-        score: number;
-        level: StudentLevel;
-    }[];
+    courses: DashboardCourseSummary[];
+    learningPaths: DashboardLearningPathSummary[];
+    cohorts: DashboardCohortSummary[];
+    quizAttempts: DashboardQuizAttemptSummary[];
 }

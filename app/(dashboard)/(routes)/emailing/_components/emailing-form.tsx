@@ -23,24 +23,21 @@ interface Student {
   email: string;
   firstName: string | null;
   lastName: string | null;
-  studentLevel: {
-    id: string;
-    name: string;
-  } | null;
 }
 
-interface Level {
+interface EmailGroup {
   id: string;
   name: string;
   position: number;
+  studentEmails: string[];
 }
 
 interface EmailingFormProps {
   students: Student[];
-  levels: Level[];
+  groups: EmailGroup[];
 }
 
-export function EmailingForm({ students = [], levels = [] }: EmailingFormProps) {
+export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
@@ -58,13 +55,18 @@ export function EmailingForm({ students = [], levels = [] }: EmailingFormProps) 
     }
   };
 
-  // Group students by level for the EmailSelector
-  const levelsWithStudents = levels.map(level => ({
-    ...level,
-    students: students.filter(s => s.studentLevel?.id === level.id).map(s => ({
-      email: s.email
-    }))
-  }));
+  const emailGroups = [
+    {
+      id: "all-students",
+      name: "Todos los estudiantes",
+      position: -1,
+      students: students.map((student) => ({ email: student.email })),
+    },
+    ...groups.map((group) => ({
+      ...group,
+      students: group.studentEmails.map((email) => ({ email })),
+    })),
+  ];
 
   const handleSendEmail = async () => {
     if (!subject || recipients.length === 0) {
@@ -173,7 +175,7 @@ export function EmailingForm({ students = [], levels = [] }: EmailingFormProps) 
             <div className="rounded-lg border dark:border-white/[0.08] bg-card/50 
               dark:bg-black/40 p-3 sm:p-4 shadow-inner dark:shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
               <EmailSelector
-                levels={levelsWithStudents}
+                groups={emailGroups}
                 onEmailsChange={setRecipients}
               />
             </div>

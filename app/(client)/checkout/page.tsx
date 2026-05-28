@@ -8,11 +8,12 @@ import {
 import { Button } from "@/components/ui/button";
 import CheckoutStepper from "@/components/checkout-stepper";
 import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
 interface SearchParams {
   invitationId?: string;
   userId?: string;
-  levelId?: string;
+  learningPathId?: string;
   email?: string;
   name?: string;
 }
@@ -24,28 +25,52 @@ export default async function InscriptionSection({
 }) {
   let pendingInvitation = null;
 
-  // Try to fetch the invitation from either invitationId or userId + levelId
+  // Try to fetch the invitation from either invitationId or userId + learningPathId.
   if (searchParams.invitationId) {
-    pendingInvitation = await prisma.pendingInvitation.findUnique({
+    const invitation = await prisma.pendingInvitation.findUnique({
       where: {
         id: searchParams.invitationId,
       },
       include: {
         payment: true,
-        level: true,
+        learningPath: true,
       },
     });
-  } else if (searchParams.userId && searchParams.levelId) {
-    // If we have userId and levelId but no invitationId, create a temporary invitation object
+
+    pendingInvitation = invitation && {
+      id: invitation.id,
+      email: invitation.email,
+      name: invitation.name,
+      learningPath: invitation.learningPath && {
+        id: invitation.learningPath.id,
+        title: invitation.learningPath.title,
+        position: invitation.learningPath.position,
+        price: invitation.learningPath.price ? Number(invitation.learningPath.price) : null,
+      },
+      payment: invitation.payment && {
+        id: invitation.payment.id,
+        status: invitation.payment.status,
+      },
+    };
+  } else if (searchParams.userId && searchParams.learningPathId) {
+    const learningPath = await prisma.learningPath.findUnique({
+      where: { id: searchParams.learningPathId },
+      select: {
+        id: true,
+        title: true,
+        position: true,
+        price: true,
+      },
+    });
+
     pendingInvitation = {
       id: searchParams.userId,
       email: searchParams.email || "",
       name: searchParams.name || "",
-      level: await prisma.level.findUnique({
-        where: {
-          id: searchParams.levelId,
-        },
-      }),
+      learningPath: learningPath && {
+        ...learningPath,
+        price: learningPath.price ? Number(learningPath.price) : null,
+      },
       payment: null,
     };
   }
@@ -54,7 +79,7 @@ export default async function InscriptionSection({
     <div className="container mx-auto py-8">
       <div className="flex w-full flex-row items-center mb-6 justify-between">
         <h1 className="text-3xl font-black  font-['Open_Sans'] text-primary">
-          INSCRIPCIÓN
+ENROLLMENT
         </h1>
         <Dialog>
           <DialogTrigger asChild>

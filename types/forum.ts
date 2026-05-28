@@ -1,19 +1,21 @@
-import { User, Level, Course } from "@prisma/client";
+import { User, LearningPath, Course, Cohort } from "@prisma/client";
 
 interface Forum {
   id: string;
   title: string;
   content: string;
   authorId: string;
-  levelId: string;
+  learningPathId?: string | null;
+  cohortId?: string | null;
   courseId?: string;
   meetingLink?: string;
   meetingDate?: Date;
   createdAt: Date;
   updatedAt: Date;
   author: User;
-  level: Level;
-  course?: Course;
+  learningPath?: LearningPath | null;
+  cohort?: Cohort | null;
+  course?: Course | null;
   comments: ForumComment[];
 }
 

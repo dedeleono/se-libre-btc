@@ -24,9 +24,14 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, BanknoteIcon, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Payment, User } from "@prisma/client";
 
-type PaymentWithUser = Payment & {
+type PaymentWithUser = {
+  id: string;
+  amount: string;
+  status: string;
+  productType: string;
+  productName: string;
+  paymentDate: string;
   user: {
     name: string | null;
     email: string;
@@ -96,6 +101,9 @@ export function PaymentsTable() {
         <Skeleton className="h-4 w-32" />
       </TableCell>
       <TableCell className="py-4">
+        <Skeleton className="h-4 w-32" />
+      </TableCell>
+      <TableCell className="py-4">
         <Skeleton className="h-6 w-24" />
       </TableCell>
     </TableRow>
@@ -103,7 +111,7 @@ export function PaymentsTable() {
 
   const EmptyState = ({ message }: { message: string }) => (
     <TableRow>
-      <TableCell colSpan={3} className="h-64 text-center">
+      <TableCell colSpan={4} className="h-64 text-center">
         <div className="flex flex-col items-center justify-center text-muted-foreground">
           <BanknoteIcon className="h-12 w-12 mb-2 opacity-50" />
           <p className="text-lg font-medium">{message}</p>
@@ -144,6 +152,7 @@ export function PaymentsTable() {
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="text-primary font-bold py-4">Fecha</TableHead>
+              <TableHead className="text-primary font-bold py-4">Producto</TableHead>
               <TableHead className="text-primary font-bold py-4">Monto</TableHead>
               <TableHead className="text-primary font-bold py-4">Estado</TableHead>
             </TableRow>
@@ -170,6 +179,14 @@ export function PaymentsTable() {
                 <TableRow key={payment.id} className="hover:bg-muted/50">
                   <TableCell className="py-4 sm:text-sm text-xs">
                     {format(new Date(payment.paymentDate), "dd/MM/yyyy")}
+                  </TableCell>
+                  <TableCell className="py-4 sm:text-sm text-xs">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{payment.productName}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {payment.productType.replace("_", " ").toLowerCase()}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell className="py-4 sm:text-sm text-xs font-medium">
                     {formatPrice(payment.amount)}

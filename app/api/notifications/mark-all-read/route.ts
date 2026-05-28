@@ -10,7 +10,7 @@ export async function PATCH() {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    await prisma.notifications.updateMany({
+    await prisma.notification.updateMany({
       where: {
         receiverId: session.user.id,
         isRead: false,

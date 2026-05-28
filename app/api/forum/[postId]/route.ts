@@ -16,7 +16,7 @@ export async function DELETE(
       where: { email: session.user.email! },
     });
 
-    if (!user || (user.role !== "ADMIN" && user.role !== "TEACHER")) {
+    if (!user || user.role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

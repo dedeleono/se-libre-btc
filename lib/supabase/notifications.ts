@@ -9,7 +9,6 @@ interface NotificationData {
   senderId: string | null;
   receiverId: string;
   paymentId?: string;
-  submissionId?: string;
   forumPostId?: string;
   isRead: boolean;
   createdAt?: string;
@@ -27,7 +26,7 @@ export const SupabaseNotifications = {
   
       
       const now = new Date().toISOString();
-      const { error } = await supabaseAdmin.from('Notifications').insert({
+      const { error } = await supabaseAdmin.from('Notification').insert({
         id: crypto.randomUUID(),
         type: isReceived ? 'PAYMENT_RECEIVED' : 'PAYMENT_PENDING',
         title: isReceived ? 'New Payment Received' : 'New Payment Pending',
@@ -52,49 +51,6 @@ export const SupabaseNotifications = {
       console.error('Unexpected error creating payment notification:', error);
       throw error;
     }
-  },
-
-  async createAssignmentSubmissionNotification(
-    submissionId: string,
-    studentId: string,
-    teacherId: string,
-    assignmentTitle: string
-  ) {
-    const now = new Date().toISOString();
-    await supabaseAdmin.from('Notifications').insert({
-      id: crypto.randomUUID(),
-      type: 'ASSIGNMENT_SUBMISSION',
-      title: 'New Assignment Submission',
-      body: `A student has submitted their work for "${assignmentTitle}"`,
-      senderId: studentId,
-      receiverId: teacherId,
-      submissionId: submissionId,
-      isRead: false,
-      createdAt: now,
-      updatedAt: now
-    });
-  },
-
-  async createAssignmentGradedNotification(
-    submissionId: string,
-    teacherId: string,
-    studentId: string,
-    assignmentTitle: string,
-    score: number
-  ) {
-    const now = new Date().toISOString();
-    await supabaseAdmin.from('Notifications').insert({
-      id: crypto.randomUUID(),
-      type: 'ASSIGNMENT_GRADED',
-      title: 'Assignment Graded',
-      body: `Your submission for "${assignmentTitle}" has been graded. Score: ${score}`,
-      senderId: teacherId,
-      receiverId: studentId,
-      submissionId: submissionId,
-      isRead: false,
-      createdAt: now,
-      updatedAt: now
-    });
   },
 
   async createUserSignupNotification(
@@ -136,7 +92,7 @@ export const SupabaseNotifications = {
       }));
 
       const { error: insertError } = await supabaseAdmin
-        .from('Notifications')
+        .from('Notification')
         .insert(notifications);
 
       if (insertError) {
@@ -155,51 +111,34 @@ export const SupabaseNotifications = {
     postId: string,
     authorId: string,
     title: string,
-    levelId?: string,
-    courseId?: string
+    learningPathId?: string,
+    courseId?: string,
+    cohortId?: string
   ) {
     try {
-      let recipients: { id: string }[] = [];
+      const recipients = courseId
+        ? await prisma.courseEnrollment.findMany({ where: { courseId }, select: { userId: true } })
+        : learningPathId
+          ? await prisma.learningPathEnrollment.findMany({ where: { learningPathId }, select: { userId: true } })
+          : cohortId
+            ? await prisma.cohortEnrollment.findMany({ where: { cohortId }, select: { userId: true } })
+            : [];
 
-      if (levelId) {
-        const { data: levelUsers, error: levelError } = await supabaseAdmin
-          .from('User')
-          .select('id')
-          .or(`levelId.eq.${levelId},teacherLevels.levelId.eq.${levelId}`)
-          .neq('id', authorId);
+      const uniqueRecipients = Array.from(new Set(recipients.map((recipient) => recipient.userId))).filter((id) => id !== authorId);
 
-        if (levelError) {
-          console.error('Error fetching level users:', levelError);
-          return;
-        }
-        if (levelUsers) recipients = levelUsers;
-      } else if (courseId) {
-        const { data: courseUsers, error: courseError } = await supabaseAdmin
-          .from('User')
-          .select('id')
-          .or(`studentCourses.courseId.eq.${courseId},teacherCourses.id.eq.${courseId}`)
-          .neq('id', authorId);
-
-        if (courseError) {
-          console.error('Error fetching course users:', courseError);
-          return;
-        }
-        if (courseUsers) recipients = courseUsers;
-      }
-
-      if (recipients.length > 0) {
-        const notifications = recipients.map((recipient) => ({
+      if (uniqueRecipients.length > 0) {
+        const notifications = uniqueRecipients.map((receiverId) => ({
           type: 'FORUM_POST',
           title: 'New Forum Post',
           body: `New post in forum: "${title}"`,
           senderId: authorId,
-          receiverId: recipient.id,
+          receiverId,
           forumPostId: postId,
           isRead: false,
         }));
 
         const { error: insertError } = await supabaseAdmin
-          .from('Notifications')
+          .from('Notification')
           .insert(notifications);
 
         if (insertError) {
@@ -218,7 +157,7 @@ export const SupabaseNotifications = {
     postTitle: string
   ) {
     if (authorId !== originalPostAuthorId) {
-      await supabaseAdmin.from('Notifications').insert({
+      await supabaseAdmin.from('Notification').insert({
         type: 'FORUM_REPLY',
         title: 'New Reply to Your Post',
         body: `Someone replied to your post: "${postTitle}"`,

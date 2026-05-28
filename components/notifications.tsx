@@ -38,8 +38,11 @@ interface Notification {
   senderId: string | null;
   receiverId: string;
   paymentId?: string;
-  submissionId?: string;
   forumPostId?: string;
+  courseId?: string;
+  learningPathId?: string;
+  cohortId?: string;
+  liveSessionId?: string;
   createdAt: string;
   updatedAt: string;
   sender?: {
@@ -293,16 +296,18 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
            notification.type === NotificationType.PAYMENT_PENDING) && 
           notification.paymentId) {
         router.push(`/admin/payments`);
-      } else if ((notification.type === NotificationType.ASSIGNMENT_SUBMISSION || 
-                  notification.type === NotificationType.ASSIGNMENT_GRADED) && 
-                 notification.submissionId) {
-        router.push(`/submissions/${notification.submissionId}`);
       } else if ((notification.type === NotificationType.FORUM_POST || 
                   notification.type === NotificationType.FORUM_REPLY) && 
                  notification.forumPostId) {
-        router.push(`/forum/post/${notification.forumPostId}`);
+        router.push(`/forum/topics/${notification.forumPostId}`);
+      } else if (notification.type === NotificationType.COURSE_ENROLLED && notification.courseId) {
+        router.push(`/courses/${notification.courseId}`);
+      } else if (notification.type === NotificationType.LEARNING_PATH_ENROLLED && notification.learningPathId) {
+        router.push(`/learning-paths/${notification.learningPathId}`);
+      } else if (notification.type === NotificationType.LIVE_SESSION_REMINDER) {
+        router.push(userRole === "ADMIN" ? "/admin/cohorts" : "/student/schedule");
       } else if (notification.type === NotificationType.USER_SIGNUP && userRole === "ADMIN") {
-        router.push("/admin/sp");
+        router.push("/admin/students");
       }
     }, [userId, router, userRole]);
 
@@ -311,8 +316,12 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
         case "PAYMENT_RECEIVED":
         case "PAYMENT_PENDING":
           return <DollarIcon className="w-4 h-4 text-green-500" />;
-        case "ASSIGNMENT_SUBMISSION":
-        case "ASSIGNMENT_GRADED":
+        case "COURSE_ENROLLED":
+        case "LEARNING_PATH_ENROLLED":
+        case "COHORT_ENROLLED":
+        case "COURSE_COMPLETED":
+        case "QUIZ_COMPLETED":
+        case "LIVE_SESSION_REMINDER":
           return <FileIcon className="w-4 h-4 text-blue-500" />;
         case "USER_SIGNUP":
           return <UserIcon className="w-4 h-4 text-purple-500" />;
@@ -338,7 +347,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
           { 
             event: "INSERT", 
             schema: "public", 
-            table: "Notifications",
+            table: "Notification",
             filter: `receiverId=eq.${userId}`
           },
           async (payload) => {
@@ -374,7 +383,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
           {
             event: "UPDATE",
             schema: "public",
-            table: "Notifications",
+            table: "Notification",
             filter: `receiverId=eq.${userId}`
           },
           (payload) => {

@@ -1,24 +1,9 @@
-import { getLevels } from "@/actions/level";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { prisma } from "@/lib/db";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Users, CreditCard, AlertCircle, LucideGitPullRequestDraft } from "lucide-react";
-import { PaymentsTable } from "./_components/payments-table";
-import { formatPrice } from "@/lib/utils";
-import { Level } from "@prisma/client";
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { CreditCard } from "lucide-react";
 
-async function getPaymentsData(userEmail: string) {
-  // Fetch all payments (both COMPLETED and PENDING) for this student,
-  // ordered by most recent payment first
-  const payments = await prisma.payment.findMany({
-    where: { userEmail },
-    orderBy: { paymentDate: "desc" },
-  });
-  return payments;
-}
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { auth } from "@/lib/auth";
+import { PaymentsTable } from "./_components/payments-table";
 
 export default async function PaymentsPage() {
 
@@ -29,8 +14,6 @@ export default async function PaymentsPage() {
     // For example:
     return redirect("/sign-in");
   }
-
-  const userEmail = session?.user?.email as string;
 
   return (
     <ScrollArea className="h-full">

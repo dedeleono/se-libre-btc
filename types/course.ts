@@ -1,33 +1,22 @@
-import { Course, Level } from "@prisma/client";
-
-interface SimplifiedLevel {
-  id: string;
-  name: string;
-}
+import { Course } from "@prisma/client";
 
 export interface ExtendedCourse extends Course {
-    studentCourses: {
-        studentId: string;
+    enrollments: {
+        userId: string;
     }[];
-    teacher?: {
-        id: string;
-        name: string | null;
-        image: string | null;
-    } | null;
     modules: {
         id: string;
         chapters: {
             id: string;
         }[];
     }[];
-    levelCourses?: {
-        level: {
+    learningPaths?: {
+        learningPath: {
             id: string;
-            name: string;
-            students?: {
+            title: string;
+            enrollments?: {
                 id: string;
             }[];
         };
     }[];
-    isOwnCourse?: boolean;
 }

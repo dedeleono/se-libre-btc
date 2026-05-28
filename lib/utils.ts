@@ -14,11 +14,13 @@ export function formatMonth(monthKey: string): string {
   return new Intl.DateTimeFormat('es', { month: 'short' }).format(date);
 }
 
-export const formatPrice = (price: number): string => {
+export const formatPrice = (price: number | string | { toString: () => string } | null | undefined): string => {
+  const numericPrice = price == null ? 0 : Number(price.toString());
+
   return new Intl.NumberFormat('es-GT', {
     style: 'currency',
     currency: 'GTQ',
-  }).format(price);
+  }).format(Number.isFinite(numericPrice) ? numericPrice : 0);
 };
 
 export async function createDashboardJwt(userId: string, email: string, encryptionKey: string): Promise<string> {

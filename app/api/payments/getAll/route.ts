@@ -41,13 +41,19 @@ export async function GET(req: Request) {
                         email: true,
                     },
                 },
+                course: { select: { title: true } },
+                learningPath: { select: { title: true } },
             },
             orderBy: {
                 paymentDate: "desc",
             },
         });
 
-        return NextResponse.json(payments);
+        return NextResponse.json(payments.map((payment) => ({
+            ...payment,
+            amount: payment.amount.toString(),
+            productName: payment.course?.title || payment.learningPath?.title || "Subscription",
+        })));
     } catch (error) {
         console.error("[PAYMENTS_GET]", error);
         return new NextResponse("Internal Error", { status: 500 });

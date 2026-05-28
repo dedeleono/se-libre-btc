@@ -14,7 +14,6 @@ import GuideCard from "./_components/guide-card";
 
 enum UserType {
   ADMIN = "admin",
-  TEACHER = "teacher",
   STUDENT = "student",
 }
 
@@ -143,46 +142,6 @@ export default async function GuidesPage() {
         description: "Cambia los precios de inscripción y mensualidad cuando lo creas necesario",
         embedUrl:
           "https://dubble.so/guides/cambiar-los-precios-de-inscripcion-y-mensualidad-sex64llhqfc4pelysp4m?embed=1",
-      },
-    ],
-    teacher: [
-      {
-        title: "Crea un nuevo curso",
-        description: "Aprende como crear cursos con tu usuario",
-        embedUrl:
-          "https://dubble.so/guides/crea-un-nuevo-curso-dklt7n5agiegweuwiomt?embed=1",
-      },
-      {
-        title: "Como editar un curso, sus módulos y capítulos",
-        description: "Cambia lo que necesites cuando lo necesites",
-        embedUrl:
-          "https://dubble.so/guides/como-editar-un-curso-sus-modulos-y-capitulos-vy0saedv3gkuwp2wiswx?embed=1",
-      },
-      {
-        title: "Ver un curso en modo estudiante",
-        description: "Navega la plataforma como estudiante",
-        embedUrl:
-          "https://dubble.so/guides/ver-un-curso-en-modo-estudiante-nwm0ktqdw21jkstejjuq?embed=1",
-      },
-      {
-        title: "Como calificar tareas y quizzes",
-        description:
-          "Aprende como calificar las tareas de tus estudiantes en tiempo real",
-        embedUrl:
-          "https://dubble.so/guides/como-calificar-tareas-y-quizzes-bnyutc4mwr4bf9shgbnf?embed=1",
-      },
-      {
-        title: "Como calificar tareas y quizzes",
-        description:
-          "Aprende como calificar las tareas de tus estudiantes en tiempo real",
-        embedUrl:
-          "https://dubble.so/guides/como-calificar-tareas-y-quizzes-bnyutc4mwr4bf9shgbnf?embed=1",
-      },
-      {
-        title: "Editando un quiz o tarea",
-        description: "Cambia las preguntas o agrega más",
-        embedUrl:
-          "https://dubble.so/guides/editando-un-quiz-o-tarea-gwlgvdj59ixsnpbdoe1a?embed=1",
       },
     ],
     student: [

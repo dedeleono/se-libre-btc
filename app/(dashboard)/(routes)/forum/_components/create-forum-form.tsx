@@ -34,7 +34,8 @@ import { Textarea } from "@/components/ui/textarea";
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   content: z.string().min(1, "Content is required"),
-  levelId: z.string().min(1, "Level is required"),
+  learningPathId: z.string().optional(),
+  cohortId: z.string().optional(),
   courseId: z.string().optional(),
   meetingLink: z.string().url().optional().or(z.literal("")),
   meetingDate: z.string().optional(),
@@ -46,19 +47,20 @@ export interface CreateForumFormRef {
 }
 
 interface CreateForumFormProps {
-  levels: { id: string; name: string }[];
+  learningPaths: { id: string; name: string }[];
+  cohorts: { id: string; name: string }[];
   courses: { 
     id: string; 
     title: string;
-    levelId?: string;
+    learningPathId?: string | null;
   }[];
 }
 
 export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormProps>(
-  ({ levels, courses }, ref) => {
+  ({ learningPaths, cohorts, courses }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
-    const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+    const [selectedLearningPath, setSelectedLearningPath] = useState<string | null>(null);
 
     useImperativeHandle(ref, () => ({
       open: () => setIsOpen(true),
@@ -87,7 +89,7 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
     };
 
     const filteredCourses = courses.filter(
-      (course) => !selectedLevel || course.levelId === selectedLevel
+      (course) => !selectedLearningPath || course.learningPathId === selectedLearningPath
     );
 
     return (
@@ -128,26 +130,51 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
 
               <FormField
                 control={form.control}
-                name="levelId"
+                name="learningPathId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Level</FormLabel>
+                    <FormLabel>Learning Path (Optional)</FormLabel>
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value);
-                        setSelectedLevel(value);
+                        setSelectedLearningPath(value);
                       }}
                       value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a level" />
+                          <SelectValue placeholder="Select a learning path" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {levels.map((level) => (
-                          <SelectItem key={level.id} value={level.id}>
-                            {level.name}
+                        {learningPaths.map((learningPath) => (
+                          <SelectItem key={learningPath.id} value={learningPath.id}>
+                            {learningPath.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="cohortId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cohort (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a cohort" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {cohorts.map((cohort) => (
+                          <SelectItem key={cohort.id} value={cohort.id}>
+                            {cohort.name}
                           </SelectItem>
                         ))}
                       </SelectContent>

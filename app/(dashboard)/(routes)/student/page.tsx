@@ -1,137 +1,107 @@
-import { auth } from "@/lib/auth";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { BookOpen, Calendar, Route, StickyNote, LucideIcon } from "lucide-react";
 
-import { CalendarDateRangePicker } from "@/components/date-range-picker";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, GraduationCap, Clock, Target } from "lucide-react";
-import StatsCard from "./_components/stats-card";
-import { ProgressOverview } from "./_components/progress-overview";
-import { RecentSubmissionsCard } from "./_components/recent-submissions-card";
-import { getStudentScoresData, calculateMonthlyProgress } from "@/lib/student-scores";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 const StudentPage = async () => {
   const session = await auth();
-  if (!session?.user) return redirect("/");
+  if (!session?.user?.id) return redirect("/");
 
-  const dbUser = await prisma.user.findUnique({ 
-    where: { email: session.user.email! }
-  });
-  if (!dbUser) return redirect("/");
-  
-  const studentScores = await getStudentScoresData(dbUser.id);
-  if (!studentScores) return redirect("/");
-  
-  const { studentData, metrics } = studentScores;
-  const { activeCourses, submittedAssignments, totalSubmittedAssignments, averageScore } = metrics;
+  const [user, courseEnrollments, learningPathEnrollments, upcomingSessions, notesCount] = await Promise.all([
+    prisma.user.findUnique({ where: { id: session.user.id } }),
+    prisma.courseEnrollment.findMany({ where: { userId: session.user.id }, include: { course: true }, take: 3, orderBy: { updatedAt: "desc" } }),
+    prisma.learningPathEnrollment.findMany({ where: { userId: session.user.id }, include: { learningPath: true }, take: 3, orderBy: { updatedAt: "desc" } }),
+    prisma.liveSession.findMany({
+      where: {
+        startsAt: { gte: new Date() },
+        OR: [
+          { cohort: { enrollments: { some: { userId: session.user.id, status: "ACTIVE" } } } },
+          { course: { enrollments: { some: { userId: session.user.id, status: "ACTIVE" } } } },
+          { learningPath: { enrollments: { some: { userId: session.user.id, status: "ACTIVE" } } } },
+        ],
+      },
+      take: 3,
+      orderBy: { startsAt: "asc" },
+    }),
+    prisma.studentNote.count({ where: { userId: session.user.id } }),
+  ]);
+
+  if (!user) return redirect("/");
 
   return (
     <ScrollArea className="h-full">
-      <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8 w-full">
-        {/* Welcome Header */}
-        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-3 md:gap-4">
-            <div
-              className="p-2 md:p-3 rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 
-              dark:from-secondary/30 dark:via-secondary/20 dark:to-transparent dark:border-white/[0.05] 
-              dark:shadow-[0_0_15px_rgba(0,0,0,0.2)] dark:backdrop-blur-sm border"
-            >
-              <GraduationCap className="h-6 w-6 md:h-8 md:w-8 text-primary dark:text-secondary/90" />
-            </div>
-            <div>
-              <h2
-                className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl 
-                 font-['Open_Sans']"
-              >
-                <span
-                  className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
-                dark:from-white dark:to-white/70"
-                >
-                  Bienvenido, {studentData.firstName || studentData.name}
-                </span>{" "}
-                👋
-              </h2>
-              <p className="text-xs dark:text-white/50 font-['Open_Sans']">
-                {studentData.studentLevel
-                  ? `Nivel actual: ${studentData.studentLevel.name}`
-                  : "Sin nivel asignado"}
-              </p>
-            </div>
-          </div>
-          <CalendarDateRangePicker />
+      <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome, {user.firstName || user.name || "learner"}</h1>
+          <p className="text-sm text-muted-foreground">Continue your Bitcoin education.</p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
-          <StatsCard
-            title="Cursos Activos"
-            value={activeCourses}
-            description="Cursos en progreso"
-            icon={BookOpen}
-            trend="neutral"
-            className="bg-gradient-to-br from-card/50 to-card dark:from-black/40 dark:to-black/20 
-              dark:border-white/[0.05] dark:backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]
-              transition-all duration-300"
-          />
-
-          <StatsCard
-            title="Por Calificar"
-            value={submittedAssignments}
-            description="En espera de revisión"
-            icon={Clock}
-            trend="neutral"
-            className="bg-gradient-to-br from-card/50 to-card dark:from-black/40 dark:to-black/20 
-              dark:border-white/[0.05] dark:backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]
-              transition-all duration-300"
-          />
-
-          <StatsCard
-            title="Total Enviadas"
-            value={totalSubmittedAssignments}
-            description="Tareas completadas"
-            icon={GraduationCap}
-            trend="positive"
-            className="bg-gradient-to-br from-card/50 to-card dark:from-black/40 dark:to-black/20 
-              dark:border-white/[0.05] dark:backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]
-              transition-all duration-300"
-          />
-
-          <StatsCard
-            title="Promedio General"
-            value={
-              <div className="flex items-baseline gap-1">
-                <span>{averageScore.toFixed(1)}</span>
-                <span className="text-sm text-foreground/80">/ 100</span>
-              </div>
-            }
-            description="Calificación actual"
-            icon={Target}
-            trend={averageScore >= 70 ? "positive" : "negative"}
-            className="bg-gradient-to-br from-card/50 to-card dark:from-black/40 dark:to-black/20 
-              dark:border-white/[0.05] dark:backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]
-              transition-all duration-300"
-          />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <DashboardStat title="Enrolled courses" value={courseEnrollments.length} icon={BookOpen} href="/student/courses" />
+          <DashboardStat title="Learning paths" value={learningPathEnrollments.length} icon={Route} href="/student/learning-paths" />
+          <DashboardStat title="Upcoming sessions" value={upcomingSessions.length} icon={Calendar} href="/student/schedule" />
+          <DashboardStat title="Notes" value={notesCount} icon={StickyNote} href="/student/notes" />
         </div>
 
-        {/* Progress and Recent Submissions */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-7">
-          <ProgressOverview
-            data={calculateMonthlyProgress(studentData.assignmentScores)}
-            className="col-span-1 sm:col-span-4 bg-gradient-to-br from-card/50 to-card rounded-xl border shadow-lg
-              dark:from-black/40 dark:to-black/20 dark:border-white/[0.05] 
-              dark:backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]"
-          />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle>Continue learning</CardTitle>
+              <Button asChild variant="outline" size="sm"><Link href="/student/courses">View all</Link></Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {courseEnrollments.map(({ course }) => (
+                <div key={course.id} className="flex items-center justify-between rounded-lg border p-3">
+                  <div>
+                    <p className="font-medium">{course.title}</p>
+                    <p className="text-xs text-muted-foreground">{course.deliveryMode.replace("_", " ")}</p>
+                  </div>
+                  <Button asChild size="sm"><Link href={`/courses/${course.id}`}>Open</Link></Button>
+                </div>
+              ))}
+              {courseEnrollments.length === 0 && <p className="text-sm text-muted-foreground">No courses yet. Browse the catalog to get started.</p>}
+            </CardContent>
+          </Card>
 
-          <RecentSubmissionsCard
-            scores={studentData.assignmentScores}
-            className="col-span-1 sm:col-span-3 bg-gradient-to-br from-card/50 to-card rounded-xl border shadow-lg
-              dark:from-black/40 dark:to-black/20 dark:border-white/[0.05] 
-              dark:backdrop-blur-xl dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]"
-          />
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle>Upcoming live sessions</CardTitle>
+              <Button asChild variant="outline" size="sm"><Link href="/student/schedule">Schedule</Link></Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {upcomingSessions.map((liveSession) => (
+                <div key={liveSession.id} className="rounded-lg border p-3">
+                  <p className="font-medium">{liveSession.title}</p>
+                  <p className="text-xs text-muted-foreground">{liveSession.startsAt.toLocaleString()}</p>
+                </div>
+              ))}
+              {upcomingSessions.length === 0 && <p className="text-sm text-muted-foreground">No upcoming sessions.</p>}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </ScrollArea>
   );
 };
+
+function DashboardStat({ title, value, icon: Icon, href }: { title: string; value: number; icon: LucideIcon; href: string }) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        <Button asChild variant="link" className="h-auto p-0 text-xs"><Link href={href}>Open</Link></Button>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default StudentPage;

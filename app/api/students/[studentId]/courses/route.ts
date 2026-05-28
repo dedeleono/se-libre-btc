@@ -11,7 +11,7 @@ export async function GET(
                 id: params.studentId,
             },
             include: {
-                studentCourses: {
+                courseEnrollments: {
                     include: {
                         course: true,
                     },
@@ -19,7 +19,7 @@ export async function GET(
             },
         });
 
-        return NextResponse.json(student?.studentCourses || []);
+        return NextResponse.json(student?.courseEnrollments || []);
     } catch (error) {
         console.error("[STUDENT_COURSES]", error);
         return new NextResponse("Internal Error", { status: 500 });

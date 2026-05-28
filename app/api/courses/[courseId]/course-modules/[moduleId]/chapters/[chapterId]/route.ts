@@ -11,21 +11,21 @@ export async function GET(
         const session = await auth();
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
 
-        const chapter = await prisma.chapter.findUnique({
+        const chapter = await prisma.chapter.findFirst({
             where: {
                 id: params.chapterId,
                 moduleId: params.moduleId,
             },
             include: {
-                assignments: {
+                quiz: {
                     include: {
                         questions: {
-                            include: {
-                                options: true
-                            }
+                            include: { options: true },
+                            orderBy: { position: "asc" },
                         }
                     }
-                }
+                },
+                liveSession: true,
             }
         });
 
@@ -49,14 +49,11 @@ export async function DELETE(
         const session = await auth();
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
 
-        const chapter = await prisma.chapter.findUnique({
+        const chapter = await prisma.chapter.findFirst({
             where: {
                 id: params.chapterId,
                 moduleId: params.moduleId,
             },
-            include: {
-                assignments: true
-            }
         });
 
         if (!chapter) {
@@ -78,59 +75,8 @@ export async function DELETE(
             }
         }
 
-        // Use transaction to handle related records deletion
-        const deletedChapter = await prisma.$transaction(async (tx) => {
-            // First delete all related assignment records
-            if (chapter.assignments.length > 0) {
-                await tx.answer.deleteMany({
-                    where: {
-                        question: {
-                            assignment: {
-                                chapterId: params.chapterId
-                            }
-                        }
-                    }
-                });
-
-                await tx.questionOption.deleteMany({
-                    where: {
-                        question: {
-                            assignment: {
-                                chapterId: params.chapterId
-                            }
-                        }
-                    }
-                });
-
-                await tx.question.deleteMany({
-                    where: {
-                        assignment: {
-                            chapterId: params.chapterId
-                        }
-                    }
-                });
-
-                await tx.studentAssignmentScore.deleteMany({
-                    where: {
-                        assignment: {
-                            chapterId: params.chapterId
-                        }
-                    }
-                });
-
-                await tx.assignment.deleteMany({
-                    where: {
-                        chapterId: params.chapterId
-                    }
-                });
-            }
-
-            // Finally delete the chapter
-            return tx.chapter.delete({
-                where: {
-                    id: params.chapterId
-                }
-            });
+        const deletedChapter = await prisma.chapter.delete({
+            where: { id: params.chapterId }
         });
 
         return NextResponse.json(deletedChapter);

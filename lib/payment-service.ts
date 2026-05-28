@@ -12,11 +12,7 @@ export class PaymentService {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    levelId: params.levelId,
-                    customerEmail: params.customerEmail,
-                    baseUrl: params.baseUrl
-                })
+                body: JSON.stringify(params)
             });
 
             if (!response.ok) {

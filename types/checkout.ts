@@ -7,12 +7,11 @@ export interface PersonalInfo {
     dpi: string;
 }
 
-export interface LevelSelection {
-    levelId: string;
-    levelName: string;
+export interface ProductSelection {
+    productId: string;
+    productName: string;
+    productType: "COURSE" | "LEARNING_PATH";
     price: number;
-    inscriptionPrice: number | null;
-    inscriptionPaid: boolean;
 }
 
 export interface PaymentInfo {
@@ -21,7 +20,7 @@ export interface PaymentInfo {
 
 export interface CheckoutFormData {
     personalInfo: PersonalInfo;
-    levelSelection: LevelSelection;
+    productSelection: ProductSelection;
     payment: PaymentInfo;
 }
 

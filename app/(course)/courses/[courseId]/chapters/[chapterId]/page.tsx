@@ -2,14 +2,12 @@ import { getChapters } from "@/actions/getChapters";
 import { Banner } from "@/components/banner";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { VideoPlayer } from "./_components/video-player";
 import { ChapterType } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { StudentAssignmentView } from "./_components/student-assignment-view";
 import { ContentViewer } from "./_components/content-viewer";
 import { isChapterAccessible } from "@/lib/chapter-access";
 import { ChapterWithProgress } from "@/types/chapter";
-import { CheckCircle } from "lucide-react";
+import { QuizPlayer } from "./_components/quiz-player";
 
 const ChapterPage = async ({
   params,
@@ -126,15 +124,6 @@ const ChapterPage = async ({
     return redirect("/sign-in");
   }
 
-  const activeAcademicYear = await prisma.studentAcademicYear.findFirst({
-    where: {
-      studentId: dbUser.id,
-      status: "ACTIVE",
-    },
-  });
-
-  const hasValidAcademicYear = !!activeAcademicYear;
-
   const { nextChapter, studentProgress } = await getChapters({
     userId: dbUser.id,
     courseId: params.courseId,
@@ -156,24 +145,15 @@ const ChapterPage = async ({
           userId: session.user.id
         }
       },
-      assignments: {
+      quiz: {
         include: {
           questions: {
-            include: {
-              options: true,
-              matchingConfig: true,
-              matchingPrompts: true,
-              matchingChoices: true,
-              matchingPairs: true
-            }
-          },
-          submissions: {
-            where: {
-              studentId: session.user.id
-            }
+            include: { options: true },
+            orderBy: { position: "asc" },
           }
         }
       },
+      liveSession: true,
       attachments: true
     }
   });
@@ -197,52 +177,11 @@ const ChapterPage = async ({
     );
   }
 
-  if (
-    (chapter.type === ChapterType.QUIZ ||
-      chapter.type === ChapterType.ASSIGNMENT) &&
-    !chapter.assignments[0]
-  ) {
-    return (
-      <Banner
-        label="This chapter is misconfigured. Please contact support."
-        variant="warning"
-      />
-    );
+  if (chapter.type === ChapterType.QUIZ && !chapter.quiz) {
+    return <Banner label="This quiz is not configured yet." variant="warning" />;
   }
 
-  const existingSubmission =
-    chapter.type === ChapterType.QUIZ || chapter.type === ChapterType.ASSIGNMENT
-      ? await prisma.submission.findFirst({
-          where: {
-            assignmentId: chapter.assignments[0].id,
-            studentId: session.user.id,
-          },
-        })
-      : null;
-  
-
-    // if (
-    //   chapter.type === ChapterType.QUIZ ||
-    //   chapter.type === ChapterType.ASSIGNMENT
-    // ) {
-    //   redirect(
-    //     `/courses/${params.courseId}/chapters/${params.chapterId}/assignment`
-    //   );
-    // }
-
-  const isPrivilegedUser = dbUser.role === "ADMIN" || dbUser.role === "TEACHER";
-
-  // Check if current chapter has a completed submission (for quizzes/assignments)
-  const hasCompletedAssignment = chapter.type !== "LESSON" 
-    ? chapter.assignments[0]?.submissions.length > 0
-    : true;
-
-  const isChapterCompleted = chapter.studentProgress.length > 0;
-
-  // Chapter is locked if previous chapter isn't completed
-  // or if it's a quiz/assignment that hasn't been completed
   const isLocked = !isAccessible;
-
   const completeOnEnd = !!session.user && !studentProgress?.isCompleted;
 
      const renderChapterContent = () => {
@@ -255,21 +194,17 @@ const ChapterPage = async ({
          );
        }
 
-       switch (chapter.type) {
-         case ChapterType.QUIZ:
-         case ChapterType.ASSIGNMENT:
-           return (
-             <StudentAssignmentView
-               assignment={{
-                 ...chapter.assignments[0],
-                 courseId: params.courseId,
-                 chapterId: chapter.id
-               }}
-               existingSubmission={existingSubmission}
-             />
-           );
-         default:
-           return (
+              switch (chapter.type) {
+       case ChapterType.QUIZ:
+         return (
+           <QuizPlayer
+             quiz={chapter.quiz!}
+             courseId={params.courseId}
+             nextChapterId={nextChapter?.id}
+           />
+         );
+       default:
+         return (
              <ContentViewer
                videoUrl={chapter.videoUrl}
                pdfUrl={chapter.pdfUrl}

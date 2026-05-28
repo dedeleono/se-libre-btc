@@ -23,7 +23,8 @@ import { useRef, useState } from "react";
 interface ForumPostsProps {
   posts: (ForumPost & {
     author: User;
-    level?: { name: string };
+    learningPath?: { title: string } | null;
+    cohort?: { title: string } | null;
     course?: { title: string };
     _count?: {
       comments: number;
@@ -52,7 +53,7 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
   const router = useRouter();
   const deleteModalRef = useRef<DeletePostModalRef>(null);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
-  const canDelete = currentUser.role === "ADMIN" || currentUser.role === "TEACHER";
+  const canDelete = currentUser.role === "ADMIN";
 
   const handleDeleteClick = (postId: string) => {
     setPostToDelete(postId);
@@ -129,12 +130,20 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
-                      {post.levelId && (
+                      {post.learningPathId && (
                         <Badge
                           variant="secondary"
                           className="text-xs sm:text-sm bg-sky-100 text-sky-700 hover:bg-sky-200"
                         >
-                          {post?.level?.name}
+                          {post.learningPath?.title}
+                        </Badge>
+                      )}
+                      {post.cohortId && (
+                        <Badge
+                          variant="secondary"
+                          className="text-xs sm:text-sm bg-purple-100 text-purple-700 hover:bg-purple-200"
+                        >
+                          {post.cohort?.title}
                         </Badge>
                       )}
                       {post.courseId && (

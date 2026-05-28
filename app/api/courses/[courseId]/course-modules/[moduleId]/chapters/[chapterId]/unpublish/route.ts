@@ -11,14 +11,15 @@ export async function PATCH(
         const session = await auth()
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
 
+        const existingChapter = await prisma.chapter.findFirst({
+            where: { id: params.chapterId, moduleId: params.moduleId },
+        });
+
+        if (!existingChapter) return new NextResponse("Not found", { status: 404 });
+
         const unpublishedChapter = await prisma.chapter.update({
-            where: {
-                id: params.chapterId,
-                moduleId: params.moduleId,
-            },
-            data: {
-                isPublished: false,
-            },
+            where: { id: params.chapterId },
+            data: { isPublished: false },
         });
 
         return NextResponse.json(unpublishedChapter)

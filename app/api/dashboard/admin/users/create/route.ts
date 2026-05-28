@@ -10,7 +10,9 @@ interface CreateUserRequest {
     lastName: string;
     role: UserRole;
     phone?: string;
-    levelId?: string;
+    courseId?: string;
+    learningPathId?: string;
+    cohortId?: string;
 }
 
 export async function POST(req: Request) {
@@ -24,7 +26,7 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json() as CreateUserRequest;
-        const { email, name, lastName, role, phone, levelId } = body;
+        const { email, name, lastName, role, phone, courseId, learningPathId, cohortId } = body;
 
         if (!email || !name || !lastName || !role) {
             return NextResponse.json(
@@ -33,10 +35,9 @@ export async function POST(req: Request) {
             );
         }
 
-        // Require levelId for students
-        if (role === UserRole.STUDENT && !levelId) {
+        if (![UserRole.ADMIN, UserRole.STUDENT].includes(role)) {
             return NextResponse.json(
-                { error: "Level ID is required for student invitations" },
+                { error: "Invalid role" },
                 { status: 400 }
             );
         }
@@ -69,8 +70,13 @@ export async function POST(req: Request) {
                 phone,
                 token,
                 expires: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+                courseId,
+                learningPathId,
+                cohortId,
                 metadata: {
-                    levelId: role === UserRole.STUDENT ? levelId : undefined
+                    courseId,
+                    learningPathId,
+                    cohortId,
                 }
             },
         });

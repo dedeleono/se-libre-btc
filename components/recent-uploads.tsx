@@ -1,12 +1,12 @@
-import { StudentAssignmentScore } from "@prisma/client";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 
 interface RecentUploadsProps {
   scores: Array<
-    StudentAssignmentScore & {
-      assignment: {
-        title: string;
-      };
+    {
+      id: string;
+      title: string;
+      scorePercent: number | null;
+      passed: boolean | null;
     }
   >;
 }
@@ -18,19 +18,19 @@ export function RecentUploads({ scores }: RecentUploadsProps) {
         <div key={score.id} className="flex items-center">
           <Avatar className="h-9 w-9">
             <AvatarFallback>
-              {score.assignment.title.charAt(0).toUpperCase()}
+              {score.title.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="ml-4 space-y-1">
             <p className="text-sm font-medium leading-none">
-              {score.assignment.title}
+              {score.title}
             </p>
             <p className="text-sm text-muted-foreground">
-              Calificación: {score.score.toFixed(1)}/{score.maxScore}
+              Resultado: {score.passed ? "Aprobado" : "Intento registrado"}
             </p>
           </div>
           <div className="ml-auto font-medium">
-            {((score.score / score.maxScore) * 100).toFixed(1)}%
+            {score.scorePercent?.toFixed(1) ?? "0.0"}%
           </div>
         </div>
       ))}

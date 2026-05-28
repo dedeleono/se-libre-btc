@@ -1,7 +1,7 @@
 import { Navbar } from "./_components/navbar";
 import { Sidebar } from "./_components/sidebar";
 import { createSsrClient } from "@/lib/supabase/supabaseSsr";
-import { NotificationsComponent } from "@/components/notifications";
+
 import { auth } from "@/lib/auth";
 import { NotificationType } from "@prisma/client";
 
@@ -14,7 +14,6 @@ interface Notification {
   senderId: string | null;
   receiverId: string;
   paymentId?: string;
-  submissionId?: string;
   forumPostId?: string;
   createdAt: string;
   updatedAt: string;
@@ -34,7 +33,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
     
     try {
       const { data, error } = await supabase
-        .from('Notifications')
+        .from('Notification')
         .select(`
           *,
           sender:User!senderId (

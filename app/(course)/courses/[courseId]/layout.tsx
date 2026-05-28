@@ -172,7 +172,6 @@ const CourseLayout = async ({
         },
         moduleId: module.id,
         studentProgress: chapter.studentProgress || [],
-        assignments: []
       } as ChapterWithProgress,
       chapterId: chapter.id
     }))
@@ -189,8 +188,8 @@ const CourseLayout = async ({
       continue;
     }
     
-    // Admin/Teacher always have access
-    if (userRole === "ADMIN" || userRole === "TEACHER") {
+    // Admins always have access
+    if (userRole === "ADMIN") {
       chaptersAccessibility[chapterId] = true;
       continue;
     }

@@ -12,7 +12,7 @@ interface EmailRequest {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session?.user || !["ADMIN", "TEACHER"].includes(session.user.role)) {
+    if (!session?.user || session.user.role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     const results = await Promise.allSettled(
       recipients.map(async (email) => {
         return transport.sendMail({
-          from: `Colegio Saber Ver <${process.env.EMAIL_FROM}>`,
+          from: `Bitcoin LMS <${process.env.EMAIL_FROM}>`,
           to: email,
           subject,
           html: content,

@@ -13,18 +13,19 @@ export async function POST(req: Request) {
       where: { email: session.user.email! },
     });
 
-    if (!user || (user.role !== "ADMIN" && user.role !== "TEACHER")) {
+    if (!user || user.role !== "ADMIN") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { title, content, levelId, courseId, meetingLink, meetingDate } = await req.json();
+    const { title, content, learningPathId, cohortId, courseId, meetingLink, meetingDate } = await req.json();
 
     const forumPost = await prisma.forumPost.create({
       data: {
         title,
         content,
         authorId: user.id,
-        levelId,
+        learningPathId,
+        cohortId,
         courseId: courseId || null,
         meetingLink: meetingLink || null,
         meetingDate: meetingDate ? new Date(meetingDate) : null,
@@ -48,8 +49,9 @@ export async function GET(req: Request) {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email! },
       include: {
-        studentLevel: true,
-        studentCourses: true,
+        learningPathEnrollments: true,
+        courseEnrollments: true,
+        cohortEnrollments: true,
       },
     });
 
@@ -58,11 +60,12 @@ export async function GET(req: Request) {
     }
 
     let forums;
-    if (user.role === "ADMIN" || user.role === "TEACHER") {
+    if (user.role === "ADMIN") {
       forums = await prisma.forumPost.findMany({
         include: {
           author: true,
-          level: true,
+          learningPath: true,
+          cohort: true,
           course: true,
           comments: {
             include: {
@@ -89,17 +92,15 @@ export async function GET(req: Request) {
       forums = await prisma.forumPost.findMany({
         where: {
           OR: [
-            { levelId: user.studentLevel?.id },
-            {
-              courseId: {
-                in: user.studentCourses.map((sc) => sc.courseId),
-              },
-            },
+            { learningPathId: { in: user.learningPathEnrollments.map((enrollment) => enrollment.learningPathId) } },
+            { cohortId: { in: user.cohortEnrollments.map((enrollment) => enrollment.cohortId) } },
+            { courseId: { in: user.courseEnrollments.map((enrollment) => enrollment.courseId) } },
           ],
         },
         include: {
           author: true,
-          level: true,
+          learningPath: true,
+          cohort: true,
           course: true,
           comments: {
             include: {

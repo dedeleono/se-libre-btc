@@ -17,7 +17,8 @@ import { format } from "date-fns";
 interface ForumClientProps {
   posts: any[];
   currentUser: any;
-  levels: any[];
+  learningPaths: any[];
+  cohorts: any[];
   courses: any[];
   canCreatePosts: boolean;
 }
@@ -25,7 +26,8 @@ interface ForumClientProps {
 export function ForumClient({
   posts,
   currentUser,
-  levels,
+  learningPaths,
+  cohorts,
   courses,
   canCreatePosts,
 }: ForumClientProps) {
@@ -49,7 +51,8 @@ export function ForumClient({
             <div className="p-2 sm:p-6">
               <ForumHeader
                 canCreatePosts={canCreatePosts}
-                levels={levels}
+                learningPaths={learningPaths}
+                cohorts={cohorts}
                 courses={courses}
               />
             </div>

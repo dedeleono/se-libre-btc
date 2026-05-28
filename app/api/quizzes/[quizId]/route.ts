@@ -1,0 +1,44 @@
+import { NextResponse } from "next/server";
+
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: { quizId: string } }
+) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const body = await req.json();
+  const quiz = await prisma.quiz.update({
+    where: { id: params.quizId },
+    data: {
+      title: body.title,
+      description: body.description,
+      passingScore: body.passingScore === undefined ? undefined : Number(body.passingScore),
+      allowRetries: body.allowRetries,
+      showCorrectAnswers: body.showCorrectAnswers,
+    },
+  });
+
+  return NextResponse.json(quiz);
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { quizId: string } }
+) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const quiz = await prisma.quiz.delete({
+    where: { id: params.quizId },
+  });
+
+  return NextResponse.json(quiz);
+}

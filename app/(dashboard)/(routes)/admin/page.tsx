@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { getAnalytics } from "@/actions/get-analytics";
 import { getOverviewData } from "@/actions/get-overview-data";
 import { formatPrice } from "@/lib/utils";
-import { Users, DollarSign, BookOpen, GraduationCap, LayoutDashboardIcon } from "lucide-react";
+import { Users, DollarSign, BookOpen, Route, LayoutDashboardIcon } from "lucide-react";
 
 export default async function Home() {
   const [analytics, overviewData] = await Promise.all([
@@ -105,15 +105,15 @@ export default async function Home() {
           <Card className="border dark:border-white/[0.05] bg-card/50 dark:bg-black/40 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="sm:text-sm text-xs font-medium">
-                Maestros
+Learning Paths
               </CardTitle>
               <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
-                <GraduationCap className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                <Route className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
               </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">
-                {analytics.totalTeachers}
+                {analytics.totalLearningPaths}
               </div>
             </CardContent>
           </Card>

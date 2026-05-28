@@ -1,108 +1,130 @@
 import { prisma } from "@/lib/db";
 import { ChapterWithProgress } from "@/types/chapter";
 
+const getPublishedChapterSequence = async (courseId: string): Promise<string[]> => {
+  const modules = await prisma.courseModule.findMany({
+    where: {
+      courseId,
+    },
+    orderBy: {
+      position: "asc",
+    },
+    select: {
+      chapters: {
+        where: {
+          isPublished: true,
+        },
+        orderBy: {
+          position: "asc",
+        },
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  return modules.flatMap((module) => module.chapters.map((chapter) => chapter.id));
+};
+
 export const isChapterAccessible = async (
   chapter: ChapterWithProgress,
   userId: string | null,
   userRole: string | null
 ): Promise<boolean> => {
-  // Allow public access to intro chapters
-  if (chapter.isIntro) {
-    return true;
-  }
-
-  // Require authentication for non-intro chapters
   if (!userId || !userRole) {
     return false;
   }
 
-  // Teachers and admins always have access
-  if (userRole === "ADMIN" || userRole === "TEACHER") {
+  if (chapter.isIntro) {
     return true;
   }
 
-  if (!chapter.module?.courseId) {
-    return false;
-  }
-
-  // Check if current chapter is already completed
-  const currentProgress = await prisma.chapterProgress.findUnique({
-    where: {
-      userId_chapterId: {
-        userId,
-        chapterId: chapter.id,
-      },
-    },
-  });
-
-  // If the chapter is already completed, allow access
-  if (currentProgress?.isCompleted) {
+  if (userRole === "ADMIN") {
     return true;
   }
 
-  // Get the current module and its position
-  const currentModule = await prisma.courseModule.findUnique({
-    where: { id: chapter.moduleId },
-    select: { position: true, courseId: true }
-  });
-
-  if (!currentModule) {
+  const courseId = chapter.module?.courseId;
+  if (!courseId) {
     return false;
   }
 
-  // Find the previous chapter
-  const previousChapter = await prisma.chapter.findFirst({
-    where: {
-      OR: [
-        {
-          moduleId: chapter.moduleId,
-          position: { lt: chapter.position }
-        },
-        {
-          module: {
-            courseId: currentModule.courseId,
-            position: { lt: currentModule.position }
-          }
-        }
-      ],
-      isPublished: true
-    },
-    include: {
-      studentProgress: {
-        where: {
+  const publishedChapterIds = await getPublishedChapterSequence(courseId);
+  const currentChapterIndex = publishedChapterIds.indexOf(chapter.id);
+
+  if (currentChapterIndex === 0) {
+    return true;
+  }
+
+  const previousChapterId = currentChapterIndex > 0
+    ? publishedChapterIds[currentChapterIndex - 1]
+    : null;
+
+  if (previousChapterId) {
+    const previousProgress = await prisma.chapterProgress.findUnique({
+      where: {
+        userId_chapterId: {
           userId,
-          isCompleted: true
-        }
+          chapterId: previousChapterId,
+        },
       },
-      assignments: {
-        include: {
-          submissions: {
-            where: {
-              studentId: userId
-            }
-          }
-        }
-      }
+      select: {
+        isCompleted: true,
+      },
+    });
+
+    if (previousProgress?.isCompleted) {
+      return true;
+    }
+  }
+
+  const directEnrollment = await prisma.courseEnrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
     },
-    orderBy: [
-      { module: { position: 'desc' } },
-      { position: 'desc' }
-    ]
   });
 
-  // First chapter is always accessible
-  if (!previousChapter) {
+  if (directEnrollment?.status === "ACTIVE" || directEnrollment?.status === "COMPLETED") {
     return true;
   }
 
-  // Check if previous chapter is completed
-  const isPreviousCompleted = previousChapter.studentProgress.length > 0;
+  const pathEnrollment = await prisma.learningPathEnrollment.findFirst({
+    where: {
+      userId,
+      status: { in: ["ACTIVE", "COMPLETED"] },
+      learningPath: {
+        courses: {
+          some: { courseId },
+        },
+      },
+    },
+  });
 
-  // For previous assignments/quizzes, check if they're submitted (not necessarily graded)
-  if (previousChapter.type !== "LESSON") {
-    const hasSubmission = previousChapter.assignments?.[0]?.submissions.length > 0;
-    return isPreviousCompleted && hasSubmission;
+  if (pathEnrollment) {
+    return true;
   }
 
-  return isPreviousCompleted;
-}; 
+  const cohortEnrollment = await prisma.cohortEnrollment.findFirst({
+    where: {
+      userId,
+      status: { in: ["ACTIVE", "COMPLETED"] },
+      cohort: {
+        OR: [
+          { courseId },
+          {
+            learningPath: {
+              courses: {
+                some: { courseId },
+              },
+            },
+          },
+        ],
+      },
+    },
+  });
+
+  return Boolean(cohortEnrollment);
+};

@@ -17,9 +17,14 @@ async function getRecentSales() {
             image: true,
           },
         },
-        level: {
+        course: {
           select: {
-            name: true,
+            title: true,
+          },
+        },
+        learningPath: {
+          select: {
+            title: true,
           },
         },
       },
@@ -87,7 +92,7 @@ export async function RecentSales() {
               {sale.user.name ?? sale.user.email}
             </p>
             <p className="text-sm text-muted-foreground">
-              {sale.level?.name ?? "Pago de mensualidad"}
+              {sale.course?.title ?? sale.learningPath?.title ?? sale.productType}
             </p>
           </div>
           <div className="ml-auto text-right">

@@ -27,7 +27,8 @@ export async function POST(
     const post = await prisma.forumPost.findUnique({
       where: { id: postId },
       include: {
-        level: true,
+        learningPath: true,
+        cohort: true,
         course: true,
       },
     });
@@ -38,21 +39,40 @@ export async function POST(
 
     // Check if user has access to this post
     if (user.role === "STUDENT") {
-      const hasAccess = await prisma.user.findFirst({
-        where: {
-          id: user.id,
-          OR: [
-            { levelId: post.levelId },
-            {
-              studentCourses: {
-                some: { courseId: post.courseId || "" },
+      const [courseEnrollment, learningPathEnrollment, cohortEnrollment] = await Promise.all([
+        post.courseId
+          ? prisma.courseEnrollment.findUnique({
+              where: {
+                userId_courseId: {
+                  userId: user.id,
+                  courseId: post.courseId,
+                },
               },
-            },
-          ],
-        },
-      });
+            })
+          : null,
+        post.learningPathId
+          ? prisma.learningPathEnrollment.findUnique({
+              where: {
+                userId_learningPathId: {
+                  userId: user.id,
+                  learningPathId: post.learningPathId,
+                },
+              },
+            })
+          : null,
+        post.cohortId
+          ? prisma.cohortEnrollment.findUnique({
+              where: {
+                userId_cohortId: {
+                  userId: user.id,
+                  cohortId: post.cohortId,
+                },
+              },
+            })
+          : null,
+      ]);
 
-      if (!hasAccess) {
+      if (!courseEnrollment && !learningPathEnrollment && !cohortEnrollment) {
         return new NextResponse("Unauthorized", { status: 401 });
       }
     }

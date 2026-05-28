@@ -1,9 +1,7 @@
 import { NextAuthConfig } from "next-auth";
 import { NextURL } from "next/dist/server/web/next-url";
 import Google from "next-auth/providers/google";
-import Email from "next-auth/providers/email";
 import { UserRole } from "@prisma/client";
-import { sendAuthEmail } from "./validations/auth-email";
 
 type AuthorizedCallback = {
     auth: {
@@ -94,7 +92,8 @@ export const authConfig: NextAuthConfig = {
             const publicRoutes = [
                 '/',
                 '/contact',
-                '/levels',
+                '/courses',
+                '/learning-paths',
                 '/checkout/error',
                 '/checkout',
                 '/onboarding',
@@ -106,7 +105,7 @@ export const authConfig: NextAuthConfig = {
 
             // Simplified public routes check
             const isOnPublicPage = publicRoutes.some(route => nextUrl.pathname === route) ||
-                nextUrl.pathname.startsWith('/levels/') ||
+                nextUrl.pathname.startsWith('/learning-paths/') ||
                 nextUrl.pathname.startsWith('/courses/preview/');
 
             // Allow email verification callback

@@ -1,9 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from 'next/navigation';
 import OnboardingForm from './_components/onboarding-form';
-import Header from "@/components/layout/header";
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { Navbar } from "./_components/navbar";
 import { prisma } from "@/lib/db";
 import { UserRole } from "@prisma/client";
@@ -23,48 +21,57 @@ export default async function OnboardingPage({
     redirect('/error?message=Invalid user role');
   }
 
-  // For students, check if they have completed checkout
-  if (session.user.role === UserRole.STUDENT) {
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: {
-        academicYears: true
-      },
-    });
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      id: true,
+      isBanned: true,
+      isDeleted: true,
+      onboardingCompleted: true,
+    },
+  });
 
-    if (!user) {
-      redirect('/error?message=User not found');
-    }
+  if (!user || user.isBanned || user.isDeleted) {
+    redirect('/error?message=User not allowed');
+  }
 
-    // Check if the student has at least one academic year with isPaid = true
-    const hasValidEnrollment = user.academicYears.some(year => year.isPaid === true);
-    
-    // If user has no valid academic year enrollment, redirect to checkout
-    if (!hasValidEnrollment) {
-      redirect('/checkout');
-    }
+  if (user.onboardingCompleted) {
+    redirect(session.user.role === UserRole.ADMIN ? "/admin" : "/student");
   }
 
   let pendingInvitation = null;
   if (searchParams.invitationId) {
-    pendingInvitation = await prisma.pendingInvitation.findUnique({
+    const invitation = await prisma.pendingInvitation.findUnique({
       where: {
         id: searchParams.invitationId,
       },
       include: {
         payment: true,
-        level: true,
+        learningPath: true,
+        course: true,
+        cohort: true,
       },
     });
 
-    if (!pendingInvitation) {
+    if (!invitation) {
       redirect('/error?message=Invalid invitation');
     }
 
-    // If payment is not completed, redirect to checkout
-    if (!pendingInvitation.payment || pendingInvitation.payment.status !== 'COMPLETED') {
-      redirect(`/checkout?invitationId=${searchParams.invitationId}`);
-    }
+    pendingInvitation = {
+      id: invitation.id,
+      email: invitation.email,
+      name: invitation.name,
+      learningPath: invitation.learningPath && {
+        id: invitation.learningPath.id,
+        title: invitation.learningPath.title,
+        position: invitation.learningPath.position,
+        price: invitation.learningPath.price ? Number(invitation.learningPath.price) : null,
+      },
+      payment: invitation.payment && {
+        id: invitation.payment.id,
+        status: invitation.payment.status,
+      },
+    };
   }
 
   return (

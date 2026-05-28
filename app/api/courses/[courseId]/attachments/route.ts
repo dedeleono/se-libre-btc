@@ -31,7 +31,10 @@ export async function POST(
         const courseOwner = await prisma.course.findFirst({
             where: {
                 id: params.courseId,
-                teacherId: dataBaseUser?.id
+                OR: [
+                    { contributors: { some: { userId: dataBaseUser.id } } },
+                    ...(dataBaseUser.role === "ADMIN" ? [{}] : []),
+                ],
             }
         })
 

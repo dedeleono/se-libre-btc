@@ -50,7 +50,7 @@ export default function ContactForm() {
   const onSubmit = async (data: ContactFormValue) => {
     // @todo add endpoint to submit contact form
     try {
-      // Add your submission logic here
+      // Add your contact send logic here
       console.log(data);
     } catch (error) {
       console.error(error);

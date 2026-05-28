@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface EmailSelectorProps {
-  levels: { 
+  groups: { 
     id: string; 
     name: string; 
     position: number;
@@ -25,25 +25,22 @@ interface EmailSelectorProps {
   onEmailsChange: (emails: string[]) => void;
 }
 
-export function EmailSelector({ levels, onEmailsChange }: EmailSelectorProps) {
+export function EmailSelector({ groups, onEmailsChange }: EmailSelectorProps) {
   const [selectedEmails, setSelectedEmails] = React.useState<string[]>([]);
   const [inputValue, setInputValue] = React.useState("");
-  const [selectedLevels, setSelectedLevels] = React.useState<string[]>([]);
-  const [openLevels, setOpenLevels] = React.useState(false);
+  const [selectedGroups, setSelectedGroups] = React.useState<string[]>([]);
 
-  // Sort levels by position
-  const sortedLevels = React.useMemo(() => {
-    return [...levels].sort((a, b) => a.position - b.position);
-  }, [levels]);
+  const sortedGroups = React.useMemo(() => {
+    return [...groups].sort((a, b) => a.position - b.position);
+  }, [groups]);
 
-  // Flatten all students from all levels into a single array
   const allStudents = React.useMemo(() => {
-    return levels.flatMap(level => 
-      level.students.map(student => ({
+    return groups.flatMap(group => 
+      group.students.map(student => ({
         email: student.email,
       }))
     );
-  }, [levels]);
+  }, [groups]);
 
   // Filter students based on email
   const filteredStudents = React.useMemo(() => {
@@ -63,26 +60,24 @@ export function EmailSelector({ levels, onEmailsChange }: EmailSelectorProps) {
     setInputValue("");
   };
 
-  const handleLevelToggle = (levelId: string) => {
-    const level = levels.find(l => l.id === levelId);
-    if (!level) return;
+  const handleGroupToggle = (groupId: string) => {
+    const group = groups.find((item) => item.id === groupId);
+    if (!group) return;
 
-    let newSelectedLevels: string[];
+    let newSelectedGroups: string[];
     let newEmails: string[];
 
-    if (selectedLevels.includes(levelId)) {
-      // Remove level and its students
-      newSelectedLevels = selectedLevels.filter(id => id !== levelId);
-      const levelEmails = level.students.map(s => s.email);
-      newEmails = selectedEmails.filter(email => !levelEmails.includes(email));
+    if (selectedGroups.includes(groupId)) {
+      newSelectedGroups = selectedGroups.filter(id => id !== groupId);
+      const groupEmails = group.students.map(s => s.email);
+      newEmails = selectedEmails.filter(email => !groupEmails.includes(email));
     } else {
-      // Add level and its students
-      newSelectedLevels = [...selectedLevels, levelId];
-      const levelEmails = level.students.map(s => s.email);
-      newEmails = Array.from(new Set([...selectedEmails, ...levelEmails]));
+      newSelectedGroups = [...selectedGroups, groupId];
+      const groupEmails = group.students.map(s => s.email);
+      newEmails = Array.from(new Set([...selectedEmails, ...groupEmails]));
     }
     
-    setSelectedLevels(newSelectedLevels);
+    setSelectedGroups(newSelectedGroups);
     setSelectedEmails(newEmails);
     onEmailsChange(newEmails);
   };
@@ -138,23 +133,23 @@ export function EmailSelector({ levels, onEmailsChange }: EmailSelectorProps) {
       </div>
 
       <div className="flex flex-col sm:grid sm:grid-cols-2 gap-4">
-        {/* Level Selection Command */}
+        {/* Group Selection Command */}
         <Command className="rounded-xl border border-primary/20">
           <div className="flex items-center px-3 border-b">
             <Users className="h-4 w-4 text-muted-foreground mr-2 flex-shrink-0" />
             <div className="flex-1 h-10 sm:h-12 px-2 text-xs sm:text-sm flex items-center text-muted-foreground">
-              {selectedLevels.length === 0
-                ? "Seleccionar grados"
-                : `${selectedLevels.length} grado(s) seleccionado(s)`}
+              {selectedGroups.length === 0
+                ? "Seleccionar grupos"
+                : `${selectedGroups.length} grupo(s) seleccionado(s)`}
             </div>
           </div>
           <CommandList className="h-[150px] sm:h-[200px] scrollbar-custom">
             <CommandGroup>
               <div className="p-1 space-y-1">
-                {sortedLevels.map((level) => (
+                {sortedGroups.map((group) => (
                   <CommandItem
-                    key={level.id}
-                    onSelect={() => handleLevelToggle(level.id)}
+                    key={group.id}
+                    onSelect={() => handleGroupToggle(group.id)}
                     className={cn(
                       "flex items-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg cursor-pointer hover:bg-primary/5 transition-all",
                       "data-[selected]:bg-primary/5"
@@ -163,17 +158,17 @@ export function EmailSelector({ levels, onEmailsChange }: EmailSelectorProps) {
                     <div
                       className={cn(
                         "mr-2 h-4 w-4 border rounded-sm flex items-center justify-center",
-                        selectedLevels.includes(level.id)
+                        selectedGroups.includes(group.id)
                           ? "bg-primary border-primary text-primary-foreground"
                           : "border-primary/20"
                       )}
                     >
-                      {selectedLevels.includes(level.id) && (
+                      {selectedGroups.includes(group.id) && (
                         <Check className="h-3 w-3" />
                       )}
                     </div>
-                    <span className="flex-1 text-xs sm:text-sm">{level.name}</span>
-                    <Badge variant="secondary" className="text-xs">{level.students.length}</Badge>
+                    <span className="flex-1 text-xs sm:text-sm">{group.name}</span>
+                    <Badge variant="secondary" className="text-xs">{group.students.length}</Badge>
                   </CommandItem>
                 ))}
               </div>

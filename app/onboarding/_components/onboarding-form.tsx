@@ -43,13 +43,11 @@ interface OnboardingFormProps {
     id: string;
     email: string;
     name: string;
-    level: {
+    learningPath: {
       id: string;
-      name: string;
+      title: string;
       position: number;
       price: number | null;
-      inscriptionPrice: number | null;
-      inscriptionPaid: boolean;
     } | null;
     payment: {
       id: string;
@@ -185,7 +183,6 @@ export default function OnboardingForm({
 
         const roleRedirects = {
           [UserRole.ADMIN]: "/admin",
-          [UserRole.TEACHER]: "/teacher",
           [UserRole.STUDENT]: "/student",
         };
 

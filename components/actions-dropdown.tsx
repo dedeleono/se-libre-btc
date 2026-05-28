@@ -25,7 +25,7 @@ export default function ActionsDropdown({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEditProduct = (courseId: string) => {
-    router.push(`/teacher/courses/${courseId}`);
+    router.push(`/admin/courses/${courseId}`);
   };
 
   const handleDeleteProduct = async (courseId: string) => {

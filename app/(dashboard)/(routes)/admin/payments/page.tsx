@@ -1,13 +1,9 @@
-import { getLevels } from "@/actions/level";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { prisma } from "@/lib/db";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Users, CreditCard, AlertCircle, LucideGitPullRequestDraft } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { DollarSign, Users, CreditCard, AlertCircle } from "lucide-react";
 import { PaymentsTable } from "./_components/payments-table";
-import { LevelPricing } from "./_components/level-pricing";
 import { formatPrice } from "@/lib/utils";
-import { Level } from "@prisma/client";
 
 async function getPaymentsData() {
   const today = new Date();
@@ -17,8 +13,7 @@ async function getPaymentsData() {
     totalRevenue,
     monthlyRevenue,
     totalPayments,
-    pendingPayments,
-    levels
+    pendingPayments
   ] = await Promise.all([
     // Total revenue
     prisma.payment.aggregate({
@@ -40,25 +35,14 @@ async function getPaymentsData() {
     // Pending payments
     prisma.payment.count({
       where: { status: "PENDING" }
-    }),
-    // Get levels with pricing
-    prisma.level.findMany({
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        inscriptionPrice: true,
-        position: true
-      }
     })
   ]);
 
   return {
-    totalRevenue: totalRevenue._sum.amount || 0,
-    monthlyRevenue: monthlyRevenue._sum.amount || 0,
+    totalRevenue: Number(totalRevenue._sum.amount || 0),
+    monthlyRevenue: Number(monthlyRevenue._sum.amount || 0),
     totalPayments,
-    pendingPayments,
-    levels
+    pendingPayments
   };
 }
 
@@ -82,7 +66,7 @@ export default async function PaymentsPage() {
                 Pagos
               </h2>
               <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans']">
-                Administra las mensualidades y las inscripciones de los grados
+Manage course, learning path, and subscription payments
               </p>
             </div>
           </div>
@@ -150,43 +134,8 @@ export default async function PaymentsPage() {
           </Card>
         </div>
 
-        <div className="rounded-lg bg-card overflow-hidden">
-          <Tabs defaultValue="payments" className="w-full">
-            <div className="border-b bg-muted w-full">
-              <TabsList className="w-full justify-start m-2 bg-transparent gap-1">
-                <TabsTrigger
-                  value="payments"
-                  className="group data-[state=active]:bg-primary/10 dark:data-[state=active]:bg-white/10
-                    data-[state=active]:text-primary dark:data-[state=active]:text-secondary
-                    text-muted-foreground dark:text-white/70
-                    hover:bg-primary/5 dark:hover:bg-white/5
-                    rounded-md transition-all duration-200 ease-in-out text-xs sm:text-sm"
-                >
-                  Historial de Pagos
-                </TabsTrigger>
-                <TabsTrigger
-                  value="pricing"
-                  className="group data-[state=active]:bg-primary/10 dark:data-[state=active]:bg-white/10
-                    data-[state=active]:text-primary dark:data-[state=active]:text-secondary
-                    text-muted-foreground dark:text-white/70
-                    hover:bg-primary/5 dark:hover:bg-white/5
-                    rounded-md transition-all duration-200 ease-in-out text-xs sm:text-sm"
-                >
-                  Precios por Grado
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            <div className="p-3 sm:p-4 md:p-6">
-              <TabsContent value="payments" className="mt-0">
-                <PaymentsTable />
-              </TabsContent>
-
-              <TabsContent value="pricing" className="mt-0">
-                <LevelPricing levels={data.levels} />
-              </TabsContent>
-            </div>
-          </Tabs>
+        <div className="rounded-lg bg-card overflow-hidden p-3 sm:p-4 md:p-6">
+          <PaymentsTable />
         </div>
       </div>
     </ScrollArea>

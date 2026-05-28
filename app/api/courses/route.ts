@@ -10,17 +10,12 @@ export async function POST(req: Request) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { levelId, teacherId, ...courseData } = await req.json();
-
-        // Only allow teacherId to be set if the user is an ADMIN
-        if (teacherId && session.user.role !== "ADMIN") {
-            return new NextResponse("Forbidden: Only admins can assign teachers", { status: 403 });
+        if (session.user.role !== "ADMIN") {
+            return new NextResponse("Forbidden", { status: 403 });
         }
 
-        const course = await createCourse(
-            { ...courseData, teacherId },
-            levelId
-        );
+        const courseData = await req.json();
+        const course = await createCourse(courseData);
 
         return NextResponse.json(course);
     } catch (error) {

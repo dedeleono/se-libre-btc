@@ -58,22 +58,6 @@ export async function DELETE(
                 chapters: {
                     include: {
                         attachments: true,
-                        assignments: {
-                            include: {
-                                questions: {
-                                    include: {
-                                        options: true,
-                                        answers: true
-                                    }
-                                },
-                                submissions: {
-                                    include: {
-                                        attachments: true
-                                    }
-                                },
-                                studentAssignmentScores: true
-                            }
-                        }
                     }
                 }
             }
@@ -89,11 +73,6 @@ export async function DELETE(
             chapter.imageUrl,
             chapter.pdfUrl,
             ...chapter.attachments.map(attachment => attachment.url),
-            ...chapter.assignments.flatMap(assignment => 
-                assignment.submissions.flatMap(submission => 
-                    submission.attachments.map(attachment => attachment.url)
-                )
-            )
         ]).filter(Boolean) as string[];
 
         // Delete files from S3
@@ -105,90 +84,8 @@ export async function DELETE(
             }
         }
 
-        // Delete everything in a transaction
-        const deletedModule = await prisma.$transaction(async (tx) => {
-            // Delete all related records in the correct order
-            await tx.answer.deleteMany({
-                where: {
-                    question: {
-                        assignment: {
-                            chapter: {
-                                moduleId: params.moduleId
-                            }
-                        }
-                    }
-                }
-            });
-
-            await tx.questionOption.deleteMany({
-                where: {
-                    question: {
-                        assignment: {
-                            chapter: {
-                                moduleId: params.moduleId
-                            }
-                        }
-                    }
-                }
-            });
-
-            await tx.question.deleteMany({
-                where: {
-                    assignment: {
-                        chapter: {
-                            moduleId: params.moduleId
-                        }
-                    }
-                }
-            });
-
-            await tx.studentAssignmentScore.deleteMany({
-                where: {
-                    assignment: {
-                        chapter: {
-                            moduleId: params.moduleId
-                        }
-                    }
-                }
-            });
-
-            await tx.submission.deleteMany({
-                where: {
-                    assignment: {
-                        chapter: {
-                            moduleId: params.moduleId
-                        }
-                    }
-                }
-            });
-
-            await tx.assignment.deleteMany({
-                where: {
-                    chapter: {
-                        moduleId: params.moduleId
-                    }
-                }
-            });
-
-            await tx.attachment.deleteMany({
-                where: {
-                    chapter: {
-                        moduleId: params.moduleId
-                    }
-                }
-            });
-
-            await tx.chapter.deleteMany({
-                where: {
-                    moduleId: params.moduleId
-                }
-            });
-
-            return tx.courseModule.delete({
-                where: {
-                    id: params.moduleId
-                }
-            });
+        const deletedModule = await prisma.courseModule.delete({
+            where: { id: params.moduleId },
         });
 
         return NextResponse.json(deletedModule);

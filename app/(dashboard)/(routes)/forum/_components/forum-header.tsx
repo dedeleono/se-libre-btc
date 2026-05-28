@@ -8,13 +8,15 @@ import { CreateForumForm, CreateForumFormRef } from "./create-forum-form";
 
 interface ForumHeaderProps {
   canCreatePosts: boolean;
-  levels: { id: string; name: string }[];
-  courses: { id: string; title: string }[];
+  learningPaths: { id: string; name: string }[];
+  cohorts: { id: string; name: string }[];
+  courses: { id: string; title: string; learningPathId?: string | null }[];
 }
 
 export const ForumHeader = ({
   canCreatePosts,
-  levels,
+  learningPaths,
+  cohorts,
   courses,
 }: ForumHeaderProps) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -53,13 +55,15 @@ export const ForumHeader = ({
       <CreatePostDialog
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        levels={levels}
+        learningPaths={learningPaths}
+        cohorts={cohorts}
         courses={courses}
       />
 
       <CreateForumForm
         ref={forumFormRef}
-        levels={levels}
+        learningPaths={learningPaths}
+        cohorts={cohorts}
         courses={courses}
       />
     </div>

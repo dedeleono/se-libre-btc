@@ -37,7 +37,6 @@ export async function POST(
         const newPosition = lastChapter ? lastChapter.position + 1 : 1;
 
         const moduleChapter = await prisma.$transaction(async (tx) => {
-            // Create the chapter first
             const chapter = await tx.chapter.create({
                 data: {
                     title,
@@ -47,26 +46,11 @@ export async function POST(
                 },
             });
 
-            // If type is QUIZ or ASSIGNMENT, create the corresponding Assignment record
-            if ((type === "QUIZ" || type === "ASSIGNMENT")) {
-                await tx.assignment.create({
+            if (type === "QUIZ") {
+                await tx.quiz.create({
                     data: {
-                        title: `${title} ${type === "QUIZ" ? "Quiz" : "Assignment"}`,
-                        maxPoints: 100,
-                        isQuiz: type === "QUIZ",
-                        isOnline: true,  // Add this since it's required and has a default
-                        timer: 3600,
-                        deadline: null,
-                        creator: {
-                            connect: {
-                                id: dbUser.id
-                            }
-                        },
-                        chapter: {
-                            connect: {
-                                id: chapter.id
-                            }
-                        }
+                        title,
+                        chapterId: chapter.id,
                     }
                 });
             }

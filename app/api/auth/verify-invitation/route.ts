@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { signIn } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { createDashboardJwt } from "@/lib/utils";
 import { SupabaseNotifications } from "@/lib/supabase/notifications";
-import { UserRole } from "@prisma/client";
+
 
 export const dynamic = 'force-dynamic';
 
@@ -20,7 +19,9 @@ export async function GET(req: Request) {
         const invitation = await prisma.pendingInvitation.findUnique({
             where: { token },
             include: {
-                level: true
+                course: true,
+                learningPath: true,
+                cohort: true,
             }
         });
 
@@ -60,40 +61,31 @@ export async function GET(req: Request) {
             console.error('Failed to create signup notification:', error);
         }
 
-        // Handle different roles
-        if (user.role === UserRole.STUDENT) {
-            // For students, always redirect to checkout with their level
-            if (invitation.metadata && (invitation.metadata as any).levelId) {
-                // Create a query string with all necessary parameters
-                const queryParams = new URLSearchParams({
-                    userId: user.id,
-                    levelId: (invitation.metadata as any).levelId,
-                    email: invitation.email,
-                    name: invitation.name,
-                    invitationId: invitation.id,
-                    token: token // Include the token for verification
-                }).toString();
+        const sessionToken = await createDashboardJwt(user.id, user.email, user.role);
+        cookies().set('next-auth.session-token', sessionToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+        });
 
-                return NextResponse.redirect(
-                    `${process.env.NEXTAUTH_URL}/checkout?${queryParams}`
-                );
-            } else {
-                // If no level was specified, redirect to error
-                return NextResponse.redirect(
-                    `${process.env.NEXTAUTH_URL}/error?message=No level specified for student invitation`
-                );
-            }
-        } else {
-            // For teachers and admins, redirect to onboarding directly
-            const sessionToken = await createDashboardJwt(user.id, user.email, user.role);
-            cookies().set('next-auth.session-token', sessionToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                path: '/',
+        if (user.role === "STUDENT" && (invitation.courseId || invitation.learningPathId || invitation.cohortId)) {
+            const queryParams = new URLSearchParams({
+                userId: user.id,
+                email: invitation.email,
+                name: invitation.name,
+                invitationId: invitation.id,
+                token,
             });
-            return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/onboarding`);
+
+            if (invitation.courseId) queryParams.set("courseId", invitation.courseId);
+            if (invitation.learningPathId) queryParams.set("learningPathId", invitation.learningPathId);
+            if (invitation.cohortId) queryParams.set("cohortId", invitation.cohortId);
+
+            return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/checkout?${queryParams.toString()}`);
         }
+
+        return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/onboarding`);
 
     } catch (error) {
         console.error("[VERIFY_INVITATION]", error);

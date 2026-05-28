@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
 import { uploadFile } from '@/lib/s3';
 
 export const dynamic = 'force-dynamic';
@@ -9,8 +10,12 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+        const session = await auth();
+        if (!session?.user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const data = await req.formData();
-        console.log("Form data received:", data); // Log received form data
         const file = data.get('file');
         const type = data.get('type');
 
@@ -27,8 +32,7 @@ export async function POST(req: NextRequest) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        const fileName = `${Date.now()}-${file.name}`;
-        const fileUrl = await uploadFile(buffer, fileName, file.type, type as 'video' | 'image' | 'document' | 'mixed');
+        const fileUrl = await uploadFile(buffer, file.name, file.type, type as 'video' | 'image' | 'document' | 'mixed');
 
         return NextResponse.json({ url: fileUrl });
     } catch (error) {

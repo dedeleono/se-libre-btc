@@ -13,8 +13,12 @@ interface Notification {
   senderId: string | null;
   receiverId: string;
   paymentId?: string;
-  submissionId?: string;
   forumPostId?: string;
+  courseId?: string;
+  learningPathId?: string;
+  cohortId?: string;
+  liveSessionId?: string;
+  quizAttemptId?: string;
   createdAt: string;
   updatedAt: string;
   sender?: {

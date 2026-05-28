@@ -39,14 +39,6 @@ interface ProfileFormProps {
     image?: string | null;
     email?: string;
     role?: UserRole;
-    studentLevel?: {
-      name: string;
-    } | null;
-    teacherLevels?: Array<{
-      level: {
-        name: string;
-      };
-    }>;
   };
 }
 

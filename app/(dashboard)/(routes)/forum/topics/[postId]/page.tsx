@@ -35,7 +35,8 @@ export default async function PostPage({ params }: PostPageProps) {
     where: { id: params.postId },
     include: {
       author: true,
-      level: true,
+      learningPath: true,
+      cohort: true,
       course: true,
       comments: {
         where: { parentId: null },
@@ -60,21 +61,40 @@ export default async function PostPage({ params }: PostPageProps) {
 
   // Check access for students
   if (user.role === "STUDENT") {
-    const hasAccess = await prisma.user.findFirst({
-      where: {
-        id: user.id,
-        OR: [
-          { levelId: post.levelId },
-          {
-            studentCourses: {
-              some: { courseId: post.courseId || "" },
+    const [courseEnrollment, learningPathEnrollment, cohortEnrollment] = await Promise.all([
+      post.courseId
+        ? prisma.courseEnrollment.findUnique({
+            where: {
+              userId_courseId: {
+                userId: user.id,
+                courseId: post.courseId,
+              },
             },
-          },
-        ],
-      },
-    });
+          })
+        : null,
+      post.learningPathId
+        ? prisma.learningPathEnrollment.findUnique({
+            where: {
+              userId_learningPathId: {
+                userId: user.id,
+                learningPathId: post.learningPathId,
+              },
+            },
+          })
+        : null,
+      post.cohortId
+        ? prisma.cohortEnrollment.findUnique({
+            where: {
+              userId_cohortId: {
+                userId: user.id,
+                cohortId: post.cohortId,
+              },
+            },
+          })
+        : null,
+    ]);
 
-    if (!hasAccess) {
+    if (!courseEnrollment && !learningPathEnrollment && !cohortEnrollment) {
       return redirect("/forum");
     }
   }
@@ -146,13 +166,33 @@ export default async function PostPage({ params }: PostPageProps) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {post.level && (
+            {post.learningPath && (
               <Badge
                 variant="secondary"
                 className="bg-sky-100 text-sky-700 hover:bg-sky-200
                   dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20"
               >
-                {post.level.name}
+                {post.learningPath.title}
+              </Badge>
+            )}
+
+            {post.cohort && (
+              <Badge
+                variant="secondary"
+                className="bg-purple-100 text-purple-700 hover:bg-purple-200
+                  dark:bg-purple-500/10 dark:text-purple-300 dark:hover:bg-purple-500/20"
+              >
+                {post.cohort.title}
+              </Badge>
+            )}
+
+            {post.course && (
+              <Badge
+                variant="outline"
+                className="border-emerald-200 bg-emerald-50 text-emerald-700
+                  dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-300"
+              >
+                {post.course.title}
               </Badge>
             )}
             
