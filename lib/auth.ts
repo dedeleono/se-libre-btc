@@ -34,7 +34,7 @@ export type AppSession = {
 };
 
 export const betterAuthServer = betterAuth({
-  appName: "Colegio Saber Ver",
+  appName: "Se Libre",
   baseURL: process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL,
   secret: process.env.BETTER_AUTH_SECRET ?? process.env.AUTH_SECRET,
   database: prismaAdapter(prisma, {

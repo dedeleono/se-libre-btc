@@ -102,7 +102,7 @@ const Footer = () => {
         {/* Copyright Section */}
         <div className="py-4 border-t border-border/30 flex items-center justify-center ">
           <p className="text-muted-foreground text-xs m-0">
-            © 2025 Colegio Saber Ver. Todos los derechos reservados.
+            © 2025 Se Libre. Todos los derechos reservados.
           </p>
         </div>
       </div>

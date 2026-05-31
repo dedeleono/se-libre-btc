@@ -107,9 +107,9 @@ export async function sendAuthEmail(email: string, url: string) {
         console.log('Attempting to send email...');
         const html = await render(AuthEmail({ host, url }));
         const result = await transport.sendMail({
-            from: `Colegio Saber Ver <${process.env.EMAIL_FROM}>`,
+            from: `Se Libre <${process.env.EMAIL_FROM}>`,
             to: email,
-            subject: "Sign in to Saber Ver",
+            subject: "Sign in to Se Libre",
             html,
         });
         console.log('Email sent successfully:', {

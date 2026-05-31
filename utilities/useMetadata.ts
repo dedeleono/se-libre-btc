@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export function constructMetadata({
-    title = `Colegio Saber Ver - Aprende, Colabora y destapa tu creatividad.`,
+    title = `Se Libre - Aprende, Colabora y destapa tu creatividad.`,
     description = `Aprende a tu ritmo; como quieras, desde donde quieras, en tu horario.`,
     image = "",
     icons = [

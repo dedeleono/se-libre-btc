@@ -54,7 +54,7 @@ export const GithubAccessTokenEmail = ({ username }: GithubAccessTokenEmailProps
         </Text>
 
         <Text style={footer}>
-          Colegio Saber Ver ・Tu camino hacia el conocimiento
+          Se Libre ・Tu camino hacia la autonomía
         </Text>
       </Container>
     </Body>

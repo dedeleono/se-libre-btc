@@ -27,7 +27,7 @@ export default function AboutPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent dark:from-black/80" />
             <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
               <h1 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 font-['Open_Sans']">
-                Colegio Saber Ver
+                Se Libre BTC
               </h1>
               <p className="text-lg max-w-2xl mx-auto text-white/90">
                 Empoderando estudiantes con experiencias de aprendizaje en línea

@@ -30,7 +30,7 @@ export function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
             transition={{ delay: 0.2 }}
           >
             <p className="mb-6 text-muted-foreground text-left">
-              Termina de configurar tu cuenta y aprende más sobre la plataforma de Saber Ver:
+              Termina de configurar tu cuenta y aprende más sobre la plataforma de Se Libre:
             </p>
           </motion.div>
 

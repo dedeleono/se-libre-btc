@@ -42,8 +42,8 @@ export async function sendInvitationEmail(email: string, url: string) {
     await transport.sendMail({
         to: email,
         from: process.env.EMAIL_FROM,
-        subject: `Bienvenido a Colegio Saber Ver`,
-        text: `Termina de registrarte en Colegio Saber Ver\n${url}\n\n`,
+        subject: `Bienvenido a Se Libre`,
+        text: `Termina de registrarte en Se Libre\n${url}\n\n`,
         html,
     });
 }

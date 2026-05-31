@@ -8,8 +8,8 @@ import DatabaseErrorBoundary from "@/components/database-error-boundary";
 import ThemeProvider from "@/components/layout/ThemeToggle/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Colegio Saber Ver",
-  description: "Colegio Saber Ver - Formando futuras generaciones con el poder de la tecnología",
+  title: "Se Libre",
+  description: "Se Libre - Se dueño de tu futuro",
 };
 
 export default function RootLayout({

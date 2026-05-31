@@ -25,15 +25,15 @@ export default function InvitationEmail({
   return (
     <Html>
       <Head />
-      <Preview>Has sido invitado a unirte a Colegio Saber Ver</Preview>
+      <Preview>Has sido invitado a unirte a Se Libre</Preview>
       <Tailwind>
         <Body className="bg-white font-sans">
           <Container className="mx-auto py-8 px-4">
             <Heading className="text-2xl font-bold text-center mb-4 text-[#034180]">
-              Bienvenido a Colegio Saber Ver
+              Bienvenido a Se Libre
             </Heading>
             <Text className="text-gray-600 mb-4">
-              Has sido invitado a unirte a Colegio Saber Ver. Haz clic en el botón
+              Has sido invitado a unirte a Se Libre. Haz clic en el botón
               a continuación para configurar tu cuenta.
             </Text>
             <Text className="text-gray-600 mb-4">

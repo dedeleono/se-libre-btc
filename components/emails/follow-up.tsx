@@ -124,7 +124,7 @@ export const TipsEmail = ({ tips = [] }: TipsEmailProps) => (
       <Section style={footer}>
         <Text style={footerText}>
           Recibes este correo porque eres parte de la comunidad educativa de
-          Colegio Saber Ver.
+          Se Libre BTC.
         </Text>
 
         <Link href="/" style={footerLink}>
@@ -144,7 +144,7 @@ export const TipsEmail = ({ tips = [] }: TipsEmailProps) => (
 
         <Img width={111} src={`${baseUrl}/static/logo-sm.png`} />
         <Text style={footerAddress}>
-          <strong>Colegio Saber Ver</strong>, Dirección del colegio aquí
+          <strong>Se Libre</strong>
         </Text>
         <Text style={footerHeart}>{"<3"}</Text>
       </Section>

@@ -21,7 +21,7 @@ const baseUrl = "https://saber-ver-v2.vercel.app";
 export const KoalaWelcomeEmail = ({ userFirstname }: KoalaWelcomeEmailProps) => (
   <Html>
     <Head />
-    <Preview>Bienvenido a la plataforma educativa de Colegio Saber Ver</Preview>
+    <Preview>Bienvenido a la plataforma educativa de Se Libre</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
@@ -33,7 +33,7 @@ export const KoalaWelcomeEmail = ({ userFirstname }: KoalaWelcomeEmailProps) => 
         />
         <Text style={paragraph}>Hola {userFirstname},</Text>
         <Text style={paragraph}>
-          Bienvenido a Colegio Saber Ver, tu plataforma educativa para un
+          Bienvenido a Se Libre, tu plataforma educativa para un
           aprendizaje personalizado y efectivo.
         </Text>
         <Section style={btnContainer}>
@@ -44,11 +44,11 @@ export const KoalaWelcomeEmail = ({ userFirstname }: KoalaWelcomeEmailProps) => 
         <Text style={paragraph}>
           Saludos cordiales,
           <br />
-          El equipo de Colegio Saber Ver
+          El equipo de Se Libre
         </Text>
         <Hr style={hr} />
         <Text style={footer}>
-          Colegio Saber Ver — Tu camino hacia el conocimiento
+          Se Libre — Tu camino hacia la autonomía
         </Text>
       </Container>
     </Body>

@@ -22,7 +22,7 @@ interface AuthEmailProps {
 }
 
 export default function AuthEmail({ host, url }: AuthEmailProps) {
-  const previewText = `Iniciar sesión en Colegio Saber Ver`;
+  const previewText = `Iniciar sesión en Se Libre`;
 
   return (
     <Html>
@@ -68,7 +68,7 @@ export default function AuthEmail({ host, url }: AuthEmailProps) {
             {/* Footer */}
             <Section className="mt-8 text-center">
               <Text className="text-[13px] leading-6 text-[#6b7280]">
-                Colegio Saber Ver — Si no solicitaste este correo electrónico,
+                Se Libre BTC — Si no solicitaste este correo electrónico,
                 puedes ignorarlo de forma segura.
               </Text>
               <Link
