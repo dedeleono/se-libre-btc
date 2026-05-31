@@ -35,6 +35,15 @@ export const validateChapterForPublishing = (chapter: ChapterValidation): { isVa
             if (question.type === "MULTIPLE_CHOICE" || question.type === "TRUE_FALSE") {
                 return question.options.length < 2 || !question.options.some((option) => option.isCorrect);
             }
+            if (question.type === "FILL_IN_THE_BLANK") {
+                return !(
+                    question.metadata &&
+                    typeof question.metadata === "object" &&
+                    "correctAnswer" in question.metadata &&
+                    typeof question.metadata.correctAnswer === "string" &&
+                    question.metadata.correctAnswer.trim()
+                );
+            }
             return false;
         });
 

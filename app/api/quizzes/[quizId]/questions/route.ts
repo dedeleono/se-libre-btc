@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { quizQuestionPayloadSchema } from "@/lib/validations/quiz";
 
 export async function POST(
   req: Request,
@@ -12,7 +14,15 @@ export async function POST(
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const body = await req.json();
+  const parsed = quizQuestionPayloadSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message || "Invalid question payload" },
+      { status: 400 }
+    );
+  }
+
+  const body = parsed.data;
   const lastQuestion = await prisma.quizQuestion.findFirst({
     where: { quizId: params.quizId },
     orderBy: { position: "desc" },
@@ -24,12 +34,12 @@ export async function POST(
       prompt: body.prompt,
       type: body.type,
       explanation: body.explanation,
-      points: Number(body.points ?? 1),
+      points: body.points,
       position: lastQuestion ? lastQuestion.position + 1 : 1,
-      metadata: body.metadata,
+      metadata: body.metadata === undefined ? undefined : body.metadata ?? Prisma.JsonNull,
       options: body.options?.length
         ? {
-            create: body.options.map((option: any, index: number) => ({
+            create: body.options.map((option, index) => ({
               content: option.content,
               isCorrect: Boolean(option.isCorrect),
               position: option.position ?? index + 1,

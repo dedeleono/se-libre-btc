@@ -3,7 +3,33 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-const normalize = (value: string) => value.trim().toLowerCase();
+const normalize = (value: string, caseSensitive = false) => {
+  const trimmed = value.trim();
+  return caseSensitive ? trimmed : trimmed.toLowerCase();
+};
+
+const getAcceptedTextAnswers = (metadata: unknown) => {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return { answers: [] as string[], caseSensitive: false };
+  }
+
+  const value = metadata as {
+    correctAnswer?: unknown;
+    acceptedAnswers?: unknown;
+    caseSensitive?: unknown;
+  };
+  const answers = [
+    typeof value.correctAnswer === "string" ? value.correctAnswer : "",
+    ...(Array.isArray(value.acceptedAnswers)
+      ? value.acceptedAnswers.filter((item): item is string => typeof item === "string")
+      : []),
+  ].filter(Boolean);
+
+  return {
+    answers,
+    caseSensitive: value.caseSensitive === true,
+  };
+};
 
 export async function POST(
   req: Request,
@@ -52,8 +78,12 @@ export async function POST(
 
     let isCorrect = false;
     if (question.type === "FILL_IN_THE_BLANK") {
-      const metadata = question.metadata as { correctAnswer?: string } | null;
-      isCorrect = !!metadata?.correctAnswer && !!textAnswer && normalize(textAnswer) === normalize(metadata.correctAnswer);
+      const metadata = getAcceptedTextAnswers(question.metadata);
+      const submittedText = textAnswer ? normalize(textAnswer, metadata.caseSensitive) : "";
+      isCorrect =
+        metadata.answers.length > 0 &&
+        !!submittedText &&
+        metadata.answers.some((answer) => normalize(answer, metadata.caseSensitive) === submittedText);
     } else {
       const correctOptionIds = question.options
         .filter((option) => option.isCorrect)
@@ -79,7 +109,6 @@ export async function POST(
   });
 
   const scorePercent = Math.round((earnedPoints / totalPoints) * 1000) / 10;
-  const passed = scorePercent >= quiz.passingScore;
 
   const attempt = await prisma.$transaction(async (tx) => {
     const createdAttempt = await tx.quizAttempt.create({
@@ -88,7 +117,7 @@ export async function POST(
         userId: userId,
         status: "COMPLETED",
         scorePercent,
-        passed,
+        passed: true,
         completedAt: new Date(),
         answers: { create: answers },
       },
@@ -122,7 +151,6 @@ export async function POST(
   return NextResponse.json({
     attempt,
     scorePercent,
-    passed,
     showCorrectAnswers: quiz.showCorrectAnswers,
     questions: quiz.showCorrectAnswers ? quiz.questions : [],
   });

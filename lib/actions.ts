@@ -14,7 +14,7 @@ export const getCachedDashboardData = cache(async () => {
     const [totalStudents, activeCourses, pendingReviews] = await Promise.all([
         prisma.user.count({ where: { role: 'STUDENT' } }),
         prisma.course.count({ where: { isPublished: true } }),
-        prisma.quizAttempt.count({ where: { status: 'COMPLETED', passed: false } }),
+        prisma.quizAttempt.count({ where: { status: 'COMPLETED' } }),
     ])
 
     return {

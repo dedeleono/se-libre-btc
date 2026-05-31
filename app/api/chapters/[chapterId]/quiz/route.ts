@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+
+const quizSettingsSchema = z.object({
+  title: z.string().trim().min(1).optional(),
+  description: z.string().trim().nullable().optional(),
+  passingScore: z.coerce.number().int().min(0).max(100).default(0),
+  allowRetries: z.boolean().default(true),
+  showCorrectAnswers: z.boolean().default(true),
+});
 
 export async function POST(
   req: Request,
@@ -12,10 +21,15 @@ export async function POST(
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const body = await req.json();
+  const parsed = quizSettingsSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid quiz settings" }, { status: 400 });
+  }
+
+  const body = parsed.data;
   const chapter = await prisma.chapter.findUnique({
     where: { id: params.chapterId },
-    select: { id: true, title: true },
+    select: { id: true, title: true, description: true },
   });
 
   if (!chapter) {
@@ -27,17 +41,17 @@ export async function POST(
     create: {
       chapterId: chapter.id,
       title: body.title || chapter.title,
-      description: body.description,
-      passingScore: Number(body.passingScore ?? 70),
-      allowRetries: body.allowRetries ?? true,
-      showCorrectAnswers: body.showCorrectAnswers ?? true,
+      description: body.description ?? chapter.description,
+      passingScore: body.passingScore,
+      allowRetries: body.allowRetries,
+      showCorrectAnswers: body.showCorrectAnswers,
     },
     update: {
       title: body.title || chapter.title,
-      description: body.description,
-      passingScore: Number(body.passingScore ?? 70),
-      allowRetries: body.allowRetries ?? true,
-      showCorrectAnswers: body.showCorrectAnswers ?? true,
+      description: body.description ?? chapter.description,
+      passingScore: body.passingScore,
+      allowRetries: body.allowRetries,
+      showCorrectAnswers: body.showCorrectAnswers,
     },
   });
 

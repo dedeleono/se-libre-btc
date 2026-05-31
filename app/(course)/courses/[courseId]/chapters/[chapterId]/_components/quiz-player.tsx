@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { Quiz, QuizOption, QuizQuestion } from "@prisma/client";
-import { CheckCircle, ChevronRight, Loader2, RotateCcw, XCircle } from "lucide-react";
+import { CheckCircle, ChevronRight, Loader2, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -41,7 +41,6 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{
     scorePercent: number;
-    passed: boolean;
     showCorrectAnswers: boolean;
     questions: ResultQuestion[];
   } | null>(null);
@@ -90,23 +89,21 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
       <div>
         <h1 className="text-2xl font-bold">{quiz.title}</h1>
         {quiz.description && <p className="mt-2 text-muted-foreground">{quiz.description}</p>}
-        <p className="mt-2 text-sm text-muted-foreground">Passing score: {quiz.passingScore}%</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          This is a self-check. It saves your progress and gives lightweight feedback.
+        </p>
       </div>
 
       {result && (
         <div className="rounded-md border bg-slate-50 p-4">
           <div className="flex items-center gap-2">
-            {result.passed ? (
-              <CheckCircle className="h-5 w-5 text-emerald-600" />
-            ) : (
-              <XCircle className="h-5 w-5 text-amber-600" />
-            )}
+            <CheckCircle className="h-5 w-5 text-emerald-600" />
             <p className="font-medium">
-              Score: {result.scorePercent}% • {result.passed ? "Passed" : "Not passed"}
+              Self-check complete · {result.scorePercent}% correct
             </p>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            Your course progress has been saved. Quiz results never block course progress.
+            Your course progress has been saved. This result is for feedback only.
           </p>
         </div>
       )}

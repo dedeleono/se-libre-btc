@@ -47,7 +47,11 @@ export default async function ChapterIdPage({
     const getRequiredFields = (type: ChapterType) => {
       switch (type) {
         case "QUIZ":
-          return [moduleChapter.title];
+          return [
+            moduleChapter.title,
+            moduleChapter.quiz,
+            moduleChapter.quiz?.questions.length,
+          ];
         default: // LESSON
           return [
             moduleChapter.title,
@@ -109,7 +113,12 @@ export default async function ChapterIdPage({
                 <h2 className="text-xl">Agregar Contenido</h2>
               </div>
               {moduleChapter.type === ChapterType.QUIZ ? (
-                <QuizBuilder chapterId={params.chapterId} quiz={moduleChapter.quiz} />
+                <QuizBuilder
+                  chapterId={params.chapterId}
+                  chapterTitle={moduleChapter.title}
+                  chapterDescription={moduleChapter.description}
+                  quiz={moduleChapter.quiz}
+                />
               ) : (
                 <>
                   <ChapterContentForm

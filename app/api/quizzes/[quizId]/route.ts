@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+
+const quizSettingsSchema = z.object({
+  title: z.string().trim().min(1).optional(),
+  description: z.string().trim().nullable().optional(),
+  passingScore: z.coerce.number().int().min(0).max(100).optional(),
+  allowRetries: z.boolean().optional(),
+  showCorrectAnswers: z.boolean().optional(),
+});
 
 export async function PATCH(
   req: Request,
@@ -12,13 +21,18 @@ export async function PATCH(
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const body = await req.json();
+  const parsed = quizSettingsSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid quiz settings" }, { status: 400 });
+  }
+
+  const body = parsed.data;
   const quiz = await prisma.quiz.update({
     where: { id: params.quizId },
     data: {
       title: body.title,
       description: body.description,
-      passingScore: body.passingScore === undefined ? undefined : Number(body.passingScore),
+      passingScore: body.passingScore,
       allowRetries: body.allowRetries,
       showCorrectAnswers: body.showCorrectAnswers,
     },

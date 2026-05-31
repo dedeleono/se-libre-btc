@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { quizQuestionPayloadSchema } from "@/lib/validations/quiz";
 
 export async function PATCH(
   req: Request,
@@ -12,36 +14,45 @@ export async function PATCH(
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const body = await req.json();
+  const parsed = quizQuestionPayloadSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message || "Invalid question payload" },
+      { status: 400 }
+    );
+  }
 
-  const question = await prisma.$transaction(async (tx) => {
-    const existingQuestion = await tx.quizQuestion.findFirst({
-      where: { id: params.questionId, quizId: params.quizId },
-      select: { id: true },
-    });
+  const body = parsed.data;
 
-    if (!existingQuestion) {
-      throw new Error("QUESTION_NOT_FOUND");
-    }
+  try {
+    const question = await prisma.$transaction(async (tx) => {
+      const existingQuestion = await tx.quizQuestion.findFirst({
+        where: { id: params.questionId, quizId: params.quizId },
+        select: { id: true },
+      });
 
-    await tx.quizQuestion.update({
-      where: { id: params.questionId },
-      data: {
-        prompt: body.prompt,
-        type: body.type,
-        explanation: body.explanation,
-        points: body.points === undefined ? undefined : Number(body.points),
-        metadata: body.metadata,
-      },
-    });
+      if (!existingQuestion) {
+        throw new Error("QUESTION_NOT_FOUND");
+      }
 
-    if (Array.isArray(body.options)) {
+      await tx.quizQuestion.update({
+        where: { id: params.questionId },
+        data: {
+          prompt: body.prompt,
+          type: body.type,
+          explanation: body.explanation,
+          points: body.points,
+          metadata: body.metadata === undefined ? undefined : body.metadata ?? Prisma.JsonNull,
+        },
+      });
+
       await tx.quizOption.deleteMany({
         where: { questionId: params.questionId },
       });
+
       if (body.options.length > 0) {
         await tx.quizOption.createMany({
-          data: body.options.map((option: any, index: number) => ({
+          data: body.options.map((option, index) => ({
             questionId: params.questionId,
             content: option.content,
             isCorrect: Boolean(option.isCorrect),
@@ -49,15 +60,21 @@ export async function PATCH(
           })),
         });
       }
+
+      return tx.quizQuestion.findUnique({
+        where: { id: params.questionId },
+        include: { options: { orderBy: { position: "asc" } } },
+      });
+    });
+
+    return NextResponse.json(question);
+  } catch (error) {
+    if (error instanceof Error && error.message === "QUESTION_NOT_FOUND") {
+      return new NextResponse("Question not found", { status: 404 });
     }
 
-    return tx.quizQuestion.findUnique({
-      where: { id: params.questionId },
-      include: { options: { orderBy: { position: "asc" } } },
-    });
-  });
-
-  return NextResponse.json(question);
+    throw error;
+  }
 }
 
 export async function DELETE(

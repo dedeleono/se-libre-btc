@@ -6,7 +6,6 @@ interface RecentUploadsProps {
       id: string;
       title: string;
       scorePercent: number | null;
-      passed: boolean | null;
     }
   >;
 }
@@ -25,9 +24,7 @@ export function RecentUploads({ scores }: RecentUploadsProps) {
             <p className="text-sm font-medium leading-none">
               {score.title}
             </p>
-            <p className="text-sm text-muted-foreground">
-              Resultado: {score.passed ? "Aprobado" : "Intento registrado"}
-            </p>
+            <p className="text-sm text-muted-foreground">Self-check completed</p>
           </div>
           <div className="ml-auto font-medium">
             {score.scorePercent?.toFixed(1) ?? "0.0"}%
