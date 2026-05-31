@@ -34,6 +34,16 @@ const getCorrectTextAnswer = (metadata: unknown) => {
   return null;
 };
 
+const allowsMultipleAnswers = (question: QuizQuestionWithOptions) => {
+  if (question.type !== "MULTIPLE_CHOICE") return false;
+
+  if (question.metadata && typeof question.metadata === "object" && "multipleAnswers" in question.metadata) {
+    return (question.metadata as { multipleAnswers?: unknown }).multipleAnswers === true;
+  }
+
+  return question.options.filter((option) => option.isCorrect).length > 1;
+};
+
 export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) => {
   const router = useRouter();
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
@@ -112,7 +122,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
         {quiz.questions.map((question, index) => {
           const showAnswers = result?.showCorrectAnswers;
           const resultQuestion = result?.questions.find((item) => item.id === question.id);
-          const isSingleChoice = question.type === "TRUE_FALSE";
+          const isSingleChoice = question.type === "TRUE_FALSE" || !allowsMultipleAnswers(question);
 
           return (
             <div key={question.id} className="rounded-md border bg-white p-4">
@@ -121,7 +131,9 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
                   <p className="font-medium">
                     {index + 1}. {question.prompt}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">{question.points} point{question.points === 1 ? "" : "s"}</p>
+                  {question.type === "MULTIPLE_CHOICE" && allowsMultipleAnswers(question) && (
+                    <p className="mt-1 text-xs text-muted-foreground">Select all that apply</p>
+                  )}
                 </div>
               </div>
 

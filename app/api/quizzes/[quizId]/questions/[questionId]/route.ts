@@ -41,7 +41,7 @@ export async function PATCH(
           prompt: body.prompt,
           type: body.type,
           explanation: body.explanation,
-          points: body.points,
+          points: 1,
           metadata: body.metadata === undefined ? undefined : body.metadata ?? Prisma.JsonNull,
         },
       });

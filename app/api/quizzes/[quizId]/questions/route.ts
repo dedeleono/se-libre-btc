@@ -34,7 +34,7 @@ export async function POST(
       prompt: body.prompt,
       type: body.type,
       explanation: body.explanation,
-      points: body.points,
+      points: 1,
       position: lastQuestion ? lastQuestion.position + 1 : 1,
       metadata: body.metadata === undefined ? undefined : body.metadata ?? Prisma.JsonNull,
       options: body.options?.length

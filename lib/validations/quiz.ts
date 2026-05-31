@@ -12,6 +12,7 @@ const quizQuestionMetadataSchema = z
     correctAnswer: z.string().trim().optional(),
     acceptedAnswers: z.array(z.string().trim().min(1)).optional(),
     caseSensitive: z.boolean().optional(),
+    multipleAnswers: z.boolean().optional(),
   })
   .nullable()
   .optional();
@@ -60,6 +61,20 @@ export const quizQuestionPayloadSchema = z
     }
 
     const correctOptions = value.options.filter((option) => option.isCorrect);
+    const allowsMultipleAnswers =
+      value.type === "MULTIPLE_CHOICE" && value.metadata?.multipleAnswers === true;
+
+    if (allowsMultipleAnswers) {
+      if (correctOptions.length < 2) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Multiple-answer questions require at least two correct answers.",
+          path: ["options"],
+        });
+      }
+      return;
+    }
+
     if (correctOptions.length !== 1) {
       context.addIssue({
         code: z.ZodIssueCode.custom,

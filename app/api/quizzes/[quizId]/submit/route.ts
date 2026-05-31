@@ -66,8 +66,8 @@ export async function POST(
     return new NextResponse("Retries are not allowed for this quiz", { status: 400 });
   }
 
-  const totalPoints = quiz.questions.reduce((sum, question) => sum + question.points, 0) || 1;
-  let earnedPoints = 0;
+  const totalQuestions = quiz.questions.length || 1;
+  let correctQuestions = 0;
 
   const answers = quiz.questions.map((question) => {
     const submitted = submittedAnswers.find((answer: any) => answer.questionId === question.id) || {};
@@ -97,7 +97,7 @@ export async function POST(
     }
 
     if (isCorrect) {
-      earnedPoints += question.points;
+      correctQuestions += 1;
     }
 
     return {
@@ -108,7 +108,7 @@ export async function POST(
     };
   });
 
-  const scorePercent = Math.round((earnedPoints / totalPoints) * 1000) / 10;
+  const scorePercent = Math.round((correctQuestions / totalQuestions) * 1000) / 10;
 
   const attempt = await prisma.$transaction(async (tx) => {
     const createdAttempt = await tx.quizAttempt.create({

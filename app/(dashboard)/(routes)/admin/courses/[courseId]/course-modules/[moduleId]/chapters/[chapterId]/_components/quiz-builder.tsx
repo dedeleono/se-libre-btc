@@ -48,7 +48,7 @@ type QuestionDraft = {
   prompt: string;
   type: QuizQuestionType;
   explanation: string;
-  points: number;
+  allowMultipleAnswers: boolean;
   correctAnswer: string;
   acceptedAnswers: string;
   caseSensitive: boolean;
@@ -70,7 +70,7 @@ const questionTypes: Array<{
   {
     value: "MULTIPLE_CHOICE",
     label: "Multiple choice",
-    description: "One correct option",
+    description: "Single or multiple answers",
     icon: ClipboardList,
   },
   {
@@ -97,7 +97,7 @@ const createDraft = (): QuestionDraft => ({
   prompt: "",
   type: "MULTIPLE_CHOICE",
   explanation: "",
-  points: 1,
+  allowMultipleAnswers: false,
   correctAnswer: "",
   acceptedAnswers: "",
   caseSensitive: false,
@@ -117,6 +117,7 @@ const getQuestionMetadata = (metadata: unknown) => {
       correctAnswer: "",
       acceptedAnswers: [] as string[],
       caseSensitive: false,
+      multipleAnswers: false,
     };
   }
 
@@ -124,6 +125,7 @@ const getQuestionMetadata = (metadata: unknown) => {
     correctAnswer?: unknown;
     acceptedAnswers?: unknown;
     caseSensitive?: unknown;
+    multipleAnswers?: unknown;
   };
 
   return {
@@ -132,6 +134,7 @@ const getQuestionMetadata = (metadata: unknown) => {
       ? value.acceptedAnswers.filter((item): item is string => typeof item === "string")
       : [],
     caseSensitive: value.caseSensitive === true,
+    multipleAnswers: value.multipleAnswers === true,
   };
 };
 
@@ -159,7 +162,7 @@ export const QuizBuilder = ({
   });
   const [draft, setDraft] = useState<QuestionDraft>(createDraft);
   const [options, setOptions] = useState(createDefaultOptions);
-  const [correctOptionIndex, setCorrectOptionIndex] = useState(0);
+  const [correctOptionIndexes, setCorrectOptionIndexes] = useState<number[]>([0]);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -168,13 +171,12 @@ export const QuizBuilder = ({
     [quiz?.questions]
   );
 
-  const totalPoints = sortedQuestions.reduce((sum, item) => sum + item.points, 0);
   const isEditingQuestion = Boolean(editingQuestionId);
 
   const resetQuestionForm = () => {
     setDraft(createDraft());
     setOptions(createDefaultOptions());
-    setCorrectOptionIndex(0);
+    setCorrectOptionIndexes([0]);
     setEditingQuestionId(null);
     setFormError(null);
   };
@@ -222,7 +224,7 @@ export const QuizBuilder = ({
   const buildQuestionPayload = () => {
     const prompt = draft.prompt.trim();
     const explanation = draft.explanation.trim();
-    const points = Math.max(1, Number(draft.points) || 1);
+    const points = 1;
 
     if (!prompt) {
       return { error: "Add a question prompt before saving." };
@@ -264,8 +266,8 @@ export const QuizBuilder = ({
           points,
           metadata: null,
           options: [
-            { content: "True", isCorrect: correctOptionIndex === 0, position: 1 },
-            { content: "False", isCorrect: correctOptionIndex === 1, position: 2 },
+            { content: "True", isCorrect: (correctOptionIndexes[0] ?? 0) === 0, position: 1 },
+            { content: "False", isCorrect: (correctOptionIndexes[0] ?? 0) === 1, position: 2 },
           ],
         },
       };
@@ -274,14 +276,22 @@ export const QuizBuilder = ({
     const cleanedOptions = options
       .map((content, index) => ({ content: content.trim(), sourceIndex: index }))
       .filter((option) => option.content);
-    const correctOption = options[correctOptionIndex]?.trim();
+    const selectedCorrectIndexes = draft.allowMultipleAnswers
+      ? correctOptionIndexes
+      : [correctOptionIndexes[0] ?? 0];
+    const hasCorrectOption = selectedCorrectIndexes.some((index) => options[index]?.trim());
+    const correctOptionCount = selectedCorrectIndexes.filter((index) => options[index]?.trim()).length;
 
     if (cleanedOptions.length < 2) {
       return { error: "Add at least two answer options." };
     }
 
-    if (!correctOption) {
-      return { error: "Mark an answer option that has text." };
+    if (!hasCorrectOption) {
+      return { error: "Mark at least one answer option that has text." };
+    }
+
+    if (draft.allowMultipleAnswers && correctOptionCount < 2) {
+      return { error: "Select at least two correct answers for a multiple-answer question." };
     }
 
     return {
@@ -290,10 +300,10 @@ export const QuizBuilder = ({
         type: draft.type,
         explanation: explanation || null,
         points,
-        metadata: null,
+        metadata: { multipleAnswers: draft.allowMultipleAnswers },
         options: cleanedOptions.map((option, index) => ({
           content: option.content,
-          isCorrect: option.sourceIndex === correctOptionIndex,
+          isCorrect: selectedCorrectIndexes.includes(option.sourceIndex),
           position: index + 1,
         })),
       },
@@ -341,7 +351,9 @@ export const QuizBuilder = ({
       prompt: item.prompt,
       type: item.type,
       explanation: item.explanation || "",
-      points: item.points,
+      allowMultipleAnswers:
+        item.type === "MULTIPLE_CHOICE" &&
+        (metadata.multipleAnswers || sortedOptions.filter((option) => option.isCorrect).length > 1),
       correctAnswer: metadata.correctAnswer,
       acceptedAnswers: metadata.acceptedAnswers
         .filter((answer) => answer !== metadata.correctAnswer)
@@ -351,13 +363,16 @@ export const QuizBuilder = ({
 
     if (item.type === "TRUE_FALSE") {
       setOptions(["True", "False"]);
-      setCorrectOptionIndex(correctIndex);
+      setCorrectOptionIndexes([correctIndex]);
     } else if (item.type === "MULTIPLE_CHOICE") {
       setOptions(sortedOptions.length >= 2 ? sortedOptions.map((option) => option.content) : createDefaultOptions());
-      setCorrectOptionIndex(correctIndex);
+      const correctIndexes = sortedOptions
+        .map((option, index) => (option.isCorrect ? index : -1))
+        .filter((index) => index >= 0);
+      setCorrectOptionIndexes(correctIndexes.length ? correctIndexes : [0]);
     } else {
       setOptions(createDefaultOptions());
-      setCorrectOptionIndex(0);
+      setCorrectOptionIndexes([0]);
     }
 
     setFormError(null);
@@ -411,9 +426,27 @@ export const QuizBuilder = ({
 
   const removeOption = (index: number) => {
     setOptions((current) => current.filter((_, itemIndex) => itemIndex !== index));
-    setCorrectOptionIndex((current) => {
-      if (current === index) return 0;
-      return current > index ? current - 1 : current;
+    setCorrectOptionIndexes((current) => {
+      const next = current
+        .filter((item) => item !== index)
+        .map((item) => (item > index ? item - 1 : item));
+
+      return next.length ? next : [0];
+    });
+  };
+
+  const markSingleCorrectOption = (index: number) => {
+    setCorrectOptionIndexes([index]);
+  };
+
+  const toggleCorrectOption = (index: number) => {
+    setCorrectOptionIndexes((current) => {
+      if (current.includes(index)) {
+        const next = current.filter((item) => item !== index);
+        return next.length ? next : [];
+      }
+
+      return [...current, index].sort((a, b) => a - b);
     });
   };
 
@@ -428,7 +461,7 @@ export const QuizBuilder = ({
             </div>
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
               <Badge variant="secondary">{sortedQuestions.length} questions</Badge>
-              <Badge variant="secondary">{totalPoints} points</Badge>
+              <Badge variant="secondary">Equal weight</Badge>
               <Badge variant={quiz ? "default" : "outline"}>{quiz ? "Configured" : "Draft"}</Badge>
             </div>
           </div>
@@ -475,8 +508,9 @@ export const QuizBuilder = ({
               <h3 className="font-medium">{isEditingQuestion ? "Edit question" : "Add question"}</h3>
             </div>
             <p className="text-xs text-muted-foreground">
-              {typeLabels[draft.type]} · {Math.max(1, Number(draft.points) || 1)} point
-              {Number(draft.points) === 1 ? "" : "s"}
+              {draft.type === "MULTIPLE_CHOICE" && draft.allowMultipleAnswers
+                ? "Multiple answers"
+                : typeLabels[draft.type]}
             </p>
           </div>
           {isEditingQuestion && (
@@ -505,7 +539,7 @@ export const QuizBuilder = ({
             />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-[1fr_140px]">
+          <div className="space-y-2">
             <div className="space-y-2">
               <Label>Question type</Label>
               <div className="grid gap-2 sm:grid-cols-3">
@@ -518,8 +552,12 @@ export const QuizBuilder = ({
                       key={item.value}
                       type="button"
                       onClick={() => {
-                        setDraft((current) => ({ ...current, type: item.value }));
-                        setCorrectOptionIndex(0);
+                        setDraft((current) => ({
+                          ...current,
+                          type: item.value,
+                          allowMultipleAnswers: item.value === "MULTIPLE_CHOICE" ? current.allowMultipleAnswers : false,
+                        }));
+                        setCorrectOptionIndexes([0]);
                         setFormError(null);
                       }}
                       className={cn(
@@ -539,21 +577,45 @@ export const QuizBuilder = ({
                 })}
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="questionPoints">Points</Label>
-              <Input
-                id="questionPoints"
-                type="number"
-                min={1}
-                value={draft.points}
-                onChange={(event) => setDraft((current) => ({ ...current, points: Number(event.target.value) }))}
-              />
-            </div>
           </div>
 
           {draft.type === "MULTIPLE_CHOICE" && (
-            <div className="space-y-3">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Answer behavior</Label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDraft((current) => ({ ...current, allowMultipleAnswers: false }));
+                      setCorrectOptionIndexes((current) => [current[0] ?? 0]);
+                    }}
+                    className={cn(
+                      "rounded-md border p-3 text-left transition-colors",
+                      !draft.allowMultipleAnswers
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "bg-background hover:bg-muted/60"
+                    )}
+                  >
+                    <span className="block text-sm font-medium">Single answer</span>
+                    <span className="block text-xs text-muted-foreground">Learners see radio buttons.</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDraft((current) => ({ ...current, allowMultipleAnswers: true }))}
+                    className={cn(
+                      "rounded-md border p-3 text-left transition-colors",
+                      draft.allowMultipleAnswers
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "bg-background hover:bg-muted/60"
+                    )}
+                  >
+                    <span className="block text-sm font-medium">Multiple answers</span>
+                    <span className="block text-xs text-muted-foreground">Learners see checkboxes.</span>
+                  </button>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between gap-3">
                 <Label>Answer options</Label>
                 <Button
@@ -571,16 +633,18 @@ export const QuizBuilder = ({
                   <div key={index} className="grid grid-cols-[32px_1fr_auto] items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setCorrectOptionIndex(index)}
+                      onClick={() =>
+                        draft.allowMultipleAnswers ? toggleCorrectOption(index) : markSingleCorrectOption(index)
+                      }
                       className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-full border transition-colors",
-                        correctOptionIndex === index
+                        correctOptionIndexes.includes(index)
                           ? "border-emerald-600 bg-emerald-50 text-emerald-700"
                           : "bg-background text-muted-foreground"
                       )}
                       aria-label={`Mark option ${index + 1} as correct`}
                     >
-                      {correctOptionIndex === index ? (
+                      {correctOptionIndexes.includes(index) ? (
                         <CheckCircle2 className="h-4 w-4" />
                       ) : (
                         <Circle className="h-4 w-4" />
@@ -615,16 +679,16 @@ export const QuizBuilder = ({
                   <button
                     key={label}
                     type="button"
-                    onClick={() => setCorrectOptionIndex(index)}
+                    onClick={() => markSingleCorrectOption(index)}
                     className={cn(
                       "flex min-h-14 items-center justify-between rounded-md border p-4 text-sm transition-colors",
-                      correctOptionIndex === index
+                      correctOptionIndexes.includes(index)
                         ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/30"
                         : "bg-background hover:bg-muted/60"
                     )}
                   >
                     <span className="font-medium">{label}</span>
-                    {correctOptionIndex === index && <Check className="h-4 w-4" />}
+                    {correctOptionIndexes.includes(index) && <Check className="h-4 w-4" />}
                   </button>
                 ))}
               </div>
@@ -731,9 +795,14 @@ export const QuizBuilder = ({
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="outline">{typeLabels[item.type]}</Badge>
-                            <Badge variant="secondary">
-                              {item.points} point{item.points === 1 ? "" : "s"}
-                            </Badge>
+                            {item.type === "MULTIPLE_CHOICE" && (
+                              <Badge variant="secondary">
+                                {metadata.multipleAnswers ||
+                                item.options.filter((option) => option.isCorrect).length > 1
+                                  ? "Multiple answers"
+                                  : "Single answer"}
+                              </Badge>
+                            )}
                           </div>
                           <p className="mt-2 whitespace-pre-wrap text-sm font-medium leading-6">{item.prompt}</p>
                         </div>
