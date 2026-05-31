@@ -1,9 +1,8 @@
 "use client";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,6 +18,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { CheckCircle2, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { signInWithGoogle, signInWithMagicLink } from "@/lib/auth-client";
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Enter a valid email address" }),
@@ -47,26 +47,14 @@ export default function UserAuthForm() {
     setLoading(true);
     setError(null);
     try {
-      console.log('Attempting to sign in with email:', data.email);
-      const callbackUrlValue = callbackUrl && callbackUrl !== '/api/auth/error' 
-        ? callbackUrl 
-        : "/redirect";
-      console.log('Using callback URL:', callbackUrlValue);
-      
-      const result = await signIn("email", {
-        email: data.email,
-        callbackUrl: callbackUrlValue,
-        redirect: false,
-      });
+      const result = await signInWithMagicLink(data.email, callbackUrl);
 
       if (result?.error) {
-        console.error("Failed to send verification email:", result.error);
-        setError(result.error);
+        setError(result.error.message ?? "Failed to send verification email");
         toast.error("Failed to send verification email. Please try again.");
         return;
       }
 
-      console.log('Verification email sent successfully');
       setSentEmail(data.email);
       setEmailSent(true);
       toast.success("Verification email sent. Please check your inbox.");
@@ -81,18 +69,14 @@ export default function UserAuthForm() {
 
   const handleGoogleSignIn = async () => {
     try {
-      const result = await signIn("google", {
-        callbackUrl: "/redirect",
-        redirect: false,
-      });
+      const result = await signInWithGoogle(callbackUrl);
 
       if (result?.error) {
-        console.error("Google sign in error:", result.error);
-      } else if (result?.url) {
-        window.location.href = result.url;
+        toast.error(result.error.message ?? "Failed to sign in with Google");
       }
     } catch (error) {
       console.error("Failed to sign in with Google:", error);
+      toast.error("Failed to sign in with Google");
     }
   };
 

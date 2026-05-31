@@ -81,7 +81,8 @@ export async function POST(req: Request) {
             },
         });
 
-        const inviteUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-invitation?token=${token}`;
+        const baseUrl = process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+        const inviteUrl = `${baseUrl}/api/auth/verify-invitation?token=${token}`;
         await sendInvitationEmail(email, inviteUrl);
 
         return NextResponse.json({

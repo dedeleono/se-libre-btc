@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "./search-input";
@@ -17,7 +17,7 @@ export const NavbarRoutes = () => {
   const isCoursePage = pathName?.includes("/courses");
   const isStudentBrowsePage = pathName?.includes("/student/browse");
   const courseId = pathName?.match(/\/courses\/([^\/]+)/)?.[1] ?? null;
-  const canManageCourses = session?.user?.role === "ADMIN";
+  const canManageCourses = (session?.user as { role?: string } | undefined)?.role === "ADMIN";
 
   return (
     <div className="ml-auto flex items-center gap-x-2">

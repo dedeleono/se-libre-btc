@@ -9,7 +9,7 @@ import { useState } from "react";
 import { User, Phone, Upload, Trash } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, updateUser } from "@/lib/auth-client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +46,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(initialData.image || null);
   const [isUploading, setIsUploading] = useState(false);
   const router = useRouter();
-  const { data: session, update } = useSession();
+  const { refetch } = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,14 +65,8 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
         imageUrl,
       });
       
-      // Update the session with the new image URL
-      await update({
-        ...session,
-        user: {
-          ...session?.user,
-          image: imageUrl,
-        },
-      });
+      await updateUser({ name: values.name, image: imageUrl });
+      await refetch();
 
       toast.success("Profile updated successfully");
       router.refresh();

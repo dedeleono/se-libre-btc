@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { cookies } from "next/headers";
-import { createDashboardJwt } from "@/lib/utils";
 import { SupabaseNotifications } from "@/lib/supabase/notifications";
 
 
 export const dynamic = 'force-dynamic';
+
+function getBaseUrl() {
+    return process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+}
+
+function redirectToSignIn(targetPath: string) {
+    const signInUrl = new URL('/sign-in', getBaseUrl());
+    signInUrl.searchParams.set('callbackUrl', targetPath);
+    return NextResponse.redirect(signInUrl);
+}
 
 export async function GET(req: Request) {
     try {
@@ -13,7 +21,7 @@ export async function GET(req: Request) {
         const token = url.searchParams.get("token");
 
         if (!token) {
-            return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/error?message=Invalid invitation link`);
+            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
         }
 
         const invitation = await prisma.pendingInvitation.findUnique({
@@ -26,18 +34,21 @@ export async function GET(req: Request) {
         });
 
         if (!invitation) {
-            return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/error?message=Invalid invitation link`);
+            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
         }
 
         if (invitation.expires < new Date()) {
             await prisma.pendingInvitation.delete({
                 where: { id: invitation.id }
             });
-            return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/error?message=Invitation has expired`);
+            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invitation has expired`);
         }
 
-        // Create the user
-        const user = await prisma.user.create({
+        const existingUser = await prisma.user.findUnique({
+            where: { email: invitation.email },
+        });
+
+        const user = existingUser ?? await prisma.user.create({
             data: {
                 email: invitation.email,
                 name: invitation.name,
@@ -45,29 +56,23 @@ export async function GET(req: Request) {
                 lastName: invitation.lastName,
                 role: invitation.role,
                 phone: invitation.phone,
-                emailVerified: new Date(), // Mark email as verified since it's an invitation
+                emailVerified: true,
                 onboardingCompleted: false,
             },
         });
 
         // Create signup notification for admin users
         try {
-            await SupabaseNotifications.createUserSignupNotification(
-                user.id,
-                user.role,
-                user.name || user.email
-            );
+            if (!existingUser) {
+                await SupabaseNotifications.createUserSignupNotification(
+                    user.id,
+                    user.role,
+                    user.name || user.email
+                );
+            }
         } catch (error) {
             console.error('Failed to create signup notification:', error);
         }
-
-        const sessionToken = await createDashboardJwt(user.id, user.email, user.role);
-        cookies().set('next-auth.session-token', sessionToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-        });
 
         if (user.role === "STUDENT" && (invitation.courseId || invitation.learningPathId || invitation.cohortId)) {
             const queryParams = new URLSearchParams({
@@ -82,13 +87,13 @@ export async function GET(req: Request) {
             if (invitation.learningPathId) queryParams.set("learningPathId", invitation.learningPathId);
             if (invitation.cohortId) queryParams.set("cohortId", invitation.cohortId);
 
-            return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/checkout?${queryParams.toString()}`);
+            return redirectToSignIn(`/checkout?${queryParams.toString()}`);
         }
 
-        return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/onboarding`);
+        return redirectToSignIn('/onboarding');
 
     } catch (error) {
         console.error("[VERIFY_INVITATION]", error);
-        return NextResponse.redirect(`${process.env.NEXTAUTH_URL}/error?message=Failed to verify invitation`);
+        return NextResponse.redirect(`${getBaseUrl()}/error?message=Failed to verify invitation`);
     }
 } 
