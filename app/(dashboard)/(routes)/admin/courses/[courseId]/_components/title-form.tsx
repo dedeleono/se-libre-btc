@@ -58,15 +58,18 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   };
 
   return (
-    <div className="mt-6 dark:bg-slate-100 bg-background rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
-        Nombre
-        <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
+    <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-medium">Nombre</h3>
+          <p className="text-xs text-muted-foreground">El título público del curso.</p>
+        </div>
+        <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
           {isEditing && <>Cancelar</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar Nombre
+              Editar
             </>
           )}
         </Button>
@@ -86,9 +89,8 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g 'Matematicas'"
+                      placeholder="Ej. Introducción a Bitcoin"
                       {...field}
-                      className="bg-white border-black border-2"
                     />
                   </FormControl>
                   <FormMessage />

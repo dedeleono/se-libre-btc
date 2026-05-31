@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/user-avatar";
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
 import { format } from "date-fns";
@@ -12,6 +12,7 @@ async function getRecentSales() {
       include: {
         user: {
           select: {
+            id: true,
             name: true,
             email: true,
             image: true,
@@ -81,12 +82,13 @@ export async function RecentSales() {
     <div className="space-y-8">
       {sales.map((sale) => (
         <div key={sale.id} className="flex items-center">
-          <Avatar className="h-9 w-9">
-            <AvatarImage src={sale.user.image ?? ""} alt="Avatar" />
-            <AvatarFallback>
-              {sale.user.name?.charAt(0) ?? sale.user.email.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
+          <UserAvatar
+            userId={sale.user.id}
+            email={sale.user.email}
+            name={sale.user.name}
+            image={sale.user.image}
+            size={36}
+          />
           <div className="ml-4 space-y-1">
             <p className="text-sm font-medium leading-none">
               {sale.user.name ?? sale.user.email}

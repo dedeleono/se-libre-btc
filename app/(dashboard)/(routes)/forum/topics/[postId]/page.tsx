@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -148,11 +148,14 @@ export default async function PostPage({ params }: PostPageProps) {
                 {post.title}
               </h1>
               <div className="flex items-center gap-x-3 text-sm dark:text-white/50">
-                <Avatar className="h-8 w-8 border-2 dark:border-white/10">
-                  <AvatarFallback className="dark:bg-white/10 dark:text-white/70">
-                    {post.author.name?.[0]}
-                  </AvatarFallback>
-                </Avatar>
+                <UserAvatar
+                  userId={post.author.id}
+                  email={post.author.email}
+                  name={post.author.name}
+                  image={post.author.image}
+                  size={32}
+                  className="border-2 dark:border-white/10"
+                />
                 <span className="font-medium dark:text-white/70">
                   {post.author.name}
                 </span>

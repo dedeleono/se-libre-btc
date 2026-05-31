@@ -30,7 +30,12 @@ export const authClient = createAuthClient({
 export const useSession = authClient.useSession;
 
 export function getAuthCallbackUrl(callbackUrl?: string | null) {
-  return getSafeClientCallbackUrl(callbackUrl) ?? DEFAULT_AUTH_REDIRECT;
+  const safeCallbackUrl = getSafeClientCallbackUrl(callbackUrl);
+  if (!safeCallbackUrl) return DEFAULT_AUTH_REDIRECT;
+
+  const postLoginUrl = new URL(DEFAULT_AUTH_REDIRECT, window.location.origin);
+  postLoginUrl.searchParams.set("next", safeCallbackUrl);
+  return `${postLoginUrl.pathname}${postLoginUrl.search}`;
 }
 
 export async function signInWithMagicLink(email: string, callbackUrl?: string | null) {

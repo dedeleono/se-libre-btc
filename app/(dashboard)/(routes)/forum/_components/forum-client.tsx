@@ -1,18 +1,10 @@
 // app/(dashboard)/(routes)/forum/_components/forum-client.tsx
 "use client";
 
-import { MessageCircle, Eye, ExternalLink, PlusCircle } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ForumHeader } from "./forum-header";
 import { ForumPosts } from "./forum-posts";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
 
 interface ForumClientProps {
   posts: any[];

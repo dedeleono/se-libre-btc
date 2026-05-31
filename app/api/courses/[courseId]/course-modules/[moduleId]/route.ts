@@ -2,6 +2,12 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { deleteFile } from "@/lib/s3"
+import * as z from "zod"
+
+const updateModuleSchema = z.object({
+    title: z.string().trim().min(1).optional(),
+    description: z.string().nullable().optional(),
+})
 
 export async function PATCH(
     req: Request,
@@ -10,9 +16,11 @@ export async function PATCH(
     try {
 
         const session = await auth()
-        const values = await req.json()
 
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
+        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
+
+        const values = updateModuleSchema.parse(await req.json())
 
         const existingModule = await prisma.courseModule.findUnique({
             where: {
@@ -49,6 +57,9 @@ export async function DELETE(
         const session = await auth();
         if (!session?.user) {
             return new NextResponse("Unauthorized", { status: 401 });
+        }
+        if (session.user.role !== "ADMIN") {
+            return new NextResponse("Forbidden", { status: 403 });
         }
 
         // Fetch the module with all related data

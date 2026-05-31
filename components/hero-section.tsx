@@ -46,7 +46,7 @@ const HeroSection = () => {
               className="mt-10 flex gap-x-6"
             >
               <Link
-                href="/checkout"
+                href="/courses"
                 className="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold text-white rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500/90 dark:hover:bg-emerald-600/90 shadow-lg hover:shadow-emerald-500/25"
               >
                 Comenzar

@@ -1,5 +1,6 @@
 import { Navbar } from "./_components/navbar";
 import { Sidebar } from "./_components/sidebar";
+import { DashboardShell } from "./_components/dashboard-shell";
 import { createSsrClient } from "@/lib/supabase/supabaseSsr";
 
 import { auth } from "@/lib/auth";
@@ -62,19 +63,18 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="h-full flex flex-col w-full max-w-full overflow-x-hidden">
-      <div className="h-[80px] lg:pl-56 fixed inset-x-0 top-0 w-full z-50">
-        <Navbar 
-          notifications={notifications} 
-          userId={session?.user?.id} 
-          userRole={session?.user?.role} 
+    <DashboardShell
+      navbar={
+        <Navbar
+          notifications={notifications}
+          userId={session?.user?.id}
+          userRole={session?.user?.role}
         />
-      </div>
-      <div className="hidden lg:flex w-56 flex-col fixed inset-y-0 z-50 left-0">
-        <Sidebar />
-      </div>
-      <main className="lg:pl-56 pt-[80px] h-full min-h-screen w-full dark:bg-sky-100/5 bg-foreground/5 max-w-full flex flex-col">{children}</main>
-    </div>
+      }
+      sidebar={<Sidebar />}
+    >
+      {children}
+    </DashboardShell>
   );
 };
 

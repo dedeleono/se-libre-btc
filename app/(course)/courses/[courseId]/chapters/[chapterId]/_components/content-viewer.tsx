@@ -49,9 +49,10 @@ interface LockScreenProps {
   type: "time" | "subscription" | "intro";
   startTime?: Date | null;
   endTime?: Date | null;
+  courseId: string;
 }
 
-const LockScreen = ({ type, startTime, endTime }: LockScreenProps) => {
+const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => {
   return (
     <div className="flex items-center justify-center h-[calc(100vh-14rem)]">
       <Card className="p-8 max-w-md mx-auto text-center space-y-6 shadow-lg relative">
@@ -88,12 +89,12 @@ const LockScreen = ({ type, startTime, endTime }: LockScreenProps) => {
             <div className="mx-auto w-fit p-4 rounded-full bg-blue-100">
               <CreditCard className="h-12 w-12 text-blue-600" />
             </div>
-            <h2 className="text-xl font-semibold">Contenido Bloqueado</h2>
+            <h2 className="text-xl font-semibold">Contenido bloqueado</h2>
             <p className="text-sm text-muted-foreground">
-              Necesitas una suscripción activa para acceder a este contenido
+              Inscríbete gratis para acceder a este contenido.
             </p>
             <Button asChild className="w-full">
-              <Link href="/checkout">Suscribirse Ahora</Link>
+              <Link href={`/courses/preview/${courseId}`}>Ver curso</Link>
             </Button>
           </>
         )}
@@ -212,7 +213,7 @@ export const ContentViewer = ({
   };
 
   if (isLocked && (lockType === "time" || lockType === "subscription")) {
-    return <LockScreen type={lockType} startTime={startTime} endTime={endTime} />;
+    return <LockScreen type={lockType} startTime={startTime} endTime={endTime} courseId={courseId} />;
   }
 
   return (

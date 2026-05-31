@@ -43,10 +43,13 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
-        Imágen
-        <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
+    <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-medium">Imagen</h3>
+          <p className="text-xs text-muted-foreground">Portada visible en catálogo y preview.</p>
+        </div>
+        <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
           {isEditing && <>Cancelar</>}
           {!isEditing && !initialData.imageUrl && (
             <>
@@ -64,15 +67,15 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
       </div>
       {!isEditing &&
         (!initialData.imageUrl ? (
-          <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
+          <div className="mt-3 flex h-60 items-center justify-center rounded-md border border-dashed bg-muted">
             <ImageIcon className="h-10 w-10 text-slate-500" />
           </div>
         ) : (
-          <div className="relative aspect-video mt-2">
+          <div className="relative mt-3 aspect-video overflow-hidden rounded-md border">
             <Image
               alt=""
               fill
-              className="object-cover rounded-md shadow-sm border border-black/10"
+              className="object-cover"
               src={initialData.imageUrl}
             />
           </div>

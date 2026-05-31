@@ -1,6 +1,11 @@
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import * as z from "zod"
+
+const createModuleSchema = z.object({
+    title: z.string().trim().min(1),
+})
 
 export async function POST(
     req: Request,
@@ -9,9 +14,10 @@ export async function POST(
     try{
 
         const session = await auth()
-        const {title} = await req.json()
+        const {title} = createModuleSchema.parse(await req.json())
 
         if(!session?.user) return new NextResponse("Unauthorized", {status: 401})
+        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
 
         const lastModule = await prisma.courseModule.findFirst({
             where:{

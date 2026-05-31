@@ -4,6 +4,7 @@ import { Category, Course } from "@prisma/client";
 type CourseWithProgressWithCategory = Course & {
   category?: Category | null;
   chapters?: { id: string }[];
+  isEnrolled?: boolean;
   progress?: number | null;
 };
 
@@ -20,10 +21,11 @@ export const CoursesList = ({ items }: CoursesListProps) => {
             key={item.id}
             id={item.id}
             title={item.title}
-            imageUrl={item.imageUrl!}
-            chaptersLength={item.chapters?.length!}
-            progress={item.progress!}
-            category={item?.category?.name!}
+            imageUrl={item.imageUrl}
+            chaptersLength={item.chapters?.length ?? 0}
+            isEnrolled={Boolean(item.isEnrolled)}
+            progress={item.progress ?? null}
+            category={item.category?.name ?? null}
           />
         ))}
       </div>

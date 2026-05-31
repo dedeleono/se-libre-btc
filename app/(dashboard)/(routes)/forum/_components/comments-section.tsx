@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDistanceToNow } from "date-fns";
@@ -12,6 +11,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { ForumReply } from "@prisma/client";
 import { User } from "@prisma/client";
+import { UserAvatar } from "@/components/user-avatar";
 
 // Add this interface to define the shape of comments with author
 interface CommentWithAuthor extends ForumReply {
@@ -84,9 +84,13 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
         {comments.map((comment) => (
           <div key={comment.id} className="space-y-4">
             <div className="flex items-start gap-4">
-              <Avatar className="h-10 w-10">
-                <AvatarFallback>{comment.author.name?.[0]}</AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                userId={comment.author.id}
+                email={comment.author.email}
+                name={comment.author.name}
+                image={comment.author.image}
+                size={40}
+              />
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">{comment.author.name}</span>
@@ -166,9 +170,13 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
                   >
                     {comment.replies.map((reply) => (
                       <div key={reply.id} className="flex items-start gap-4">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback>{reply.author.name?.[0]}</AvatarFallback>
-                        </Avatar>
+                        <UserAvatar
+                          userId={reply.author.id}
+                          email={reply.author.email}
+                          name={reply.author.name}
+                          image={reply.author.image}
+                          size={32}
+                        />
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center gap-2">
                             <span className="font-semibold">{reply.author.name}</span>

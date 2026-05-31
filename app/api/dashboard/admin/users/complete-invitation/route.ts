@@ -33,10 +33,6 @@ export async function POST(req: Request) {
       return new NextResponse("Invitation not found", { status: 404 });
     }
 
-    if (pendingInvitation.payment && pendingInvitation.payment.status !== "COMPLETED") {
-      return new NextResponse("Payment not completed", { status: 400 });
-    }
-
     const operations = [];
 
     if (pendingInvitation.courseId) {

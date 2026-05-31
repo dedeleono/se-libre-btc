@@ -1,12 +1,13 @@
 'use client';
 
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
-import { Separator } from "./ui/separator";
-import { LogOutIcon, User } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import { useSignOut } from "@/hooks/useSignOut";
+import { UserAvatar } from "@/components/user-avatar";
 
 interface SignOutProps {
   initialUser: {
+    id?: string | null;
+    email?: string | null;
     name?: string | null;
     image?: string | null;
   }
@@ -14,26 +15,13 @@ interface SignOutProps {
 
 export function SignOut({ initialUser }: SignOutProps) {
   const handleSignOut = useSignOut();
-  const { name, image } = initialUser;
+  const { id, email, name, image } = initialUser;
 
   return (
     <div className="flex items-center justify-between p-4 hover:bg-slate-100/80 transition-colors">
       <div className="flex items-center gap-x-3">
-        <Avatar className="h-8 w-8">
-          <AvatarImage
-            src={image || ""}
-            alt={name || ""}
-            className="object-cover"
-            onError={(e) => {
-              console.error("Error loading image:", e);
-              e.currentTarget.src = "";
-            }}
-          />
-          <AvatarFallback>
-            {name ? name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
-          </AvatarFallback>
-        </Avatar>
-        <span className="text-sm font-medium">{name}</span>
+        <UserAvatar userId={id} email={email} name={name} image={image} size={32} />
+        <span className="dashboard-sidebar-label truncate text-sm font-medium">{name || email}</span>
       </div>
       <button 
         onClick={handleSignOut} 

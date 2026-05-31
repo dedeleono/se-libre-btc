@@ -76,18 +76,9 @@ export async function GET(req: Request) {
 
         if (user.role === "STUDENT" && (invitation.courseId || invitation.learningPathId || invitation.cohortId)) {
             const queryParams = new URLSearchParams({
-                userId: user.id,
-                email: invitation.email,
-                name: invitation.name,
                 invitationId: invitation.id,
-                token,
             });
-
-            if (invitation.courseId) queryParams.set("courseId", invitation.courseId);
-            if (invitation.learningPathId) queryParams.set("learningPathId", invitation.learningPathId);
-            if (invitation.cohortId) queryParams.set("cohortId", invitation.cohortId);
-
-            return redirectToSignIn(`/checkout?${queryParams.toString()}`);
+            return redirectToSignIn(`/onboarding?${queryParams.toString()}`);
         }
 
         return redirectToSignIn('/onboarding');

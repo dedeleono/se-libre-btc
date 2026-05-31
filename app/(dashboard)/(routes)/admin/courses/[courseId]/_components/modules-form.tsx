@@ -83,16 +83,20 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4 relative">
+    <div className="relative mt-6 rounded-md border bg-card p-4 shadow-sm">
       {isUpdating && (
-        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center"><Loader2 className="animate-spin h-6 w-6 text-sky-700"/></div>
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/70 backdrop-blur-sm"><Loader2 className="animate-spin h-6 w-6 text-primary"/></div>
       )}
-      <div className="font-medium flex items-center justify-between">
-        Módulos del Curso
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-medium">Módulos del curso</h3>
+          <p className="text-xs text-muted-foreground">Organiza el contenido en bloques claros.</p>
+        </div>
         <Button
           onClick={toggleCreating}
           variant="ghost"
-          className="cursor-pointer"
+          size="sm"
+          className="shrink-0"
         >
           {isCreating && <>Cancelar</>}
           {!isCreating && (
@@ -120,7 +124,6 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
                       disabled={isSubmitting}
                       placeholder="e.g 'Introducción al curso'"
                       {...field}
-                      className="bg-white border-black"
                     />
                   </FormControl>
                   <FormMessage />
@@ -147,7 +150,7 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
       )}
       {!isCreating && (
         <p className="text-xs text-muted-foreground mt-4">
-          Arratsra y suelta para re-ordenar{" "}
+          Arrastra y suelta para reordenar.
         </p>
       )}
     </div>

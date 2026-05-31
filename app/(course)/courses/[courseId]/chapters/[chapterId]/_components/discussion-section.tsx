@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDistanceToNow } from "date-fns";
@@ -11,6 +10,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { toast } from "sonner";
 import { User } from "@prisma/client";
+import { UserAvatar } from "@/components/user-avatar";
 
 interface Discussion {
   id: string;
@@ -99,9 +99,13 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
               transition={{ duration: 0.2 }}
               className="flex items-start gap-4"
             >
-              <Avatar className="h-10 w-10">
-                <AvatarFallback>{discussion.author.name?.[0]}</AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                userId={discussion.author.id}
+                email={discussion.author.email}
+                name={discussion.author.name}
+                image={discussion.author.image}
+                size={40}
+              />
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">

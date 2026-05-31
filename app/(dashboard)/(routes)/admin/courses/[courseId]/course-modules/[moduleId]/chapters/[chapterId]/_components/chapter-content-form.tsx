@@ -87,15 +87,19 @@ export const ChapterContentForm = ({
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-6 border border-slate-200 shadow-sm">
-      <div className="font-medium flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-slate-700">
-          Contenido de la lección
-        </h3>
+    <div className="mt-6 rounded-md border bg-card p-4 shadow-sm md:p-6">
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-medium">Contenido de la lección</h3>
+          <p className="text-xs text-muted-foreground">
+            Elige un formato y agrega el material principal.
+          </p>
+        </div>
         <Button
           onClick={toggleEdit}
           variant="ghost"
-          className="transition-colors hover:bg-slate-200"
+          size="sm"
+          className="shrink-0"
         >
           {isEditing && (
             <span className="flex items-center text-slate-600">Cancelar</span>
@@ -175,14 +179,14 @@ export const ChapterContentForm = ({
             onValueChange={(value) =>
               setContentType(value as "video" | "youtube" | "pdf" | "richText")
             }
-            className="flex gap-4"
+            className="grid grid-cols-2 gap-2 sm:grid-cols-4"
           >
             <div
               className={cn(
-                "flex items-center space-x-2 rounded-lg border p-4 cursor-pointer transition-all",
+                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-all",
                 contentType === "video"
-                  ? "border-indigo-600 bg-indigo-50"
-                  : "border-slate-200"
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "bg-background hover:bg-muted/60"
               )}
             >
               <RadioGroupItem value="video" id="video" />
@@ -196,10 +200,10 @@ export const ChapterContentForm = ({
             </div>
             <div
               className={cn(
-                "flex items-center space-x-2 rounded-lg border p-4 cursor-pointer transition-all",
+                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-all",
                 contentType === "youtube"
-                  ? "border-indigo-600 bg-indigo-50"
-                  : "border-slate-200"
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "bg-background hover:bg-muted/60"
               )}
             >
               <RadioGroupItem value="youtube" id="youtube" />
@@ -210,10 +214,10 @@ export const ChapterContentForm = ({
             </div>
             <div
               className={cn(
-                "flex items-center space-x-2 rounded-lg border p-4 cursor-pointer transition-all",
+                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-all",
                 contentType === "pdf"
-                  ? "border-indigo-600 bg-indigo-50"
-                  : "border-slate-200"
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "bg-background hover:bg-muted/60"
               )}
             >
               <RadioGroupItem value="pdf" id="pdf" />
@@ -224,10 +228,10 @@ export const ChapterContentForm = ({
             </div>
             <div
               className={cn(
-                "flex items-center space-x-2 rounded-lg border p-4 cursor-pointer transition-all",
+                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-all",
                 contentType === "richText"
-                  ? "border-indigo-600 bg-indigo-50"
-                  : "border-slate-200"
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "bg-background hover:bg-muted/60"
               )}
             >
               <RadioGroupItem value="richText" id="richText" />

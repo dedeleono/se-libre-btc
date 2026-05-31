@@ -100,6 +100,16 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
               }))
               .filter((option) => option.content);
 
+    if (question.type === "MULTIPLE_CHOICE" && payloadOptions.length < 2) {
+      toast.error("Agrega al menos dos opciones para una pregunta de selección múltiple");
+      return;
+    }
+
+    if (question.type === "FILL_IN_THE_BLANK" && !question.correctAnswer.trim()) {
+      toast.error("Agrega la respuesta correcta");
+      return;
+    }
+
     try {
       setIsSaving(true);
       const payload = {
@@ -204,11 +214,11 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
 
   return (
     <div className="mt-6 space-y-6">
-      <div className="rounded-md border border-slate-200 bg-slate-100 p-4">
+      <div className="rounded-md border bg-card p-4 shadow-sm">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="font-medium">Quiz settings</h3>
-            <p className="text-sm text-slate-600">Configure this chapter&apos;s self-check quiz.</p>
+            <p className="text-sm text-muted-foreground">Configura este quiz de autoevaluación.</p>
           </div>
           <Button onClick={updateSettings} disabled={isSaving}>
             {quiz ? "Save settings" : "Create quiz"}
@@ -219,13 +229,11 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
             value={settings.title}
             onChange={(event) => setSettings((current) => ({ ...current, title: event.target.value }))}
             placeholder="Quiz title"
-            className="bg-white"
           />
           <Textarea
             value={settings.description}
             onChange={(event) => setSettings((current) => ({ ...current, description: event.target.value }))}
             placeholder="Description"
-            className="bg-white"
           />
           <div className="grid gap-3 sm:grid-cols-3">
             <Input
@@ -234,16 +242,15 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
               max={100}
               value={settings.passingScore}
               onChange={(event) => setSettings((current) => ({ ...current, passingScore: Number(event.target.value) }))}
-              className="bg-white"
             />
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm">
               <Switch
                 checked={settings.allowRetries}
                 onCheckedChange={(checked) => setSettings((current) => ({ ...current, allowRetries: checked }))}
               />
               Allow retries
             </label>
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm">
               <Switch
                 checked={settings.showCorrectAnswers}
                 onCheckedChange={(checked) => setSettings((current) => ({ ...current, showCorrectAnswers: checked }))}
@@ -255,7 +262,7 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
       </div>
 
       {quiz && (
-        <div className="rounded-md border border-slate-200 bg-slate-100 p-4">
+        <div className="rounded-md border bg-card p-4 shadow-sm">
           <div className="flex items-center gap-2">
             <PlusCircle className="h-4 w-4 text-slate-600" />
             <h3 className="font-medium">Add question</h3>
@@ -265,7 +272,6 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
               value={question.prompt}
               onChange={(event) => setQuestion((current) => ({ ...current, prompt: event.target.value }))}
               placeholder="Question prompt"
-              className="bg-white"
             />
             <div className="grid gap-3 sm:grid-cols-3">
               <select
@@ -273,7 +279,7 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
                 onChange={(event) =>
                   setQuestion((current) => ({ ...current, type: event.target.value as QuizQuestionType }))
                 }
-                className="rounded-md border bg-white px-3 py-2 text-sm"
+                className="rounded-md border bg-background px-3 py-2 text-sm"
               >
                 <option value="MULTIPLE_CHOICE">Multiple choice</option>
                 <option value="TRUE_FALSE">True / false</option>
@@ -284,7 +290,6 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
                 min={1}
                 value={question.points}
                 onChange={(event) => setQuestion((current) => ({ ...current, points: Number(event.target.value) }))}
-                className="bg-white"
                 placeholder="Points"
               />
             </div>
@@ -292,11 +297,10 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
               <Input
                 value={question.correctAnswer}
                 onChange={(event) => setQuestion((current) => ({ ...current, correctAnswer: event.target.value }))}
-                className="bg-white"
                 placeholder="Correct answer"
               />
             ) : question.type === "TRUE_FALSE" ? (
-              <div className="flex gap-4 text-sm">
+              <div className="flex gap-4 rounded-md border bg-background p-3 text-sm">
                 {["True", "False"].map((label, index) => (
                   <label key={label} className="flex items-center gap-2">
                     <input
@@ -324,7 +328,6 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
                         next[index] = event.target.value;
                         setOptions(next);
                       }}
-                      className="bg-white"
                       placeholder={`Option ${index + 1}`}
                     />
                   </div>
@@ -335,7 +338,6 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
               value={question.explanation}
               onChange={(event) => setQuestion((current) => ({ ...current, explanation: event.target.value }))}
               placeholder="Explanation shown after attempt"
-              className="bg-white"
             />
             <div className="flex gap-2">
               <Button onClick={saveQuestion} disabled={isSaving || !question.prompt.trim()}>
@@ -368,7 +370,7 @@ export const QuizBuilder = ({ chapterId, quiz }: QuizBuilderProps) => {
       {quiz && (
         <div className="space-y-3">
           {sortedQuestions.map((item, index) => (
-            <div key={item.id} className="rounded-md border bg-white p-4">
+            <div key={item.id} className="rounded-md border bg-card p-4 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium">

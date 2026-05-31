@@ -295,7 +295,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       if ((notification.type === NotificationType.PAYMENT_RECEIVED || 
            notification.type === NotificationType.PAYMENT_PENDING) && 
           notification.paymentId) {
-        router.push(`/admin/payments`);
+        router.refresh();
       } else if ((notification.type === NotificationType.FORUM_POST || 
                   notification.type === NotificationType.FORUM_REPLY) && 
                  notification.forumPostId) {

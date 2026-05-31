@@ -1,22 +1,28 @@
 import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
+import * as z from "zod"
+
+const updateCourseCategoriesSchema = z.object({
+    courseId: z.string().min(1),
+    categoryIds: z.array(z.string().min(1)),
+})
 
 export async function PATCH(
     req: Request,
 ) {
     const session = await auth()
-    const { courseId, categoryIds } = await req.json()
-
-    if (!courseId || !Array.isArray(categoryIds)) {
-        return new NextResponse("Invalid", { status: 400 })
-    }
 
     if (!session?.user) {
         return new NextResponse("Unauthorized", { status: 401 })
     }
+    if (session.user.role !== "ADMIN") {
+        return new NextResponse("Forbidden", { status: 403 })
+    }
 
     try {
+        const { courseId, categoryIds } = updateCourseCategoriesSchema.parse(await req.json())
+
         // Clear existing categories associated with the course
         await prisma.courseCategory.deleteMany({
             where: {
@@ -30,11 +36,13 @@ export async function PATCH(
             categoryId: categoryId,
         }))
 
-        await prisma.courseCategory.createMany({
-            data: newCourseCategories,
-        })
+        if (newCourseCategories.length > 0) {
+            await prisma.courseCategory.createMany({
+                data: newCourseCategories,
+            })
+        }
 
-        return new NextResponse("Unauthorized", { status: 201 })
+        return NextResponse.json({ success: true }, { status: 201 })
     } catch (error) {
         console.error("Error updating categories:", error)
         return new NextResponse("An error occurred while updating categories", { status: 500 })

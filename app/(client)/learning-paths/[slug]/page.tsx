@@ -32,7 +32,7 @@ export default async function LearningPathDetailPage({ params }: { params: { slu
           redirectTo={learningPath.courses[0]?.courseId ? `/courses/${learningPath.courses[0].courseId}` : "/student/learning-paths"}
           className="mt-6"
         >
-          {learningPath.isFree ? "Enroll for free" : "Continue to checkout"}
+          Enroll for free
         </EnrollmentButton>
       </div>
       <div className="grid gap-4">

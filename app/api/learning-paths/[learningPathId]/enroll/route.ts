@@ -22,13 +22,6 @@ export async function POST(
     return new NextResponse("Learning path not found", { status: 404 });
   }
 
-  if (!learningPath.isFree && Number(learningPath.price ?? 0) > 0) {
-    return NextResponse.json(
-      { message: "Payment is required before enrollment." },
-      { status: 402 }
-    );
-  }
-
   const source = session.user.role === "ADMIN" ? "ADMIN" : "FREE";
 
   await prisma.$transaction([
@@ -58,8 +51,9 @@ export async function POST(
           userId,
           courseId: pathCourse.courseId,
           source: "LEARNING_PATH",
+          lastAccessedAt: new Date(),
         },
-        update: { status: "ACTIVE" },
+        update: { status: "ACTIVE", lastAccessedAt: new Date() },
       })
     ),
   ]);

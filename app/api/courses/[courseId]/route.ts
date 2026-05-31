@@ -2,6 +2,21 @@ import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { deleteFile } from "@/lib/s3"
+import { CourseDeliveryMode, CourseDifficulty } from "@prisma/client"
+import * as z from "zod"
+
+const updateCourseSchema = z.object({
+    title: z.string().min(1).optional(),
+    shortDescription: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    imageUrl: z.string().nullable().optional(),
+    difficulty: z.nativeEnum(CourseDifficulty).optional(),
+    deliveryMode: z.nativeEnum(CourseDeliveryMode).optional(),
+    estimatedDuration: z.string().nullable().optional(),
+    lessonDuration: z.string().nullable().optional(),
+    isFree: z.boolean().optional(),
+    price: z.union([z.string(), z.number()]).nullable().optional(),
+})
 
 export async function DELETE(
     req: Request,
@@ -10,6 +25,7 @@ export async function DELETE(
     try {
         const session = await auth()
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
+        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
 
         const course = await prisma.course.findUnique({
             where: { id: params.courseId },
@@ -71,9 +87,10 @@ export async function PATCH(
         
         const session = await auth()
 
-        const values = await req.json();
-
         if(!session?.user) return new NextResponse("Unauthorized", { status: 401 })
+        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
+
+        const values = updateCourseSchema.parse(await req.json());
 
         const currentCourse = await prisma.course.findUnique({
             where: {

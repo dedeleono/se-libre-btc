@@ -15,14 +15,16 @@ import {
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ThemeToggle/theme-toggle";
-
-const navItems = [
-  { label: "Acerca de nosotros", href: "/about" },
-  { label: "Contactános", href: "/contact" },
-] as const;
+import { LanguageToggle } from "@/components/language-toggle";
+import { useLocale } from "@/lib/i18n";
 
 const HeaderMenu = () => {
   const pathname = usePathname();
+  const { t } = useLocale();
+  const navItems = [
+    { label: t.about, href: "/about" },
+    { label: t.contact, href: "/contact" },
+  ] as const;
 
   return (
     <nav
@@ -60,6 +62,7 @@ const HeaderMenu = () => {
 
         {/* Auth Button - Desktop */}
         <div className="hidden md:flex items-center gap-4">
+          <LanguageToggle />
           <ThemeToggle />
           <Link href="/sign-in">
             <Button
@@ -68,7 +71,7 @@ const HeaderMenu = () => {
               className="bg-sky-900 hover:bg-sky-800 
               dark:bg-sky-700/90 dark:hover:bg-sky-800/90 dark:text-white"
             >
-              Iniciar Sesión
+              {t.signIn}
             </Button>
           </Link>
         </div>
@@ -76,6 +79,7 @@ const HeaderMenu = () => {
         {/* Mobile Navigation */}
         <div className="flex items-center gap-2 md:hidden">
           <ThemeToggle />
+          <LanguageToggle />
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -92,7 +96,7 @@ const HeaderMenu = () => {
             >
               <SheetHeader>
                 <SheetTitle className="text-left dark:text-white/90">
-                  Menu
+                  {t.menu}
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-4 mt-4">
@@ -117,7 +121,7 @@ const HeaderMenu = () => {
                       className="bg-sky-900 hover:bg-sky-800 w-full 
                       dark:bg-sky-700/90 dark:hover:bg-sky-800/90 dark:text-white"
                     >
-                      Iniciar Sesión
+                      {t.signIn}
                     </Button>
                   </Link>
                 </div>

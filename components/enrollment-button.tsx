@@ -51,7 +51,7 @@ export function EnrollmentButton({
         return;
       }
       if (error.response?.status === 402) {
-        toast.error("Payment is required for this enrollment.");
+        toast.error("This enrollment is not available yet.");
         return;
       }
       toast.error(error.response?.data || "Unable to enroll");

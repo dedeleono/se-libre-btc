@@ -13,7 +13,9 @@ export const Sidebar = async () => {
         dark:border-white/[0.05] dark:backdrop-blur-sm"
       >
         <div className="p-[1.15rem] dark:bg-card/30 dark:shadow-[inset_0_-1px_0_rgba(255,255,255,0.05)]">
-          <Logo width={130} height={130} />
+          <div className="dashboard-sidebar-logo transition-transform duration-200">
+            <Logo width={130} height={130} />
+          </div>
         </div>
         <ScrollArea className="flex-1 dark:bg-transparent">
           <div className="flex flex-col w-full">
@@ -26,6 +28,8 @@ export const Sidebar = async () => {
           >
             <SignOut 
               initialUser={{
+                id: session.user?.id,
+                email: session.user?.email,
                 name: session.user?.name,
                 image: session.user?.image
               }} 

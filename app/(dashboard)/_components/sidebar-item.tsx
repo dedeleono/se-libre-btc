@@ -1,11 +1,16 @@
 "use client";
 
 import { LucideIcon } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { IconType } from 'react-icons';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SidebarItemProps {
   icon: LucideIcon | IconType;
@@ -19,30 +24,39 @@ const SidebarItem = ({
   href
 }: SidebarItemProps) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = pathname === href || (href !== "/student" && href !== "/admin" && pathname.startsWith(`${href}/`));
 
-  return (
+  const link = (
     <Link
       href={href}
+      aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex items-center gap-x-3 text-sm font-medium w-full p-4",
+        "flex min-h-10 w-full items-center gap-x-3 rounded-md px-3 py-2 text-sm font-medium",
         "transition-all duration-200",
-        "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80",
+        "text-muted-foreground hover:bg-muted hover:text-foreground",
         "dark:text-white/70 dark:hover:text-white dark:hover:bg-white/[0.06]",
         isActive &&
-          "text-sky-700 bg-sky-50 hover:bg-sky-50 hover:text-sky-700 border-r-4 border-sky-700 dark:bg-white/[0.08] dark:text-white dark-glow dark:border-none",
-        isActive && "text-sky-700 bg-sky-50 dark:text-sky-600 ",
+          "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary dark:bg-white/[0.08] dark:text-white",
         href === "#" && "cursor-pointer"
       )}
     >
       <Icon
         className={cn(
           "h-4 w-4 flex-shrink-0",
-          isActive ? "text-sky-700" : "text-slate-500"
+          isActive ? "text-primary dark:text-white" : "text-muted-foreground"
         )}
       />
-      <span className="truncate">{label}</span>
+      <span className="dashboard-sidebar-label truncate">{label}</span>
     </Link>
+  );
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent side="right">
+        {label}
+      </TooltipContent>
+    </Tooltip>
   );
 };
 

@@ -5,7 +5,7 @@ import axios from "axios";
 import { Attachment, Course } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
-import { File, ImageIcon, Loader2, Pencil, PlusCircle, X } from "lucide-react";
+import { File, Loader2, PlusCircle, X } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { S3FileUpload } from "@/components/file-upload";
@@ -52,10 +52,13 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
-        Recursos
-        <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
+    <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-medium">Recursos</h3>
+          <p className="text-xs text-muted-foreground">Archivos descargables para estudiantes.</p>
+        </div>
+        <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
           {isEditing && <>Cancelar</>}
           {!isEditing && (
             <>
@@ -78,10 +81,12 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
                 {initialData.attachments.map((attachment) => (
                   <div
                     key={attachment.id}
-                    className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md justify-between"
+                    className="flex items-center justify-between rounded-md border bg-muted/40 p-3 text-sm"
                   >
-                    <File className="h-4 w-4 mr-2 flex-shrink-0" />
-                    <p className="text-xs line-clamp-1">{attachment.name}</p>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <File className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                      <p className="truncate text-xs">{attachment.name}</p>
+                    </div>
                     {deletingId === attachment.id && (
                       <div>
                         <Loader2 className="h-4 w-4 animate-spin" />

@@ -2,6 +2,22 @@ import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { deleteFile } from '@/lib/s3';
+import { ChapterType } from "@prisma/client";
+import * as z from "zod";
+
+const updateChapterSchema = z.object({
+    title: z.string().trim().min(1).optional(),
+    description: z.string().nullable().optional(),
+    type: z.nativeEnum(ChapterType).optional(),
+    isIntro: z.boolean().optional(),
+    startTime: z.string().datetime().nullable().optional(),
+    endTime: z.string().datetime().nullable().optional(),
+    imageUrl: z.string().nullable().optional(),
+    videoUrl: z.string().nullable().optional(),
+    youtubeUrl: z.string().nullable().optional(),
+    pdfUrl: z.string().nullable().optional(),
+    richContent: z.string().nullable().optional(),
+})
 
 export async function GET(
     req: Request,
@@ -10,6 +26,7 @@ export async function GET(
     try {
         const session = await auth();
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
+        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 });
 
         const chapter = await prisma.chapter.findFirst({
             where: {
@@ -48,6 +65,7 @@ export async function DELETE(
     try {
         const session = await auth();
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
+        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 });
 
         const chapter = await prisma.chapter.findFirst({
             where: {
@@ -93,9 +111,10 @@ export async function PATCH(
 ) {
     try {
         const session = await auth()
-        const { isIntro, ...values } = await req.json()
-
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
+        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
+
+        const { isIntro, ...values } = updateChapterSchema.parse(await req.json())
 
         const existingChapter = await prisma.chapter.findUnique({
             where: {
@@ -178,7 +197,9 @@ export async function PATCH(
             },
             data: {
                 isIntro,
-                ...values
+                ...values,
+                startTime: values.startTime ? new Date(values.startTime) : values.startTime,
+                endTime: values.endTime ? new Date(values.endTime) : values.endTime,
             }
         });
 

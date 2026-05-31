@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
 import { toast } from "sonner";
-import { Loader2, User, Image, CheckCircle } from "lucide-react";
+import { Loader2, User, Image } from "lucide-react";
 import { motion } from "framer-motion";
 
 import {
@@ -29,7 +29,7 @@ import {
 import { S3FileUpload } from "@/components/file-upload";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@prisma/client";
-import { Stepper, Step, useStepper } from "@/components/stepper";
+import { UserAvatar } from "@/components/user-avatar";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -66,15 +66,15 @@ interface OnboardingStep {
 const steps: OnboardingStep[] = [
   {
     id: "personal-info",
-    label: "Personal Information",
+    label: "Información personal",
     icon: User,
-    description: "Tell us about yourself"
+    description: "Cuéntanos sobre ti"
   },
   {
     id: "profile-picture",
-    label: "Profile Picture",
+    label: "Avatar",
     icon: Image,
-    description: "Add your profile picture"
+    description: "Sube una foto o usa tu patrón"
   }
 ];
 
@@ -201,36 +201,25 @@ export default function OnboardingForm({
       <CardHeader>
         <CardTitle>Completa tu perfil</CardTitle>
         <CardDescription>
-          Configura tu perfil para que puedas empezar a usar la plataforma.
+          Configura tu perfil para empezar a aprender en Se Libre.
         </CardDescription>
       </CardHeader>
       
-      {/* Overall Process Progress */}
       <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.05]">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200",
-              "border-green-500 bg-green-500 text-white"
-            )}>
-              <CheckCircle className="w-4 h-4" />
-            </div>
-            <span className="ml-2 text-sm font-medium text-gray-500 dark:text-white/70">
-              Inscripción y Pago
-            </span>
+          <div>
+            <p className="text-sm font-medium text-foreground">Acceso gratuito</p>
+            <p className="text-xs text-muted-foreground">
+              Tu cuenta queda lista al terminar este perfil.
+            </p>
           </div>
-          <div className="flex-1 h-[2px] bg-gray-200 dark:bg-white/10 mx-4" />
-          <div className="flex items-center">
-            <div className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200",
-              "border-emerald-700 bg-emerald-700 text-white dark:border-emerald-600 dark:bg-emerald-600"
-            )}>
-              2
-            </div>
-            <span className="ml-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-              Perfil
-            </span>
-          </div>
+          <UserAvatar
+            userId={organizationId}
+            email={pendingInvitation?.email}
+            name={form.watch("name")}
+            image={imageUrl}
+            size={44}
+          />
         </div>
       </div>
       
@@ -264,7 +253,7 @@ export default function OnboardingForm({
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
+                        <Input placeholder="Tu nombre completo" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -275,7 +264,7 @@ export default function OnboardingForm({
                   className="w-full"
                   onClick={() => handleStepSubmit('personal-info', { name: form.getValues('name') })}
                 >
-                  Next
+                  Continuar
                 </Button>
               </div>
             )}
@@ -284,6 +273,18 @@ export default function OnboardingForm({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <FormLabel>Foto de perfil</FormLabel>
+                  <div className="flex items-center gap-3 rounded-md border bg-muted/30 p-3">
+                    <UserAvatar
+                      userId={organizationId}
+                      email={pendingInvitation?.email}
+                      name={form.getValues("name")}
+                      image={imageUrl}
+                      size={48}
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Puedes subir una foto o quedarte con tu avatar generado.
+                    </p>
+                  </div>
                   <S3FileUpload
                     value={imageUrl}
                     onChange={(url) => setImageUrl(url || "")}
@@ -300,7 +301,7 @@ export default function OnboardingForm({
                     className="flex-1"
                     onClick={() => setCurrentStepIndex(0)}
                   >
-                    Back
+                    Atrás
                   </Button>
                   <Button
                     type="button"

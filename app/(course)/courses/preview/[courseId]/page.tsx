@@ -140,9 +140,7 @@ export default async function CoursePreviewPage({
             </div>
             <div className="space-y-4 p-5">
               <div>
-                <p className="text-2xl font-bold">
-                  {course.isFree ? "Free" : `Q ${Number(course.price ?? 0).toFixed(2)}`}
-                </p>
+                <p className="text-2xl font-bold">Free</p>
                 {instructor?.name && (
                   <p className="text-sm text-muted-foreground">By {instructor.name}</p>
                 )}
@@ -154,7 +152,7 @@ export default async function CoursePreviewPage({
                   redirectTo={`/courses/${course.id}`}
                   className="w-full"
                 >
-                  {course.isFree ? "Enroll for free" : "Continue to checkout"}
+                  Enroll for free
                 </EnrollmentButton>
                 {introChapter && (
                   <Button asChild variant="outline" className="w-full">

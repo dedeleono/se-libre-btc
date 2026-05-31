@@ -6,11 +6,12 @@ import { prisma } from "@/lib/db";
 type CourseWithProgressWithCategory = Course & {
     category?: Category | null;
     chapters?: { id: string }[];
+    isEnrolled: boolean;
     progress?: number | null;
 }
 
 type GetCourses = {
-    userId: string;
+    userId?: string;
     title?: string;
     categoryId?: string;
 }
@@ -25,6 +26,13 @@ export const getCourses = async ({ userId, categoryId, title }: GetCourses): Pro
             },
             include: {
                 courseCategory: { include: { category: true } },
+                enrollments: {
+                    where: {
+                        userId: userId ?? "__anonymous__",
+                        status: { in: ["ACTIVE", "COMPLETED"] },
+                    },
+                    select: { id: true },
+                },
                 modules: {
                     include: {
                         chapters: {
@@ -38,10 +46,19 @@ export const getCourses = async ({ userId, categoryId, title }: GetCourses): Pro
             }
         });
 
-        return Promise.all(courses.map(async (course) => ({
-            ...course,
-            progress: await getProgress(userId, course.id),
-        })));
+        return Promise.all(courses.map(async (course) => {
+            const chapters = course.modules.flatMap((module) => module.chapters);
+            const category = course.courseCategory[0]?.category ?? null;
+            const isEnrolled = course.enrollments.length > 0;
+
+            return {
+                ...course,
+                category,
+                chapters,
+                isEnrolled,
+                progress: userId && isEnrolled ? await getProgress(userId, course.id) : null,
+            };
+        }));
     } catch (error) {
         console.log("[GET_COURSES]", error);
         return [];

@@ -13,14 +13,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { Input } from "@/components/ui/input";
-
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
 import { Course } from "@prisma/client";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
@@ -66,15 +63,18 @@ export const DescriptionForm = ({
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
-        Descripción
-        <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
+    <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-medium">Descripción</h3>
+          <p className="text-xs text-muted-foreground">Explica el valor y el alcance del curso.</p>
+        </div>
+        <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
           {isEditing && <>Cancelar</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar Descripción
+              Editar
             </>
           )}
         </Button>
@@ -86,7 +86,7 @@ export const DescriptionForm = ({
             !initialData.description && "text-slate-500 italic"
           )}
         >
-          {!initialData.description && "No description"}
+          {!initialData.description && "Sin descripción"}
           {initialData.description && (
             <Preview value={initialData.description} />
           )}

@@ -10,6 +10,7 @@ interface CourseCardProps {
   title: string;
   imageUrl: string | null;
   chaptersLength: number;
+  isEnrolled: boolean;
   progress: number | null;
   category: string | null;
 }
@@ -19,11 +20,10 @@ export const CourseCard = ({
   title,
   imageUrl,
   chaptersLength,
+  isEnrolled,
   progress,
   category,
 }: CourseCardProps) => {
-  const isEnrolled = progress !== null;
-
   return (
       <div className="group hover:shadow-sm transition overflow-hidden border rounded-md p-3 h-full w-full flex flex-col">
         <Link href={isEnrolled ? `/courses/${id}` : `/courses/preview/${id}`}>
@@ -54,7 +54,7 @@ export const CourseCard = ({
                     </span>
                 </div>
             </div>
-            {progress !== null && (
+            {isEnrolled && progress !== null && (
                 <div className="flex items-center gap-x-2 text-sm md:text-xs">
                     <IconBadge size="sm" icon={CheckCircle}/>
                     <p>

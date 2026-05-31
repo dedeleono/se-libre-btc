@@ -79,15 +79,18 @@ export const CategoryForm = ({
   );
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4">
-      <div className="font-medium flex items-center justify-between">
-        Categoría
-        <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
+    <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="font-medium">Categorías</h3>
+          <p className="text-xs text-muted-foreground">Ayudan a filtrar y descubrir este curso.</p>
+        </div>
+        <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
           {isEditing && <>Cancelar</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar Categorías
+              Editar
             </>
           )}
         </Button>
@@ -101,7 +104,7 @@ export const CategoryForm = ({
         >
           {selectedOptions.length > 0
             ? selectedOptions.map((option) => option.label).join(", ")
-            : "No category"}
+            : "Sin categorías"}
         </p>
       )}
       {isEditing && (
@@ -127,6 +130,7 @@ export const CategoryForm = ({
                 Guardar
               </Button>
               <Button
+                type="button"
                 variant={"outline"}
                 onClick={() => formCategoryCreateRef.current?.open()}
               >

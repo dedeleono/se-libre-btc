@@ -14,18 +14,11 @@ export async function POST(
 
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
-    select: { id: true, isFree: true, price: true },
+    select: { id: true },
   });
 
   if (!course) {
     return new NextResponse("Course not found", { status: 404 });
-  }
-
-  if (!course.isFree && Number(course.price ?? 0) > 0) {
-    return NextResponse.json(
-      { message: "Payment is required before enrollment." },
-      { status: 402 }
-    );
   }
 
   const enrollment = await prisma.courseEnrollment.upsert({
@@ -39,6 +32,7 @@ export async function POST(
       userId: session.user.id,
       courseId: course.id,
       source: session.user.role === "ADMIN" ? "ADMIN" : "FREE",
+      lastAccessedAt: new Date(),
     },
     update: {
       status: "ACTIVE",

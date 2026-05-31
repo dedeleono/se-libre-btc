@@ -8,11 +8,14 @@ import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "./search-input";
 import ThemeToggle from "./layout/ThemeToggle/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
+import { useLocale } from "@/lib/i18n";
 
 export const NavbarRoutes = () => {
   const pathName = usePathname();
   const { data: session } = useSession();
   const router = useRouter();
+  const { t } = useLocale();
 
   const isCoursePage = pathName?.includes("/courses");
   const isStudentBrowsePage = pathName?.includes("/student/browse");
@@ -34,7 +37,7 @@ export const NavbarRoutes = () => {
           onClick={() => router.push(`/admin/courses/${courseId}`)}
           className="dark:text-white/70 dark:hover:bg-white/[0.06] dark:hover:text-white"
         >
-          Manage course
+          {t.manageCourse}
         </Button>
       )}
 
@@ -42,10 +45,11 @@ export const NavbarRoutes = () => {
         <Link href={`/courses/${courseId}/student-resources`} className="w-full">
           <Button size="sm" variant="ghost" className="w-full gap-2 rounded-sm hover:bg-transparent dark:text-white/70 dark:hover:bg-white/[0.06] dark:hover:text-white">
             <FileText className="h-4 w-4" />
-            Resources
+            {t.resources}
           </Button>
         </Link>
       )}
+      <LanguageToggle />
       <ThemeToggle />
     </div>
   );
