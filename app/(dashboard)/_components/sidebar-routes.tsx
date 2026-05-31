@@ -14,7 +14,7 @@ import {
   UserIcon,
   Users,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 
 import SidebarItem from "./sidebar-item";
 
@@ -51,7 +51,7 @@ const adminRoutes: Route[] = [
 
 export const SidebarRoutes = () => {
   const { data: session } = useSession();
-  const userRole = session?.user?.role;
+  const userRole = (session?.user as { role?: string } | undefined)?.role;
   const routes = userRole === "ADMIN" ? adminRoutes : userRole === "STUDENT" ? studentRoutes : [];
 
   return (

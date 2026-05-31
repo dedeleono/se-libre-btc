@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession } from "@/lib/auth-client";
 import { Chapter, Course, CourseModule, ChapterProgress } from "@prisma/client";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -29,6 +29,7 @@ export const CourseMobileSidebar = ({
   chaptersAccessibility 
 }: CourseMobileSidebarProps) => {
   const { data: session } = useSession();
+  const currentUserRole = (session?.user as { role?: string } | undefined)?.role;
 
   return (
     <Sheet>
@@ -44,7 +45,7 @@ export const CourseMobileSidebar = ({
           course={course} 
           userSession={session}
           chaptersAccessibility={chaptersAccessibility}
-          currentUserRole={session?.user?.role}
+          currentUserRole={currentUserRole}
         />
       </SheetContent>
     </Sheet>

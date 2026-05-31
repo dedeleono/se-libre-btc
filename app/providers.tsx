@@ -1,7 +1,6 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SessionProvider } from "next-auth/react";
 import { useState } from "react";
 import { LoadingProvider } from "@/components/providers/loading-provider";
 
@@ -11,7 +10,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <LoadingProvider>
-        <SessionProvider>{children}</SessionProvider>
+        {children}
       </LoadingProvider>
     </QueryClientProvider>
   );

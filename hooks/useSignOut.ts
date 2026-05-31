@@ -1,7 +1,7 @@
 'use client';
 
-import { signOut } from 'next-auth/react';
 import { deleteCookie } from 'cookies-next';
+import { signOut } from '@/lib/auth-client';
 
 export function useSignOut() {
     const handleSignOut = async () => {
@@ -14,10 +14,12 @@ export function useSignOut() {
             // First call our custom logout endpoint
             await fetch('/api/auth/logout');
 
-            // Then perform NextAuth signOut
             await signOut({
-                callbackUrl: '/sign-in',
-                redirect: true
+                fetchOptions: {
+                    onSuccess: () => {
+                        window.location.href = '/sign-in';
+                    },
+                },
             });
         } catch (error) {
             console.error('Error during sign out:', error);

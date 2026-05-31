@@ -11,8 +11,6 @@ export async function GET() {
 
     cookieStore.delete('currentPaymentIntent');
 
-    // cookieStore.delete('next-auth.session-token');
-
     return new NextResponse(null, { status: 200 });
 }
 
