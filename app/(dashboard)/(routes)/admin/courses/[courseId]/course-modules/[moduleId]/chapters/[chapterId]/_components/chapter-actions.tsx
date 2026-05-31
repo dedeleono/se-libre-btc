@@ -8,6 +8,7 @@ import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { validateChapterForPublishing } from "@/lib/validations/chapter";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ChapterActionsProps {
   disabled: boolean;
@@ -24,6 +25,7 @@ export const ChapterActions = ({
   chapterId,
   isPublished,
 }: ChapterActionsProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -51,10 +53,10 @@ export const ChapterActions = ({
         `/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}/${url}`
       );
 
-      toast.success(isPublished ? "Lección despublicada" : "Lección publicada");
+      toast.success(isPublished ? t.admin.lessonUnpublished : t.admin.lessonPublished);
       router.refresh();
     } catch (error: any) {
-      toast.error(error.response?.data || "Algo salió mal");
+      toast.error(error.response?.data || t.common.somethingWentWrong);
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +68,7 @@ export const ChapterActions = ({
       await axios.delete(
         `/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}`
       );
-      toast.success("Lección eliminada");
+      toast.success(t.admin.lessonDeleted);
 
       router.push(`/admin/courses/${courseId}/course-modules/${moduleId}`);
       
@@ -74,7 +76,7 @@ export const ChapterActions = ({
         router.refresh();
       }, 1500);
     } catch (error) {
-      toast.error("Error al eliminar lección");
+      toast.error(t.admin.lessonDeleteError);
     } finally {
       setIsLoading(false);
     }
@@ -88,7 +90,7 @@ export const ChapterActions = ({
         size={"default"}
         variant={"outline"}
       >
-        {isPublished ? "Bajar" : "Publicar"}
+        {isPublished ? t.admin.lower : t.admin.publish}
       </Button>
       <ConfirmModal onConfirm={onDelete}>
         <Button size={"icon"} disabled={isLoading} variant={"destructive"}>

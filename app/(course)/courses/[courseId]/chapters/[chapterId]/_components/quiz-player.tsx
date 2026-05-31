@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLocale } from "@/lib/i18n";
 
 type QuizQuestionWithOptions = QuizQuestion & {
   options: QuizOption[];
@@ -45,6 +46,7 @@ const allowsMultipleAnswers = (question: QuizQuestionWithOptions) => {
 };
 
 export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) => {
+  const { t } = useLocale();
   const router = useRouter();
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
   const [textAnswers, setTextAnswers] = useState<Record<string, string>>({});
@@ -79,10 +81,10 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
         })),
       });
       setResult(response.data);
-      toast.success("Quiz submitted");
+      toast.success(t.course.quizSubmitted);
       router.refresh();
     } catch (error: any) {
-      toast.error(error?.response?.data || "Could not submit quiz");
+      toast.error(error?.response?.data || t.course.quizSubmitError);
     } finally {
       setIsSubmitting(false);
     }
@@ -100,7 +102,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
         <h1 className="text-2xl font-bold">{quiz.title}</h1>
         {quiz.description && <p className="mt-2 text-muted-foreground">{quiz.description}</p>}
         <p className="mt-2 text-sm text-muted-foreground">
-          This is a self-check. It saves your progress and gives lightweight feedback.
+          {t.course.quizSelfCheck}
         </p>
       </div>
 
@@ -109,11 +111,11 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
           <div className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-emerald-600" />
             <p className="font-medium">
-              Self-check complete · {result.scorePercent}% correct
+              {t.course.quizComplete(result.scorePercent)}
             </p>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            Your course progress has been saved. This result is for feedback only.
+            {t.course.quizProgressSaved}
           </p>
         </div>
       )}
@@ -132,7 +134,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
                     {index + 1}. {question.prompt}
                   </p>
                   {question.type === "MULTIPLE_CHOICE" && allowsMultipleAnswers(question) && (
-                    <p className="mt-1 text-xs text-muted-foreground">Select all that apply</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{t.course.selectAllThatApply}</p>
                   )}
                 </div>
               </div>
@@ -143,7 +145,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
                   onChange={(event) => setTextAnswers((current) => ({ ...current, [question.id]: event.target.value }))}
                   disabled={!!result}
                   className="mt-3"
-                  placeholder="Your answer"
+                  placeholder={t.course.yourAnswer}
                 />
               ) : (
                 <div className="mt-3 space-y-2">
@@ -160,7 +162,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
                         />
                         <span>{option.content}</span>
                         {showAnswers && resultQuestion?.options.find((item) => item.id === option.id)?.isCorrect && (
-                          <span className="ml-auto text-xs font-medium text-emerald-700">Correct</span>
+                          <span className="ml-auto text-xs font-medium text-emerald-700">{t.course.correct}</span>
                         )}
                       </label>
                     );
@@ -170,7 +172,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
 
               {showAnswers && question.type === "FILL_IN_THE_BLANK" && (
                 <p className="mt-3 text-sm text-emerald-700">
-                  Correct answer: {getCorrectTextAnswer(resultQuestion?.metadata)}
+                  {t.course.correctAnswer(getCorrectTextAnswer(resultQuestion?.metadata))}
                 </p>
               )}
               {showAnswers && resultQuestion?.explanation && (
@@ -185,18 +187,18 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
         {!result && (
           <Button onClick={submitQuiz} disabled={isSubmitting || quiz.questions.length === 0}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Submit quiz
+            {t.course.submitQuiz}
           </Button>
         )}
         {result && quiz.allowRetries && (
           <Button variant="outline" onClick={retry}>
             <RotateCcw className="mr-2 h-4 w-4" />
-            Retry
+            {t.course.retryQuiz}
           </Button>
         )}
         {result && nextChapterId && (
           <Button onClick={() => router.push(`/courses/${courseId}/chapters/${nextChapterId}`)}>
-            Next chapter
+            {t.course.nextChapter}
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         )}

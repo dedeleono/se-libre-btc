@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
 // import FooterCards from "../footercards/page";
 import Logo from "@/components/logo";
+import { useLocale } from "@/lib/i18n";
 
 const Footer = () => {
+  const { t } = useLocale();
+
   return (
     <footer className="bg-muted/5 text-muted pt-16 backdrop-blur-sm font-['Open_Sans'] border-t-2 border-primary/10">
       <div className="container md:max-w-[95rem] mx-auto px-6">
@@ -21,26 +26,26 @@ const Footer = () => {
           {/* Sitemap Section */}
           <div className="md:col-span-3">
             <h2 className="text-foreground text-xl font-semibold mb-6 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-12 after:h-1 after:bg-primary">
-              Home
+              {t.nav.home}
             </h2>
             <nav className="space-y-4">
               <Link
                 href="/"
                 className="block text-muted-foreground hover:text-foreground transition-all duration-300 hover:translate-x-2"
               >
-                Inicio
+                {t.nav.home}
               </Link>
               <Link
                 href="/about"
                 className="block text-muted-foreground hover:text-foreground transition-all duration-300 hover:translate-x-2"
               >
-                Acerca de Nosotros
+                {t.nav.about}
               </Link>
               <Link
                 href="/contact"
                 className="block text-muted-foreground hover:text-foreground transition-all duration-300 hover:translate-x-2"
               >
-                Contáctanos
+                {t.nav.contact}
               </Link>
             </nav>
           </div>
@@ -48,7 +53,7 @@ const Footer = () => {
           {/* Follow Us Section */}
           <div className="md:col-span-3">
             <h2 className="text-foreground text-xl font-semibold mb-6 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-12 after:h-1 after:bg-primary">
-              Siguenos
+              {t.public.footerFollow}
             </h2>
             <nav className="space-y-4">
               <Link
@@ -102,7 +107,7 @@ const Footer = () => {
         {/* Copyright Section */}
         <div className="py-4 border-t border-border/30 flex items-center justify-center ">
           <p className="text-muted-foreground text-xs m-0">
-            © 2025 Se Libre. Todos los derechos reservados.
+            {t.public.copyright}
           </p>
         </div>
       </div>

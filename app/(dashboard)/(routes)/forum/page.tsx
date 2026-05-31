@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { ForumClient } from "./_components/forum-client";
 import { ForumPost } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
+import { getServerMessages } from "@/lib/i18n-server";
 
 type CourseWithPath = {
   id: string;
@@ -14,6 +15,7 @@ type CourseWithPath = {
 };
 
 export default async function Forum() {
+  const t = getServerMessages();
   const session = await auth();
   if (!session?.user) {
     return redirect("/");
@@ -204,10 +206,10 @@ export default async function Forum() {
               bg-gradient-to-r from-accent to-primary dark:from-white dark:to-white/50 bg-clip-text text-transparent
               font-['Open_Sans']"
             >
-              Foro
+              {t.forum.title}
             </h2>
             <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans']">
-              Comparte tus dudas y conocimientos con la comunidad
+              {t.forum.subtitle}
             </p>
           </div>
         </div>

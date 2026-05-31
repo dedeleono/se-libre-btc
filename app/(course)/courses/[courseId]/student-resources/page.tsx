@@ -7,6 +7,7 @@ import { Download, FileText, Video, File, Image as ImageIcon, Book, Loader2 } fr
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
+import { useLocale } from "@/lib/i18n";
 
 interface ResourcePageProps {
   params: {
@@ -79,15 +80,9 @@ const getFileIcon = (type: string) => {
   return IconComponent;
 };
 
-const resourceTypes = {
-  all: "Todos",
-  document: "Documentos",
-  video: "Videos",
-  pdf: "PDFs",
-  image: "Imágenes",
-} as const;
-
 export default function ResourcesPage({ params }: ResourcePageProps) {
+  const { t } = useLocale();
+  const resourceTypes = t.course.resourceTypes;
   const [course, setCourse] = useState<CourseWithResources | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -142,8 +137,8 @@ export default function ResourcesPage({ params }: ResourcePageProps) {
       <div className="p-6 max-w-5xl mx-auto text-center">
         <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
           <File className="h-12 w-12 mb-4" />
-          <h3 className="text-lg font-medium mb-2">No se pudo cargar el curso</h3>
-          <p>Ha ocurrido un error al cargar los recursos del curso.</p>
+          <h3 className="text-lg font-medium mb-2">{t.course.courseLoadErrorTitle}</h3>
+          <p>{t.course.resourcesLoadError}</p>
         </div>
       </div>
     );
@@ -153,7 +148,7 @@ export default function ResourcesPage({ params }: ResourcePageProps) {
   const courseResources = course.attachments.map((attachment: any) => ({
     ...attachment,
     type: getFileType(attachment.url),
-    source: "Curso",
+    source: t.nav.courses,
   }));
 
   const chapterResources = course.modules
@@ -190,8 +185,8 @@ export default function ResourcesPage({ params }: ResourcePageProps) {
         
         <div className="flex flex-col items-center justify-center h-[400px] text-muted-foreground">
           <FileText className="h-12 w-12 mb-4" />
-          <h3 className="text-lg font-medium mb-2">No hay recursos disponibles</h3>
-          <p>Este curso aún no tiene recursos disponibles.</p>
+          <h3 className="text-lg font-medium mb-2">{t.course.noResources}</h3>
+          <p>{t.course.noResourcesDescription}</p>
         </div>
       </div>
     );
@@ -200,9 +195,9 @@ export default function ResourcesPage({ params }: ResourcePageProps) {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-black mb-2 text-success dark:text-secondary font-['Open_Sans']">Recursos del Curso</h1>
+        <h1 className="text-2xl font-black mb-2 text-success dark:text-secondary font-['Open_Sans']">{t.course.courseResources}</h1>
         <p className="text-slate-600 dark:text-white/70 font-['Open_Sans'] text-sm">
-          Accede a todos los materiales y recursos disponibles para este curso
+          {t.course.resourcesSubtitle}
         </p>
       </div>
 

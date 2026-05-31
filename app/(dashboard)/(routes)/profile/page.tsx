@@ -8,9 +8,11 @@ import AnimatedSection from "./_components/animated-section";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserRole } from "@prisma/client";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function ProfilePage() {
   const session = await auth();
+  const t = getServerMessages();
 
   if (!session?.user?.id) {
     return redirect("/");
@@ -38,8 +40,8 @@ export default async function ProfilePage() {
                 <User className="h-8 w-8 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl font-black tracking-tight md:text-4xl">Profile</h1>
-                <p className="text-sm text-muted-foreground">Your personal account information.</p>
+                <h1 className="text-3xl font-black tracking-tight md:text-4xl">{t.profile.title}</h1>
+                <p className="text-sm text-muted-foreground">{t.profile.subtitle}</p>
               </div>
             </div>
           </div>
@@ -53,7 +55,7 @@ export default async function ProfilePage() {
                   <div className="rounded-full bg-teal-700/10 p-2">
                     <UserCircle className="h-5 w-5 text-teal-700" />
                   </div>
-                  <CardTitle>Personal information</CardTitle>
+                  <CardTitle>{t.profile.personalInformation}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -69,24 +71,24 @@ export default async function ProfilePage() {
                   <div className="rounded-full bg-sky-700/10 p-2">
                     <Mail className="h-5 w-5 text-sky-700" />
                   </div>
-                  <CardTitle>Account details</CardTitle>
+                  <CardTitle>{t.profile.accountDetails}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-lg bg-sky-700/5 p-4">
-                  <p className="text-sm font-medium">Email</p>
+                  <p className="text-sm font-medium">{t.auth.email}</p>
                   <p className="text-sm text-muted-foreground">{profileData.email}</p>
                 </div>
                 <div className="rounded-lg bg-sky-700/5 p-4">
-                  <p className="text-sm font-medium">Role</p>
+                  <p className="text-sm font-medium">{t.profile.role}</p>
                   <p className="text-sm text-muted-foreground">
-                    {profileData.role === UserRole.ADMIN ? "Admin" : "Student"}
+                    {profileData.role === UserRole.ADMIN ? t.profile.adminRole : t.profile.studentRole}
                   </p>
                 </div>
                 <div className="rounded-lg bg-sky-700/5 p-4">
-                  <p className="text-sm font-medium">Enrollments</p>
+                  <p className="text-sm font-medium">{t.profile.enrollments}</p>
                   <p className="text-sm text-muted-foreground">
-                    {profileData.courseEnrollments.length} courses • {profileData.learningPathEnrollments.length} learning paths
+                    {t.profile.enrollmentsSummary(profileData.courseEnrollments.length, profileData.learningPathEnrollments.length)}
                   </p>
                 </div>
               </CardContent>

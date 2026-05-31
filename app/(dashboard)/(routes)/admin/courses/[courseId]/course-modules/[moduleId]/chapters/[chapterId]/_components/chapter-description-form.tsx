@@ -25,6 +25,7 @@ import { Chapter } from "@prisma/client";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ChapterDescriptionFormProps {
   initialData: Chapter;
@@ -43,6 +44,7 @@ export const ChapterDescriptionForm = ({
   moduleId,
   chapterId
 }: ChapterDescriptionFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -64,24 +66,24 @@ export const ChapterDescriptionForm = ({
         `/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}`,
         values
       );
-          toast.success("Descripción actualizada");
+          toast.success(t.admin.descriptionUpdated);
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Error al actualizar descripción");
+      toast.error(t.admin.descriptionUpdateError);
     }
   };
 
   return (
     <div className="mt-6 bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Descripción
+        {t.admin.description}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
-          {isEditing && <>Cancelar</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar Descripción
+              {t.admin.editDescription}
             </>
           )}
         </Button>
@@ -93,7 +95,7 @@ export const ChapterDescriptionForm = ({
             !initialData.description && "text-slate-500 italic"
           )}
         >
-          {!initialData.description && "Sin descripción"}
+          {!initialData.description && t.admin.noDescription}
           {initialData.description && (
             <Preview value={initialData.description} />
           )}
@@ -119,7 +121,7 @@ export const ChapterDescriptionForm = ({
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Guardar
+                {t.common.save}
               </Button>
             </div>
           </form>

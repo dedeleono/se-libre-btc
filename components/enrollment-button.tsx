@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/lib/i18n";
 
 interface EnrollmentButtonProps {
   productId: string;
@@ -32,6 +33,7 @@ export function EnrollmentButton({
   variant,
   size,
 }: EnrollmentButtonProps) {
+  const { t } = useLocale();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,7 +41,7 @@ export function EnrollmentButton({
     try {
       setIsLoading(true);
       const response = await axios.post(endpointByType[productType](productId));
-      toast.success(response.data?.message || "Enrollment complete");
+      toast.success(response.data?.message || t.toasts.enrollmentComplete);
       if (redirectTo) {
         router.push(redirectTo);
       } else {
@@ -51,10 +53,10 @@ export function EnrollmentButton({
         return;
       }
       if (error.response?.status === 402) {
-        toast.error("This enrollment is not available yet.");
+        toast.error(t.toasts.enrollmentUnavailable);
         return;
       }
-      toast.error(error.response?.data || "Unable to enroll");
+      toast.error(error.response?.data || t.toasts.enrollmentError);
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +71,7 @@ export function EnrollmentButton({
       variant={variant}
       size={size}
     >
-      {isLoading ? "Enrolling..." : children}
+      {isLoading ? t.course.enrolling : children}
     </Button>
   );
 }

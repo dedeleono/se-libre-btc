@@ -8,12 +8,14 @@ import { ContentViewer } from "./_components/content-viewer";
 import { isChapterAccessible } from "@/lib/chapter-access";
 import { ChapterWithProgress } from "@/types/chapter";
 import { QuizPlayer } from "./_components/quiz-player";
+import { getServerMessages } from "@/lib/i18n-server";
 
 const ChapterPage = async ({
   params,
 }: {
   params: { courseId: string; chapterId: string };
 }) => {
+  const t = getServerMessages();
   const chapterIntro = await prisma.chapter.findUnique({
     where: {
       id: params.chapterId,
@@ -171,14 +173,14 @@ const ChapterPage = async ({
   if (!isAccessible) {
     return (
       <Banner
-        label="Complete the previous chapter first to unlock this content."
+        label={t.course.completePrevious}
         variant="warning"
       />
     );
   }
 
   if (chapter.type === ChapterType.QUIZ && !chapter.quiz) {
-    return <Banner label="This quiz is not configured yet." variant="warning" />;
+    return <Banner label={t.course.quizNotConfigured} variant="warning" />;
   }
 
   const isLocked = !isAccessible;
@@ -189,7 +191,7 @@ const ChapterPage = async ({
          return (
            <Banner 
              variant="warning"
-             label="Complete the previous chapter first to unlock this content."
+             label={t.course.completePrevious}
            />
          );
        }
@@ -228,7 +230,7 @@ const ChapterPage = async ({
       {studentProgress?.isCompleted && (
         <div className="sticky top-0 w-full border-t-0">
           <Banner 
-            label="¡Has completado esta lección!" 
+            label={t.course.lessonCompleted} 
             variant="success"
           />
         </div>

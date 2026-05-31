@@ -7,8 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getServerMessages } from "@/lib/i18n-server";
 
 const StudentPage = async () => {
+  const t = getServerMessages();
   const session = await auth();
   if (!session?.user?.id) return redirect("/");
 
@@ -37,22 +39,22 @@ const StudentPage = async () => {
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Welcome, {user.firstName || user.name || "learner"}</h1>
-          <p className="text-sm text-muted-foreground">Continue your Bitcoin education.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t.student.welcome(user.firstName || user.name || t.student.learnerFallback)}</h1>
+          <p className="text-sm text-muted-foreground">{t.student.subtitle}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <DashboardStat title="Enrolled courses" value={courseEnrollments.length} icon={BookOpen} href="/student/courses" />
-          <DashboardStat title="Learning paths" value={learningPathEnrollments.length} icon={Route} href="/student/learning-paths" />
-          <DashboardStat title="Upcoming sessions" value={upcomingSessions.length} icon={Calendar} href="/student/schedule" />
-          <DashboardStat title="Notes" value={notesCount} icon={StickyNote} href="/student/notes" />
+          <DashboardStat title={t.student.enrolledCourses} value={courseEnrollments.length} icon={BookOpen} href="/student/courses" openLabel={t.common.open} />
+          <DashboardStat title={t.student.learningPaths} value={learningPathEnrollments.length} icon={Route} href="/student/learning-paths" openLabel={t.common.open} />
+          <DashboardStat title={t.student.upcomingSessions} value={upcomingSessions.length} icon={Calendar} href="/student/schedule" openLabel={t.common.open} />
+          <DashboardStat title={t.student.notes} value={notesCount} icon={StickyNote} href="/student/notes" openLabel={t.common.open} />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle>Continue learning</CardTitle>
-              <Button asChild variant="outline" size="sm"><Link href="/student/courses">View all</Link></Button>
+              <CardTitle>{t.student.continueLearning}</CardTitle>
+              <Button asChild variant="outline" size="sm"><Link href="/student/courses">{t.common.viewAll}</Link></Button>
             </CardHeader>
             <CardContent className="space-y-3">
               {courseEnrollments.map(({ course }) => (
@@ -61,17 +63,17 @@ const StudentPage = async () => {
                     <p className="font-medium">{course.title}</p>
                     <p className="text-xs text-muted-foreground">{course.deliveryMode.replace("_", " ")}</p>
                   </div>
-                  <Button asChild size="sm"><Link href={`/courses/${course.id}`}>Open</Link></Button>
+                  <Button asChild size="sm"><Link href={`/courses/${course.id}`}>{t.common.open}</Link></Button>
                 </div>
               ))}
-              {courseEnrollments.length === 0 && <p className="text-sm text-muted-foreground">No courses yet. Browse the catalog to get started.</p>}
+              {courseEnrollments.length === 0 && <p className="text-sm text-muted-foreground">{t.student.noCourses}</p>}
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle>Upcoming live sessions</CardTitle>
-              <Button asChild variant="outline" size="sm"><Link href="/student/schedule">Schedule</Link></Button>
+              <CardTitle>{t.student.upcomingLiveSessions}</CardTitle>
+              <Button asChild variant="outline" size="sm"><Link href="/student/schedule">{t.nav.schedule}</Link></Button>
             </CardHeader>
             <CardContent className="space-y-3">
               {upcomingSessions.map((liveSession) => (
@@ -80,7 +82,7 @@ const StudentPage = async () => {
                   <p className="text-xs text-muted-foreground">{liveSession.startsAt.toLocaleString()}</p>
                 </div>
               ))}
-              {upcomingSessions.length === 0 && <p className="text-sm text-muted-foreground">No upcoming sessions.</p>}
+              {upcomingSessions.length === 0 && <p className="text-sm text-muted-foreground">{t.student.noUpcomingSessions}</p>}
             </CardContent>
           </Card>
         </div>
@@ -89,7 +91,7 @@ const StudentPage = async () => {
   );
 };
 
-function DashboardStat({ title, value, icon: Icon, href }: { title: string; value: number; icon: LucideIcon; href: string }) {
+function DashboardStat({ title, value, icon: Icon, href, openLabel }: { title: string; value: number; icon: LucideIcon; href: string; openLabel: string }) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -98,7 +100,7 @@ function DashboardStat({ title, value, icon: Icon, href }: { title: string; valu
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <Button asChild variant="link" className="h-auto p-0 text-xs"><Link href={href}>Open</Link></Button>
+        <Button asChild variant="link" className="h-auto p-0 text-xs"><Link href={href}>{openLabel}</Link></Button>
       </CardContent>
     </Card>
   );

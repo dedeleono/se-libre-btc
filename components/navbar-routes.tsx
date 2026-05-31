@@ -37,7 +37,7 @@ export const NavbarRoutes = () => {
           onClick={() => router.push(`/admin/courses/${courseId}`)}
           className="dark:text-white/70 dark:hover:bg-white/[0.06] dark:hover:text-white"
         >
-          {t.manageCourse}
+          {t.nav.manageCourse}
         </Button>
       )}
 
@@ -45,7 +45,7 @@ export const NavbarRoutes = () => {
         <Link href={`/courses/${courseId}/student-resources`} className="w-full">
           <Button size="sm" variant="ghost" className="w-full gap-2 rounded-sm hover:bg-transparent dark:text-white/70 dark:hover:bg-white/[0.06] dark:hover:text-white">
             <FileText className="h-4 w-4" />
-            {t.resources}
+            {t.nav.resources}
           </Button>
         </Link>
       )}

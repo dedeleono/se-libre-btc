@@ -13,6 +13,7 @@ import { Loader2, Upload, File, X, AlertCircle } from "lucide-react";
 import { Progress } from "./ui/progress";
 import { Alert, AlertDescription } from "./ui/alert";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocale } from "@/lib/i18n";
 
 interface S3FileUploadProps {
   onUploadComplete: (url: string) => void;
@@ -40,6 +41,7 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
     },
     ref
   ) => {
+    const { t } = useLocale();
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
         
         // Check file size explicitly
         if (file.size > maxFileSize) {
-          setError(`El archivo es demasiado grande. El tamaño máximo es ${Math.round(maxFileSize / (1024 * 1024))}MB.`);
+          setError(t.forms.fileTooLarge(Math.round(maxFileSize / (1024 * 1024))));
           return;
         }
         
@@ -133,7 +135,7 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
           });
           
           // More detailed error message
-          let errorMessage = "Error al subir el archivo. Por favor, intenta de nuevo.";
+          let errorMessage = t.forms.uploadError;
           
           if (error.response) {
             // Server responded with a status code outside of 2xx range
@@ -144,11 +146,11 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
               headers: error.response.headers
             });
             if (error.response.status === 413) {
-              errorMessage = "El archivo es demasiado grande para ser procesado por el servidor.";
+              errorMessage = t.forms.uploadServerTooLarge;
             } else if (error.response.data?.error) {
               errorMessage = error.response.data.error;
             } else {
-              errorMessage = `Error del servidor: ${error.response.status} ${error.response.statusText}`;
+              errorMessage = t.forms.uploadServerError(error.response.status, error.response.statusText);
             }
           } else if (error.request) {
             // Request was made but no response received
@@ -159,7 +161,7 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
               timeout: error.config?.timeout,
               headers: error.config?.headers
             });
-            errorMessage = `No se pudo conectar con el servidor. Verifica tu conexión. URL: ${error.config?.url || 'desconocida'}`;
+            errorMessage = t.forms.uploadConnectionError(error.config?.url || "unknown");
           }
           
           setError(errorMessage);
@@ -170,7 +172,7 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
           setUploadProgress(0);
         }
       },
-      [onUploadComplete, onUploadError, type, maxFileSize]
+      [onUploadComplete, onUploadError, type, maxFileSize, t.forms]
     );
 
     const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
@@ -186,11 +188,11 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
         if (rejection) {
           const errorCode = rejection.errors[0]?.code;
           if (errorCode === 'file-too-large') {
-            setError(`El archivo es demasiado grande. El tamaño máximo es ${Math.round(maxFileSize / (1024 * 1024))}MB.`);
+            setError(t.forms.fileTooLarge(Math.round(maxFileSize / (1024 * 1024))));
           } else if (errorCode === 'file-invalid-type') {
-            setError(`Tipo de archivo no permitido. Formatos aceptados: ${acceptedFileTypes.join(', ')}`);
+            setError(t.forms.invalidFileType(acceptedFileTypes.join(", ")));
           } else {
-            setError('El archivo no cumple con los requisitos.');
+            setError(t.forms.invalidFile);
           }
         }
       }
@@ -219,10 +221,10 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
             )}
             <div className="text-sm text-muted-foreground">
               {isUploading 
-                ? "Subiendo archivo..." 
+                ? t.forms.uploadingFile
                 : isDragActive 
-                  ? "Suelta el archivo aquí" 
-                  : "Arrastra y suelta un archivo aquí, o haz clic para seleccionar"
+                  ? t.forms.dropFile
+                  : t.forms.uploadPrompt
               }
             </div>
           </div>
@@ -237,7 +239,7 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
               className="space-y-2"
             >
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Progreso de subida</span>
+                <span className="text-muted-foreground">{t.forms.uploadProgress}</span>
                 <span className="font-medium">{Math.round(uploadProgress)}%</span>
               </div>
               <Progress value={uploadProgress} className="h-2" />

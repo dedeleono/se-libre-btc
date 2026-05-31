@@ -11,6 +11,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { User } from "@prisma/client";
 import { UserAvatar } from "@/components/user-avatar";
+import { useLocale } from "@/lib/i18n";
 
 interface Discussion {
   id: string;
@@ -25,6 +26,7 @@ interface DiscussionSectionProps {
 }
 
 export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionProps) {
+  const { t } = useLocale();
   const router = useRouter();
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -42,11 +44,11 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
       }
     } catch (error) {
       console.error("Error loading discussions:", error);
-      toast.error("Failed to load discussions");
+      toast.error(t.forum.loadDiscussionsError);
       setDiscussions([]);
       setIsLoading(false);
     }
-  }, [chapterId]);
+  }, [chapterId, t.forum.loadDiscussionsError]);
 
   const onSubmitComment = async () => {
     try {
@@ -56,10 +58,10 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
       });
       setNewComment("");
       setShowCommentBox(false);
-      toast.success("Discussion posted successfully");
+      toast.success(t.forum.discussionPosted);
       loadDiscussions();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(t.common.somethingWentWrong);
     } finally {
       setIsSubmitting(false);
     }
@@ -82,12 +84,9 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <MessageSquare className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">No hay nada aún</h3>
+            <h3 className="text-lg font-semibold mb-2">{t.forum.noContentYet}</h3>
             <p className="text-sm text-muted-foreground max-w-sm">
-              Sé el primero en empezar una discusión! <br />
-              <br />
-              Comparte tus ideas, haz preguntas o participa con otros
-              estudiantes.
+              {t.forum.emptyPrompt}
             </p>
           </div>
         ) : (
@@ -143,7 +142,7 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
           <Textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Comparte tus ideas o haz una pregunta..."
+            placeholder={t.forum.commentPlaceholder}
             className="min-h-[100px]"
           />
           <div className="flex gap-2">
@@ -151,10 +150,10 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
               onClick={onSubmitComment}
               disabled={!newComment.trim() || isSubmitting}
             >
-              Post
+              {t.forum.postReply}
             </Button>
             <Button variant="ghost" onClick={() => setShowCommentBox(false)}>
-              Cancelar
+              {t.common.cancel}
             </Button>
           </div>
         </div>

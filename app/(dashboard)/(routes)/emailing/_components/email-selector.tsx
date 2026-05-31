@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLocale } from "@/lib/i18n";
 
 interface EmailSelectorProps {
   groups: { 
@@ -26,6 +27,7 @@ interface EmailSelectorProps {
 }
 
 export function EmailSelector({ groups, onEmailsChange }: EmailSelectorProps) {
+  const { t } = useLocale();
   const [selectedEmails, setSelectedEmails] = React.useState<string[]>([]);
   const [inputValue, setInputValue] = React.useState("");
   const [selectedGroups, setSelectedGroups] = React.useState<string[]>([]);
@@ -179,7 +181,7 @@ export function EmailSelector({ groups, onEmailsChange }: EmailSelectorProps) {
         {/* Individual Student Selection Command */}
         <Command className="rounded-xl border border-primary/20 overflow-hidden">
           <CommandInput
-            placeholder="Buscar estudiante..."
+            placeholder={t.emailing.searchStudent}
             value={inputValue}
             onValueChange={setInputValue}
             className="flex-1 h-10 sm:h-12 px-2 border-0 focus:ring-0 focus-visible:ring-0 text-xs sm:text-sm w-full"

@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Editor } from "@/components/editor";
 import { DiscussionSection } from "./discussion-section";
 import { User } from "@prisma/client";
+import { useLocale } from "@/lib/i18n";
 
 interface ContentViewerProps {
   videoUrl?: string | null;
@@ -53,6 +54,8 @@ interface LockScreenProps {
 }
 
 const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => {
+  const { t } = useLocale();
+
   return (
     <div className="flex items-center justify-center h-[calc(100vh-14rem)]">
       <Card className="p-8 max-w-md mx-auto text-center space-y-6 shadow-lg relative">
@@ -61,9 +64,9 @@ const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => 
             <div className="mx-auto w-fit p-4 rounded-full bg-emerald-100">
               <Lock className="h-12 w-12 text-emerald-600" />
             </div>
-            <h2 className="text-xl font-semibold">Contenido de Muestra</h2>
+            <h2 className="text-xl font-semibold">{t.course.sampleContentTitle}</h2>
             <p className="text-sm text-muted-foreground">
-              Esta es una lección gratuita de muestra. ¡Explora el contenido y descubre lo que puedes aprender!
+              {t.course.sampleContentDescription}
             </p>
           </>
         )}
@@ -73,13 +76,13 @@ const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => 
             <div className="mx-auto w-fit p-4 rounded-full bg-yellow-100">
               <Clock className="h-12 w-12 text-yellow-600" />
             </div>
-            <h2 className="text-xl font-semibold">Tiempo Restringido</h2>
+            <h2 className="text-xl font-semibold">{t.course.timeRestricted}</h2>
             <p className="text-sm text-muted-foreground">
               {!startTime 
-                ? "Esta lección aún no está disponible"
-                : `Esta lección estará disponible el ${new Date(startTime).toLocaleDateString()}`
+                ? t.course.lessonUnavailable
+                : t.course.lessonAvailableOn(new Date(startTime).toLocaleDateString())
               }
-              {endTime && ` hasta el ${new Date(endTime).toLocaleDateString()}`}
+              {endTime && t.course.untilDate(new Date(endTime).toLocaleDateString())}
             </p>
           </>
         )}
@@ -89,12 +92,12 @@ const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => 
             <div className="mx-auto w-fit p-4 rounded-full bg-blue-100">
               <CreditCard className="h-12 w-12 text-blue-600" />
             </div>
-            <h2 className="text-xl font-semibold">Contenido bloqueado</h2>
+            <h2 className="text-xl font-semibold">{t.course.lockedContent}</h2>
             <p className="text-sm text-muted-foreground">
-              Inscríbete gratis para acceder a este contenido.
+              {t.course.enrollToAccess}
             </p>
             <Button asChild className="w-full">
-              <Link href={`/courses/preview/${courseId}`}>Ver curso</Link>
+              <Link href={`/courses/preview/${courseId}`}>{t.course.viewCourse}</Link>
             </Button>
           </>
         )}
@@ -123,6 +126,7 @@ export const ContentViewer = ({
   isAuthenticated = true,
   currentUser,
 }: ContentViewerProps) => {
+  const { t } = useLocale();
   
   const [notes, setNotes] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -154,7 +158,7 @@ export const ContentViewer = ({
       try {
         setIsLoading(true);
         const response = await fetch(`/api/notes?chapterId=${chapterId}`);
-        if (!response.ok) throw new Error("Failed to load notes");
+        if (!response.ok) throw new Error(t.course.notesLoadError);
         
         const data = await response.json();
         if (data?.content) {
@@ -168,7 +172,7 @@ export const ContentViewer = ({
     };
 
     loadNotes();
-  }, [chapterId, isAuthenticated, isPreviewMode]);
+  }, [chapterId, isAuthenticated, isPreviewMode, t.course.notesLoadError]);
 
   const onVideoEnd = () => {
     if (completeOnEnd && completionRef.current && isAuthenticated && !isPreviewMode) {
@@ -193,12 +197,12 @@ export const ContentViewer = ({
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to save notes");
+      if (!response.ok) throw new Error(t.course.notesSaveError);
       
-      toast.success("Notes saved successfully");
+      toast.success(t.course.notesSaved);
     } catch (error) {
       console.error("Error saving notes:", error);
-      toast.error("Failed to save notes");
+      toast.error(t.course.notesSaveError);
     } finally {
       setIsSavingNotes(false);
     }
@@ -206,7 +210,7 @@ export const ContentViewer = ({
 
   const handleTabChange = (tab: "content" | "discussion" | "notes") => {
     if (isPreviewMode && tab !== "content") {
-      toast.info("Upgrade your access to use all features");
+      toast.info(t.course.upgradeAccess);
       return;
     }
     setActiveTab(tab);
@@ -234,7 +238,7 @@ export const ContentViewer = ({
                   className="bg-emerald-100 text-emerald-700 border-emerald-200
                   dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
                 >
-                  Preview
+                  {t.course.preview}
                 </Badge>
               )}
             </div>
@@ -250,14 +254,14 @@ export const ContentViewer = ({
               dark:bg-white/[0.08] dark:text-white/90"
             >
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              <p className="text-sm">Actualizando progreso...</p>
+              <p className="text-sm">{t.course.updatingProgress}</p>
             </div>
           )}
         </div>
         {progress > 0 && isAuthenticated && !isPreviewMode && (
           <div className="mt-0 space-y-1">
             <div className="flex justify-between text-sm text-muted-foreground dark:text-white/70">
-              <span>Course Progress</span>
+              <span>{t.course.courseProgress}</span>
               <span>{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
@@ -276,7 +280,7 @@ export const ContentViewer = ({
                 : "text-muted-foreground dark:text-white/70"
             )}
           >
-            Contenido
+            {t.course.content}
           </button>
           {!isPreviewMode && (
             <>
@@ -289,7 +293,7 @@ export const ContentViewer = ({
                     : "text-muted-foreground dark:text-white/70"
                 )}
               >
-                Notas
+                {t.nav.notes}
               </button>
               <button
                 onClick={() => handleTabChange("discussion")}
@@ -300,7 +304,7 @@ export const ContentViewer = ({
                     : "text-muted-foreground dark:text-white/70"
                 )}
               >
-                Discusión
+                {t.course.discussion}
               </button>
             </>
           )}
@@ -381,10 +385,10 @@ export const ContentViewer = ({
                     </div>
                     <div className="text-center space-y-2">
                       <h3 className="font-semibold text-lg dark:text-white/90">
-                        Loading Content
+                        {t.course.loadingContent}
                       </h3>
                       <p className="text-sm text-muted-foreground dark:text-white/70">
-                        Please wait while we prepare your lesson
+                        {t.course.preparingLesson}
                       </p>
                     </div>
                   </div>
@@ -399,7 +403,7 @@ export const ContentViewer = ({
                   <div className="flex items-center space-x-4">
                     <Loader2 className="h-8 w-8 animate-spin text-primary dark:text-secondary" />
                     <p className="text-sm font-medium dark:text-white/90">
-                      Loading video...
+                      {t.course.loadingVideo}
                     </p>
                   </div>
                 </div>
@@ -413,7 +417,7 @@ export const ContentViewer = ({
                   <div className="flex items-center space-x-4">
                     <Loader2 className="h-8 w-8 animate-spin text-primary dark:text-secondary" />
                     <p className="text-sm font-medium dark:text-white/90">
-                      Loading document...
+                      {t.course.loadingDocument}
                     </p>
                   </div>
                 </div>
@@ -448,7 +452,7 @@ export const ContentViewer = ({
                     className="text-sm font-semibold flex items-center gap-x-2 dark:text-white/90"
                   >
                     <FileText className="h-4 w-4" />
-                    Libreta Digital
+                    {t.course.digitalNotebook}
                   </Label>
                   <div className="mt-2">
                     <Editor
@@ -466,10 +470,10 @@ export const ContentViewer = ({
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     {isLoading
-                      ? "Cargando notas..."
+                      ? t.course.loadingNotes
                       : isSavingNotes
-                        ? "Guardando notas..."
-                        : "Tus notas se guardan automáticamente"}
+                        ? t.course.savingNotes
+                        : t.course.autosaveNotes}
                   </p>
                 </div>
 
@@ -483,10 +487,10 @@ export const ContentViewer = ({
                     {isSavingNotes ? (
                       <>
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                        Guardando...
+                        {t.course.savingNotes}
                       </>
                     ) : (
-                      "Guardar Notas"
+                      t.course.saveNotes
                     )}
                   </Button>
 
@@ -508,18 +512,17 @@ export const ContentViewer = ({
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="space-y-1 text-center sm:text-left">
                   <h3 className="font-semibold text-emerald-800 dark:text-emerald-400">
-                    Te gustaría continuar?
+                    {t.course.continuePromptTitle}
                   </h3>
                   <p className="text-sm text-emerald-700 dark:text-emerald-500">
-                    Regístrate para acceder al curso completo y todas sus
-                    características.
+                    {t.course.continuePromptDescription}
                   </p>
                 </div>
                 <Button
                   asChild
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
-                  <Link href="/sign-in">Inicia aquí</Link>
+                  <Link href="/sign-in">{t.course.startHere}</Link>
                 </Button>
               </div>
             </Card>
@@ -534,14 +537,14 @@ export const ContentViewer = ({
             <div>
               <Label className="text-sm font-semibold flex items-center gap-x-2 dark:text-white/90">
                 <FileText className="h-4 w-4" />
-                Libreta Digital
+                {t.course.digitalNotebook}
               </Label>
               <div className="mt-2">
                 {notes ? (
                   <div className="prose max-w-none">
                     {typeof notes === 'string' && notes.startsWith('{"root":') ? (
                       <div className="text-sm">
-                        {JSON.parse(notes).root?.children?.[0]?.children?.[0]?.text || "No hay contenido disponible"}
+                        {JSON.parse(notes).root?.children?.[0]?.children?.[0]?.text || t.common.noContent}
                       </div>
                     ) : (
                       <Preview value={notes} />
@@ -549,8 +552,7 @@ export const ContentViewer = ({
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground dark:text-white/70">
-                    No hay notas aún. Agrega tus notas en la pestaña de
-                    contenido.
+                    {t.course.noNotes}
                   </p>
                 )}
               </div>
@@ -565,7 +567,7 @@ export const ContentViewer = ({
           <div className="space-y-4">
             <div>
               <Label className="text-sm font-semibold dark:text-white/90">
-                Comparte tus ideas y preguntas
+                {t.course.shareIdeas}
               </Label>
               <div className="mt-4">
                 <DiscussionSection

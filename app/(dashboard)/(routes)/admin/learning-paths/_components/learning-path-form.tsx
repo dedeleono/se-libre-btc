@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useLocale } from "@/lib/i18n";
 
 type CourseOption = {
   id: string;
@@ -43,6 +44,7 @@ interface LearningPathFormProps {
 }
 
 export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
   const isNew = !initialData?.id;
   const [isSaving, setIsSaving] = useState(false);
@@ -81,15 +83,15 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
 
       if (isNew) {
         const response = await axios.post("/api/learning-paths", payload);
-        toast.success("Learning path created");
+        toast.success(t.admin.learningPathCreated);
         router.push(`/admin/learning-paths/${response.data.id}`);
       } else {
         await axios.patch(`/api/learning-paths/${initialData.id}`, payload);
-        toast.success("Learning path saved");
+        toast.success(t.admin.learningPathSaved);
         router.refresh();
       }
     } catch {
-      toast.error("Could not save learning path");
+      toast.error(t.admin.learningPathSaveError);
     } finally {
       setIsSaving(false);
     }
@@ -101,10 +103,10 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
     try {
       setIsSaving(true);
       await axios.patch(`/api/learning-paths/${initialData.id}/${nextPublished ? "publish" : "unpublish"}`);
-      toast.success(nextPublished ? "Learning path published" : "Learning path unpublished");
+      toast.success(nextPublished ? t.admin.learningPathPublished : t.admin.learningPathUnpublished);
       router.refresh();
     } catch {
-      toast.error("Could not update publish state");
+      toast.error(t.admin.learningPathPublishError);
     } finally {
       setIsSaving(false);
     }
@@ -117,10 +119,10 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
       setIsSaving(true);
       await axios.post(`/api/learning-paths/${initialData.id}/courses`, { courseId: selectedCourseId });
       setSelectedCourseId("");
-      toast.success("Course added");
+      toast.success(t.admin.courseAdded);
       router.refresh();
     } catch {
-      toast.error("Could not add course");
+      toast.error(t.admin.courseAddError);
     } finally {
       setIsSaving(false);
     }
@@ -132,10 +134,10 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
     try {
       setIsSaving(true);
       await axios.delete(`/api/learning-paths/${initialData.id}/courses/${courseId}`);
-      toast.success("Course removed");
+      toast.success(t.admin.courseRemoved);
       router.refresh();
     } catch {
-      toast.error("Could not remove course");
+      toast.error(t.admin.courseRemoveError);
     } finally {
       setIsSaving(false);
     }
@@ -159,7 +161,7 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
       });
       router.refresh();
     } catch {
-      toast.error("Could not reorder courses");
+      toast.error(t.admin.courseReorderError);
     } finally {
       setIsSaving(false);
     }
@@ -169,18 +171,18 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
       <Link href="/admin/learning-paths" className="flex items-center text-sm transition hover:opacity-75">
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to learning paths
+        {t.admin.backToLearningPaths}
       </Link>
 
       <Card>
         <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <div>
-            <CardTitle>{isNew ? "New Learning Path" : "Learning Path Details"}</CardTitle>
-            <p className="mt-1 text-sm text-muted-foreground">Edit title, publishing, pricing, and public preview details.</p>
+            <CardTitle>{isNew ? t.admin.newLearningPath : t.admin.learningPathDetails}</CardTitle>
+            <p className="mt-1 text-sm text-muted-foreground">{t.admin.editPathDetails}</p>
           </div>
           {!isNew && (
             <Button variant={initialData.isPublished ? "outline" : "default"} disabled={isSaving} onClick={() => publish(!initialData.isPublished)}>
-              {initialData.isPublished ? "Unpublish" : "Publish"}
+              {initialData.isPublished ? t.admin.unpublish : t.admin.publish}
             </Button>
           )}
         </CardHeader>
@@ -189,38 +191,38 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
             <Input
               value={formData.title}
               onChange={(event) => setFormData((current) => ({ ...current, title: event.target.value }))}
-              placeholder="Title"
+              placeholder={t.admin.title}
             />
             <Input
               value={formData.slug}
               onChange={(event) => setFormData((current) => ({ ...current, slug: event.target.value }))}
-              placeholder="Slug"
+              placeholder={t.admin.slug}
             />
           </div>
           <Textarea
             value={formData.description}
             onChange={(event) => setFormData((current) => ({ ...current, description: event.target.value }))}
-            placeholder="Description"
+            placeholder={t.admin.description}
           />
           <Input
             value={formData.imageUrl}
             onChange={(event) => setFormData((current) => ({ ...current, imageUrl: event.target.value }))}
-            placeholder="Image URL"
+            placeholder={t.admin.imageUrl}
           />
           <div className="grid gap-4 md:grid-cols-2">
             <label className="flex items-center gap-2 text-sm">
               <Switch checked={formData.isFree} onCheckedChange={(checked) => setFormData((current) => ({ ...current, isFree: checked }))} />
-              Free enrollment
+              {t.admin.freeEnrollment}
             </label>
             <Input
               disabled={formData.isFree}
               value={formData.price}
               onChange={(event) => setFormData((current) => ({ ...current, price: event.target.value }))}
-              placeholder="Price"
+              placeholder={t.admin.price}
             />
           </div>
           <Button onClick={savePath} disabled={isSaving || !formData.title.trim()}>
-            {isNew ? "Create learning path" : "Save changes"}
+            {isNew ? t.admin.createLearningPath : t.admin.saveChanges}
           </Button>
         </CardContent>
       </Card>
@@ -228,8 +230,8 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
       {!isNew && (
         <Card>
           <CardHeader>
-            <CardTitle>Courses</CardTitle>
-            <p className="text-sm text-muted-foreground">Add, remove, and reorder courses in this path.</p>
+            <CardTitle>{t.nav.courses}</CardTitle>
+            <p className="text-sm text-muted-foreground">{t.admin.addRemoveReorderCourses}</p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-2">
@@ -238,12 +240,12 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
                 onChange={(event) => setSelectedCourseId(event.target.value)}
                 className="min-w-0 flex-1 rounded-md border bg-background px-3 py-2 text-sm"
               >
-                <option value="">Select course</option>
+                <option value="">{t.admin.selectCourse}</option>
                 {availableCourses.map((course) => (
                   <option key={course.id} value={course.id}>{course.title}</option>
                 ))}
               </select>
-              <Button onClick={addCourse} disabled={isSaving || !selectedCourseId}>Add</Button>
+              <Button onClick={addCourse} disabled={isSaving || !selectedCourseId}>{t.admin.add}</Button>
             </div>
 
             <div className="space-y-2">
@@ -251,7 +253,7 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
                 <div key={pathCourse.id} className="flex items-center justify-between gap-3 rounded-md border p-3">
                   <div>
                     <p className="font-medium">{pathCourse.course.title}</p>
-                    <p className="text-xs text-muted-foreground">Position {index + 1}</p>
+                    <p className="text-xs text-muted-foreground">{t.admin.position(index + 1)}</p>
                   </div>
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="icon" disabled={index === 0 || isSaving} onClick={() => reorderCourse(pathCourse.id, "up")}>
@@ -267,7 +269,7 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
                 </div>
               ))}
               {sortedPathCourses.length === 0 && (
-                <div className="rounded-md border p-4 text-center text-sm text-muted-foreground">No courses added yet.</div>
+                <div className="rounded-md border p-4 text-center text-sm text-muted-foreground">{t.admin.noCoursesAddedYet}</div>
               )}
             </div>
           </CardContent>

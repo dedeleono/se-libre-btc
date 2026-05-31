@@ -30,19 +30,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-
-const categorySchema = z.object({
-  name: z.string().min(1, "El nombre es requerido"),
-});
+import { useLocale } from "@/lib/i18n";
 
 interface FormPros {
   courseId: string;
 }
 
-type CategoryFormData = z.infer<typeof categorySchema>;
+type CategoryFormData = {
+  name: string;
+};
 
 const CategoryFormCreate = forwardRef(({ courseId }: FormPros, ref) => {
+  const { t } = useLocale();
   const router = useRouter();
+  const categorySchema = z.object({
+    name: z.string().min(1, t.validation.nameRequired),
+  });
 
   const [creatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const [modalOpen, setIsModalOpen] = useState(false);
@@ -69,13 +72,13 @@ const CategoryFormCreate = forwardRef(({ courseId }: FormPros, ref) => {
       });
 
       if (response.status === 200) {
-        toast.success("Categoría creada exitosamente");
+        toast.success(t.admin.categoryCreated);
         router.refresh();
         setIsCreatingNewCategory(false);
         setIsModalOpen(false);
       }
     } catch (error) {
-      toast.error("Error al crear categoría");
+      toast.error(t.admin.categoryCreateError);
     }
   };
 
@@ -83,8 +86,8 @@ const CategoryFormCreate = forwardRef(({ courseId }: FormPros, ref) => {
     <Dialog open={modalOpen} onOpenChange={(v) => setIsModalOpen(v)}>
       <DialogContent>
         <DialogHeader className="text-left">
-          <DialogTitle>Nueva Categoría</DialogTitle>
-          <DialogDescription>Escribe el nombre debajo</DialogDescription>
+          <DialogTitle>{t.admin.newCategory}</DialogTitle>
+          <DialogDescription>{t.admin.categoryNameHelp}</DialogDescription>
         </DialogHeader>
 
         {/* Use react-hook-form with Zod resolver */}
@@ -96,7 +99,7 @@ const CategoryFormCreate = forwardRef(({ courseId }: FormPros, ref) => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="Ej. Matemáticas" {...field} />
+                    <Input placeholder={t.admin.categoryPlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -110,7 +113,7 @@ const CategoryFormCreate = forwardRef(({ courseId }: FormPros, ref) => {
                 className="text-base"
                 disabled={isSubmitting}
               >
-                Guardar
+                {t.common.save}
               </Button>
             </DialogFooter>
           </form>

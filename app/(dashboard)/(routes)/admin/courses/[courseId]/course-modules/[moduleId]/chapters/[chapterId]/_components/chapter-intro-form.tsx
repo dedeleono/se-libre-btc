@@ -26,6 +26,7 @@ import { Chapter } from "@prisma/client";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ChapterIntroFormProps {
   initialData: Chapter & {isIntro: Boolean};
@@ -44,6 +45,7 @@ export const ChapterIntroForm = ({
   moduleId,
   chapterId
 }: ChapterIntroFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -66,24 +68,24 @@ export const ChapterIntroForm = ({
         `/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}`,
         values
       );
-      toast.success("Acceso actualizado");
+      toast.success(t.admin.accessUpdated);
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Error al actualizar acceso");
+      toast.error(t.admin.accessUpdateError);
     }
   };
 
   return (
     <div className="mt-6 bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Acceso a lección
+        {t.admin.lessonAccess}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
-          {isEditing && <>Cancel</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar acceso
+              {t.admin.editAccess}
             </>
           )}
         </Button>
@@ -96,9 +98,9 @@ export const ChapterIntroForm = ({
           )}
         >
           {!!initialData.isIntro ? (
-            <>Es introducción</>
+            <>{t.admin.isIntro}</>
           ) : (
-            <>No es introducción</>
+            <>{t.admin.notIntro}</>
           )}
         </p>
       )}
@@ -123,8 +125,7 @@ export const ChapterIntroForm = ({
                   </FormControl>
                   <div className="spacep-y-1 leading-none">
                     <FormDescription>
-                      Selecciona la cajita si esta lección es de introducción y
-                      visible siempre
+                      {t.admin.introHelp}
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -132,7 +133,7 @@ export const ChapterIntroForm = ({
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Guardar
+                {t.common.save}
               </Button>
             </div>
           </form>

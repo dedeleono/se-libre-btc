@@ -30,11 +30,7 @@ import { S3FileUpload } from "@/components/file-upload";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@prisma/client";
 import { UserAvatar } from "@/components/user-avatar";
-
-const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  imageUrl: z.string().optional(),
-});
+import { useLocale } from "@/lib/i18n";
 
 interface OnboardingFormProps {
   organizationId: string;
@@ -62,21 +58,6 @@ interface OnboardingStep {
   icon: any;
   description: string;
 }
-
-const steps: OnboardingStep[] = [
-  {
-    id: "personal-info",
-    label: "Información personal",
-    icon: User,
-    description: "Cuéntanos sobre ti"
-  },
-  {
-    id: "profile-picture",
-    label: "Avatar",
-    icon: Image,
-    description: "Sube una foto o usa tu patrón"
-  }
-];
 
 const StepIcon = ({ 
   icon: Icon, 
@@ -116,6 +97,7 @@ export default function OnboardingForm({
   userRole,
   pendingInvitation,
 }: OnboardingFormProps) {
+  const { t } = useLocale();
   const [imageUrl, setImageUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -126,6 +108,24 @@ export default function OnboardingForm({
     'profile-picture': 'idle'
   });
   const router = useRouter();
+  const formSchema = z.object({
+    name: z.string().min(1, t.validation.nameRequired),
+    imageUrl: z.string().optional(),
+  });
+  const steps: OnboardingStep[] = [
+    {
+      id: "personal-info",
+      label: t.onboarding.personalInfo,
+      icon: User,
+      description: t.onboarding.personalInfoDescription
+    },
+    {
+      id: "profile-picture",
+      label: t.onboarding.avatar,
+      icon: Image,
+      description: t.onboarding.avatarDescription
+    }
+  ];
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -159,7 +159,7 @@ export default function OnboardingForm({
     } catch (error) {
       console.error("Error submitting step:", error);
       setStepStates(prev => ({ ...prev, [stepId]: 'error' }));
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t.onboarding.stepError);
     }
   };
 
@@ -179,7 +179,7 @@ export default function OnboardingForm({
           });
         }
 
-        toast.success("Profile updated successfully");
+        toast.success(t.profile.updated);
 
         const roleRedirects = {
           [UserRole.ADMIN]: "/admin",
@@ -190,7 +190,7 @@ export default function OnboardingForm({
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error(t.common.somethingWentWrong);
     } finally {
       setIsLoading(false);
     }
@@ -199,18 +199,18 @@ export default function OnboardingForm({
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Completa tu perfil</CardTitle>
+        <CardTitle>{t.onboarding.completeProfile}</CardTitle>
         <CardDescription>
-          Configura tu perfil para empezar a aprender en Se Libre.
+          {t.onboarding.completeProfileDescription}
         </CardDescription>
       </CardHeader>
       
       <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.05]">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-foreground">Acceso gratuito</p>
+            <p className="text-sm font-medium text-foreground">{t.onboarding.freeAccess}</p>
             <p className="text-xs text-muted-foreground">
-              Tu cuenta queda lista al terminar este perfil.
+              {t.onboarding.accountReady}
             </p>
           </div>
           <UserAvatar
@@ -251,9 +251,9 @@ export default function OnboardingForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>{t.profile.fullName}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Tu nombre completo" {...field} />
+                        <Input placeholder={t.profile.fullNamePlaceholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -264,7 +264,7 @@ export default function OnboardingForm({
                   className="w-full"
                   onClick={() => handleStepSubmit('personal-info', { name: form.getValues('name') })}
                 >
-                  Continuar
+                  {t.common.continue}
                 </Button>
               </div>
             )}
@@ -272,7 +272,7 @@ export default function OnboardingForm({
             {currentStepIndex === 1 && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <FormLabel>Foto de perfil</FormLabel>
+                  <FormLabel>{t.onboarding.profilePhoto}</FormLabel>
                   <div className="flex items-center gap-3 rounded-md border bg-muted/30 p-3">
                     <UserAvatar
                       userId={organizationId}
@@ -282,7 +282,7 @@ export default function OnboardingForm({
                       size={48}
                     />
                     <p className="text-sm text-muted-foreground">
-                      Puedes subir una foto o quedarte con tu avatar generado.
+                      {t.onboarding.photoHelp}
                     </p>
                   </div>
                   <S3FileUpload
@@ -301,7 +301,7 @@ export default function OnboardingForm({
                     className="flex-1"
                     onClick={() => setCurrentStepIndex(0)}
                   >
-                    Atrás
+                    {t.onboarding.back}
                   </Button>
                   <Button
                     type="button"
@@ -310,7 +310,7 @@ export default function OnboardingForm({
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Completar perfil
+                    {t.onboarding.finishProfile}
                   </Button>
                 </div>
               </div>

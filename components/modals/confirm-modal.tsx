@@ -11,6 +11,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
+import { useLocale } from "@/lib/i18n";
 
 interface ConfirmModalProps {
     children: React.ReactNode;
@@ -18,6 +19,8 @@ interface ConfirmModalProps {
 }
 
 export const ConfirmModal = ({children, onConfirm}: ConfirmModalProps) => {
+    const { t } = useLocale();
+
     return(
         <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -25,12 +28,12 @@ export const ConfirmModal = ({children, onConfirm}: ConfirmModalProps) => {
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Quieres continuar?</AlertDialogTitle>
-                    <AlertDialogDescription>No puedes deshacer esta acción una vez confirmes</AlertDialogDescription>
+                    <AlertDialogTitle>{t.common.confirmTitle}</AlertDialogTitle>
+                    <AlertDialogDescription>{t.forms.confirmDeleteDescription}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={onConfirm}>Continuar</AlertDialogAction>
+                    <AlertDialogCancel>{t.common.cancel}</AlertDialogCancel>
+                    <AlertDialogAction onClick={onConfirm}>{t.common.continue}</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

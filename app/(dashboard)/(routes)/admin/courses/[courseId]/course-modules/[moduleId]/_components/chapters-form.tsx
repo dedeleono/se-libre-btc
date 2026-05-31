@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Button } from "@/components/ui/button";
-import { Loader2, Pencil, PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ChaptersFormProps {
   initialData: CourseModule & {chapters: Chapter[]};
@@ -43,6 +44,7 @@ const formSchema = z.object({
 });
 
 export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isCreating, setIsCreating] = useState(false);
@@ -71,11 +73,11 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
           position
         }
       );
-      toast.success("Lección creada");
+      toast.success(t.admin.lessonCreated);
       toggleCreating();
       router.refresh();
     } catch (error) {
-      toast.error("Error al crear lección");
+      toast.error(t.admin.lessonCreateError);
     }
   };
 
@@ -89,10 +91,10 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
         }
       );
 
-      toast.success("Lecciones reordenadas");
+      toast.success(t.admin.lessonsReordered);
       router.refresh();
     } catch (error) {
-      toast.error("Error al reordenar lecciones");
+      toast.error(t.admin.lessonsReorderError);
     } finally {
       setIsUpdating(false);
     }
@@ -110,17 +112,17 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
         </div>
       )}
       <div className="font-medium flex items-center justify-between">
-        Lecciones del Módulo
+        {t.admin.moduleLessonsTitle}
         <Button
           onClick={toggleCreating}
           variant="ghost"
           className="cursor-pointer"
         >
-          {isCreating && <>Cancelar</>}
+          {isCreating && <>{t.common.cancel}</>}
           {!isCreating && (
             <>
               <PlusCircle className="w-4 h-4 mr-2" />
-              Agregar una lección
+              {t.admin.addLesson}
             </>
           )}
         </Button>
@@ -145,18 +147,18 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
                         value={field.value}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select chapter type" />
+                          <SelectValue placeholder={t.admin.selectChapterType} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value={ChapterType.LESSON}>
-                            Lección
+                            {t.admin.lesson}
                           </SelectItem>
                           <SelectItem value={ChapterType.QUIZ}>Quiz</SelectItem>
                           <SelectItem value={ChapterType.RESOURCE}>
-                            Recurso
+                            {t.admin.resource}
                           </SelectItem>
                           <SelectItem value={ChapterType.LIVE_SESSION}>
-                            Sesión en vivo
+                            {t.admin.liveSession}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -173,7 +175,7 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
                     <FormControl>
                       <Input
                         disabled={isSubmitting}
-                        placeholder="e.g 'Introducción al curso'"
+                        placeholder={t.admin.moduleTitlePlaceholder}
                         {...field}
                         className="bg-white border-black"
                       />
@@ -185,7 +187,7 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
             
 
             <Button disabled={!isValid || isSubmitting} type="submit">
-              Crear
+              {t.common.create}
             </Button>
           </form>
         </Form>
@@ -197,7 +199,7 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
             !initialData.chapters.length && "text-slate-500 italic"
           )}
         >
-          {!initialData.chapters.length && "No hay lecciones"}
+          {!initialData.chapters.length && t.admin.noLessons}
           <ChapterList
             onEdit={onEdit}
             onReorder={onReorder}
@@ -207,7 +209,7 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
       )}
       {!isCreating && (
         <p className="text-xs text-muted-foreground mt-4">
-          Arratsra y suelta para re-ordenar{" "}
+          {t.admin.dragToReorder}
         </p>
       )}
     </div>

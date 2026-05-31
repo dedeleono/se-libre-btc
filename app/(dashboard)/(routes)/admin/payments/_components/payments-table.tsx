@@ -24,8 +24,10 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, BanknoteIcon, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLocale } from "@/lib/i18n";
 
 export function PaymentsTable() {
+  const { t } = useLocale();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -38,7 +40,7 @@ export function PaymentsTable() {
         });
         return data;
       } catch (error) {
-        throw new Error("Failed to fetch payments");
+        throw new Error(t.payments.unableToLoad);
       }
     },
   });
@@ -46,19 +48,19 @@ export function PaymentsTable() {
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       COMPLETED: {
-        label: "Pagado",
+        label: t.payments.paid,
         icon: CheckCircle,
         className: "bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30",
         iconClassName: "text-green-600 dark:text-green-400"
       },
       PENDING: {
-        label: "Pendiente",
+        label: t.payments.pending,
         icon: AlertCircle,
         className: "bg-yellow-50 text-yellow-700 border border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-900/30",
         iconClassName: "text-yellow-600 dark:text-yellow-400"
       },
       FAILED: {
-        label: "Fallido",
+        label: t.payments.failed,
         icon: XCircle,
         className: "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30",
         iconClassName: "text-red-600 dark:text-red-400"
@@ -119,7 +121,7 @@ export function PaymentsTable() {
         <div className="flex-1 relative">
           <Search className={`absolute left-2 top-2.5 h-4 w-4 text-muted-foreground ${isLoading ? 'animate-pulse' : ''}`} />
           <Input
-            placeholder="Buscar por nombre o email..."
+            placeholder={t.payments.searchByNameOrEmail}
             className="pl-8 sm:text-sm text-xs"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -129,13 +131,13 @@ export function PaymentsTable() {
         <Select value={statusFilter} onValueChange={setStatusFilter} disabled={isLoading}>
           <SelectTrigger className="w-[180px] sm:text-sm text-xs">
             <Filter className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder={t.payments.filterByStatus} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" className="sm:text-sm text-xs">Todos</SelectItem>
-            <SelectItem value="COMPLETED" className="sm:text-sm text-xs">Completados</SelectItem>
-            <SelectItem value="PENDING" className="sm:text-sm text-xs">Pendientes</SelectItem>
-            <SelectItem value="FAILED" className="sm:text-sm text-xs">Fallidos</SelectItem>
+            <SelectItem value="all" className="sm:text-sm text-xs">{t.payments.all}</SelectItem>
+            <SelectItem value="COMPLETED" className="sm:text-sm text-xs">{t.payments.completedPlural}</SelectItem>
+            <SelectItem value="PENDING" className="sm:text-sm text-xs">{t.payments.pendingPlural}</SelectItem>
+            <SelectItem value="FAILED" className="sm:text-sm text-xs">{t.payments.failedPlural}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -144,12 +146,12 @@ export function PaymentsTable() {
         <Table className="min-w-[600px]">
           <TableHeader>
             <TableRow>
-              <TableHead className="text-primary font-bold ">Fecha</TableHead>
-              <TableHead className="text-primary font-bold ">Estudiante</TableHead>
-              <TableHead className="text-primary font-bold ">Producto</TableHead>
+              <TableHead className="text-primary font-bold ">{t.payments.date}</TableHead>
+              <TableHead className="text-primary font-bold ">{t.payments.student}</TableHead>
+              <TableHead className="text-primary font-bold ">{t.payments.product}</TableHead>
               
-              <TableHead className="text-primary font-bold ">Monto</TableHead>
-              <TableHead className="text-primary font-bold ">Estado</TableHead>
+              <TableHead className="text-primary font-bold ">{t.payments.amount}</TableHead>
+              <TableHead className="text-primary font-bold ">{t.payments.status}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -158,15 +160,15 @@ export function PaymentsTable() {
                 <LoadingRow key={index} />
               ))
             ) : error ? (
-              <EmptyState message="Error al cargar los pagos. Por favor, intenta de nuevo." />
+              <EmptyState message={t.payments.errorLoading} />
             ) : !payments ? (
-              <EmptyState message="No se pudieron cargar los pagos" />
+              <EmptyState message={t.payments.unableToLoad} />
             ) : payments.length === 0 ? (
               <EmptyState 
                 message={
                   searchQuery || statusFilter !== 'all' 
-                    ? 'No se encontraron pagos con los filtros actuales'
-                    : 'No hay pagos registrados en el sistema'
+                    ? t.payments.noResults
+                    : t.payments.noPayments
                 }
               />
             ) : (

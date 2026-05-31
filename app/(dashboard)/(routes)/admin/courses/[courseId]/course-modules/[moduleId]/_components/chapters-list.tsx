@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Grip, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useLocale } from "@/lib/i18n";
 
 interface ChapterListProps {
   items: Chapter[];
@@ -21,6 +22,7 @@ interface ChapterListProps {
 }
 
 export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
+  const { t } = useLocale();
   const [isMounted, setIsMounted] = useState(false);
   const [chapters, setChapters] = useState(
     [...items].sort((a, b) => a.position - b.position)
@@ -91,7 +93,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                           variant={"outline"}
                           className="rounded-full px-3 py-1 text-sky-100 bg-sky-800 font-semibold text-xs"
                         >
-                          Intro
+                          {t.admin.intro}
                         </Badge>
                       )}
                       {chapter.type === ChapterType.QUIZ && (
@@ -107,7 +109,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                           variant={"outline"}
                           className="rounded-full px-3 py-1 text-slate-100 bg-teal-700 font-semibold text-xs"
                         >
-                          Tarea
+                          {t.admin.assignment}
                         </Badge>
                       )}
 
@@ -115,7 +117,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                         variant={"outline"}
                         className="rounded-full px-3 py-1 text-slate-100 bg-slate-500 font-semibold text-xs"
                       >
-                        {!chapter.isPublished ? "Draft" : "Published"}
+                        {!chapter.isPublished ? t.common.draft : t.common.published}
                       </Badge>
                       <Pencil
                         className="w-4 h-4 cursor-pointer hover:opacity-75 transition"

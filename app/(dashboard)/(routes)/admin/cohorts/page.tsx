@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/db";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function AdminCohortsPage() {
+  const t = getServerMessages();
   const cohorts = await prisma.cohort.findMany({
     include: { course: true, learningPath: true, _count: { select: { enrollments: true, liveSessions: true } } },
     orderBy: { createdAt: "desc" },
@@ -19,12 +21,12 @@ export default async function AdminCohortsPage() {
             <Calendar className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Cohorts</h1>
-            <p className="text-sm text-muted-foreground">Manage live and hybrid learning experiences.</p>
+            <h1 className="text-3xl font-bold tracking-tight">{t.nav.cohorts}</h1>
+            <p className="text-sm text-muted-foreground">{t.admin.manageLiveHybrid}</p>
           </div>
         </div>
         <Button asChild>
-          <Link href="/admin/cohorts/new">New cohort</Link>
+          <Link href="/admin/cohorts/new">{t.admin.newCohort}</Link>
         </Button>
       </div>
 
@@ -34,20 +36,20 @@ export default async function AdminCohortsPage() {
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <div>
                 <CardTitle>{cohort.title}</CardTitle>
-                <p className="text-sm text-muted-foreground">{cohort.course?.title || cohort.learningPath?.title || "No target selected"}</p>
+                <p className="text-sm text-muted-foreground">{cohort.course?.title || cohort.learningPath?.title || t.admin.noTargetSelected}</p>
               </div>
               <Button asChild size="sm">
-                <Link href={`/admin/cohorts/${cohort.id}`}>Manage</Link>
+                <Link href={`/admin/cohorts/${cohort.id}`}>{t.admin.manage}</Link>
               </Button>
             </CardHeader>
             <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-              <div>Status: {cohort.status}</div>
-              <div>Enrollments: {cohort._count.enrollments}</div>
-              <div>Live sessions: {cohort._count.liveSessions}</div>
+              <div>{t.admin.status}: {cohort.status}</div>
+              <div>{t.admin.enrollments}: {cohort._count.enrollments}</div>
+              <div>{t.admin.liveSessions}: {cohort._count.liveSessions}</div>
             </CardContent>
           </Card>
         ))}
-        {cohorts.length === 0 && <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">No cohorts yet.</CardContent></Card>}
+        {cohorts.length === 0 && <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">{t.admin.noCohortsYet}</CardContent></Card>}
       </div>
     </div>
   );

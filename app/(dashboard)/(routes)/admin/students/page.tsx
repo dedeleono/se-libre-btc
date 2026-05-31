@@ -2,8 +2,10 @@ import { Users } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/db";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function AdminStudentsPage() {
+  const t = getServerMessages();
   const students = await prisma.user.findMany({
     where: { role: "STUDENT", isDeleted: false },
     orderBy: { createdAt: "desc" },
@@ -16,14 +18,14 @@ export default async function AdminStudentsPage() {
           <Users className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Students</h1>
-          <p className="text-sm text-muted-foreground">Manage learner accounts and access.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t.admin.studentsTitle}</h1>
+          <p className="text-sm text-muted-foreground">{t.admin.manageStudents}</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{students.length} students</CardTitle>
+          <CardTitle>{t.admin.studentsCount(students.length)}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {students.map((student) => (
@@ -32,10 +34,10 @@ export default async function AdminStudentsPage() {
                 <p className="font-medium">{student.name || `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.email}</p>
                 <p className="text-muted-foreground">{student.email}</p>
               </div>
-              <span className="text-xs text-muted-foreground">{student.isBanned ? "Banned" : "Active"}</span>
+              <span className="text-xs text-muted-foreground">{student.isBanned ? t.common.banned : t.common.active}</span>
             </div>
           ))}
-          {students.length === 0 && <p className="text-sm text-muted-foreground">No students yet.</p>}
+          {students.length === 0 && <p className="text-sm text-muted-foreground">{t.admin.noStudentsYet}</p>}
         </CardContent>
       </Card>
     </div>

@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnrollmentButton } from "@/components/enrollment-button";
 import { prisma } from "@/lib/db";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function LearningPathDetailPage({ params }: { params: { slug: string } }) {
+  const t = getServerMessages();
   const learningPath = await prisma.learningPath.findUnique({
     where: { slug: params.slug },
     include: {
@@ -32,7 +34,7 @@ export default async function LearningPathDetailPage({ params }: { params: { slu
           redirectTo={learningPath.courses[0]?.courseId ? `/courses/${learningPath.courses[0].courseId}` : "/student/learning-paths"}
           className="mt-6"
         >
-          Enroll for free
+          {t.course.enrollForFree}
         </EnrollmentButton>
       </div>
       <div className="grid gap-4">
@@ -40,8 +42,8 @@ export default async function LearningPathDetailPage({ params }: { params: { slu
           <Card key={course.id}>
             <CardHeader><CardTitle>{index + 1}. {course.title}</CardTitle></CardHeader>
             <CardContent className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
-              <span>{course.shortDescription || "Course details coming soon."}</span>
-              <Button asChild variant="outline" size="sm"><Link href={`/courses/preview/${course.id}`}>Preview</Link></Button>
+              <span>{course.shortDescription || t.public.courseDetailsComingSoon}</span>
+              <Button asChild variant="outline" size="sm"><Link href={`/courses/preview/${course.id}`}>{t.public.preview}</Link></Button>
             </CardContent>
           </Card>
         ))}

@@ -7,12 +7,14 @@ import { ModuleTitleForm } from "./_components/module-title-form";
 import { ModuleDescriptionForm } from "./_components/module-description-form";
 import { ChaptersForm } from "./_components/chapters-form";
 import { ModuleActions } from "./_components/modules-actions";
+import { getServerMessages } from "@/lib/i18n-server";
 
 const CourseModuleIdPage = async ({
   params,
 }: {
   params: { courseId: string, moduleId: string };
 }) => {
+  const t = getServerMessages();
 
   const courseModule = await prisma.courseModule.findFirst({
     where: {
@@ -48,15 +50,15 @@ const CourseModuleIdPage = async ({
             className="flex items-center text-sm hover:opacity-75 transition mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Ir atrás
+            {t.admin.goBack}
           </Link>
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col gap-y-2">
               <h1 className="font-medium text-2xl">
-                Creación y Edición de Módulo
+                {t.admin.courseModulesTitle}
               </h1>
               <span className="text-sm text-slate-700">
-                Complete all fields {completionText}
+                {t.admin.completeAllFields(completionText)}
               </span>
             </div>
             <ModuleActions
@@ -71,7 +73,7 @@ const CourseModuleIdPage = async ({
           <div>
             <div className="flex items-center gap-x-2">
               <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-xl">Edita el módulo</h2>
+              <h2 className="text-xl">{t.admin.courseModulesDescription}</h2>
             </div>
             <ModuleTitleForm
               initialData={courseModule}
@@ -88,7 +90,7 @@ const CourseModuleIdPage = async ({
         <div>
           <div className="flex items-center gap-x-2">
             <IconBadge icon={PaperclipIcon} />
-            <h2 className="text-xl">Lecciones del Módulo</h2>
+            <h2 className="text-xl">{t.admin.moduleLessonsTitle}</h2>
           </div>
           <ChaptersForm
             initialData={courseModule}

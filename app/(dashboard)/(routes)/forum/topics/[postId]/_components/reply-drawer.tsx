@@ -11,12 +11,15 @@ import {
 } from "@/components/ui/drawer";
 import { MessageCircle } from "lucide-react";
 import { CreateReplyForm } from "./create-reply-form";
+import { useLocale } from "@/lib/i18n";
 
 interface ReplyDrawerProps {
   postId: string;
 }
 
 export function ReplyDrawer({ postId }: ReplyDrawerProps) {
+  const { t } = useLocale();
+
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -30,17 +33,17 @@ export function ReplyDrawer({ postId }: ReplyDrawerProps) {
       <DrawerContent>
         <div className="mx-auto w-full max-w-2xl">
           <DrawerHeader className="border-b pb-4">
-            <DrawerTitle>Escribir una respuesta</DrawerTitle>
+            <DrawerTitle>{t.forum.writeAReply}</DrawerTitle>
           </DrawerHeader>
           <div className="p-4">
             <CreateReplyForm postId={postId} />
           </div>
           <div className="mt-4 flex items-center justify-end gap-x-2 border-t p-4">
             <DrawerClose asChild>
-              <Button variant="outline">Cancelar</Button>
+              <Button variant="outline">{t.common.cancel}</Button>
             </DrawerClose>
             <Button type="submit" form="reply-form">
-              Publicar
+              {t.forum.publish}
             </Button>
           </div>
         </div>

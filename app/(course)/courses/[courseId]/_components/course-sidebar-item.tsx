@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Lock, CheckCircle, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface CourseSidebarItemProps {
   id: string;
@@ -30,13 +31,14 @@ export const CourseSidebarItem = ({
   isAccessible,
   customMessage
 }: CourseSidebarItemProps) => {
+  const { t } = useLocale();
   const pathname = usePathname();
   const router = useRouter();
   const isActive = pathname?.includes(id);
 
   const onClick = () => {
     if (!isAccessible) {
-      toast.error(customMessage || "Complete previous chapters first");
+      toast.error(customMessage || t.course.completePreviousToast);
       return;
     }
     router.push(`/courses/${courseId}/chapters/${id}`);

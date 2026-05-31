@@ -17,6 +17,7 @@ import { handleTemplateSelect as createHandleTemplateSelect } from "@/lib/utils"
 import { QuickActions } from "./quick-actions";
 import { EmailEditorComponent, JSONTemplate } from "./email-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useLocale } from "@/lib/i18n";
 
 interface Student {
   id: string;
@@ -38,6 +39,7 @@ interface EmailingFormProps {
 }
 
 export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) {
+  const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
@@ -51,14 +53,14 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
       setEmailDesign(parsedDesign);
     } catch (error) {
       console.error("Error parsing template content:", error);
-      toast.error("Error loading template");
+      toast.error(t.emailing.loadTemplateError);
     }
   };
 
   const emailGroups = [
     {
       id: "all-students",
-      name: "Todos los estudiantes",
+      name: t.emailing.allStudents,
       position: -1,
       students: students.map((student) => ({ email: student.email })),
     },
@@ -70,7 +72,7 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
 
   const handleSendEmail = async () => {
     if (!subject || recipients.length === 0) {
-      toast.error("Por favor complete todos los campos");
+      toast.error(t.emailing.completeFields);
       return;
     }
 
@@ -78,7 +80,7 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
       setIsLoading(true);
 
       if (!content) {
-        toast.error("Por favor agregue contenido al email");
+        toast.error(t.emailing.addContent);
         return;
       }
 
@@ -90,7 +92,7 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
 
       const { summary } = response.data;
       toast.success(
-        `Email enviado exitosamente (${summary.successful}/${summary.total})`
+        t.emailing.sentSuccess(summary.successful, summary.total)
       );
       
       // Clear form if all emails were sent successfully
@@ -101,7 +103,7 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
         setRecipients([]);
       }
     } catch (error) {
-      toast.error("Error al enviar el email");
+      toast.error(t.emailing.sendError);
     } finally {
       setIsLoading(false);
     }
@@ -110,10 +112,9 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
   const MobileNotice = () => (
     <Alert className="mb-4 border-destructive bg-destructive/10 font-['Open_Sans']">
       <Smartphone className="h-5 w-5 !text-destructive" />
-      <AlertTitle className="text-destructive font-bold">Pantalla no recomendada</AlertTitle>
+      <AlertTitle className="text-destructive font-bold">{t.emailing.mobileTitle}</AlertTitle>
       <AlertDescription className="text-xs">
-        El editor de emails está optimizado para pantallas más grandes. Para una mejor experiencia,
-        te recomendamos usar una tablet o computadora.
+        {t.emailing.mobileDescription}
       </AlertDescription>
     </Alert>
   );
@@ -127,7 +128,7 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
             dark:shadow-[0_0_15px_rgba(0,0,0,0.2)] dark:backdrop-blur-sm border">
             <Mail className="h-5 w-5 sm:h-6 sm:w-6 text-primary dark:text-white/90" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold dark:text-white/90 font-['Open_Sans']">Nuevo Email</h2>
+          <h2 className="text-xl sm:text-2xl font-bold dark:text-white/90 font-['Open_Sans']">{t.emailing.newEmail}</h2>
         </div>
 
         {/* <div className="flex items-center gap-2 sm:gap-3">
@@ -149,25 +150,25 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
             className="data-[state=active]:bg-accent/20 data-[state=active]:text-accent
               dark:text-white/70 dark:data-[state=active]:bg-accent/20 
               dark:data-[state=active]:text-accent-foreground transition-colors">
-            Componer
+            {t.emailing.compose}
           </TabsTrigger>
           <TabsTrigger value="preview"
             className="data-[state=active]:bg-accent/20 data-[state=active]:text-accent
               dark:text-white/70 dark:data-[state=active]:bg-accent/20 
               dark:data-[state=active]:text-accent-foreground transition-colors">
-            Vista Previa
+            {t.emailing.preview}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="compose" className="space-y-4 sm:space-y-6">
           <div className="space-y-3 sm:space-y-4">
             <div className="flex items-center gap-2">
-              <Label className="text-sm sm:text-base font-medium dark:text-white/90">Destinatarios</Label>
+              <Label className="text-sm sm:text-base font-medium dark:text-white/90">{t.emailing.recipients}</Label>
               {recipients.length > 0 && (
                 <Badge variant="default" 
                   className="bg-primary/20 text-primary dark:bg-primary/30 dark:text-white 
                     hover:bg-primary/30 dark:hover:bg-primary/40">
-                  {recipients.length} seleccionados
+                  {t.emailing.selectedCount(recipients.length)}
                 </Badge>
               )}
             </div>
@@ -182,10 +183,10 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
           </div>
 
           <div className="space-y-3 sm:space-y-4">
-            <Label className="text-sm sm:text-base font-medium dark:text-white/90">Asunto</Label>
+            <Label className="text-sm sm:text-base font-medium dark:text-white/90">{t.emailing.subject}</Label>
             <Input
               disabled={isLoading}
-              placeholder="Escribe el asunto del email..."
+              placeholder={t.emailing.subjectPlaceholder}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               className="bg-card/50 dark:bg-black/40 border-2 dark:border-white/[0.08] 
@@ -195,7 +196,7 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
           </div>
 
           <div className="space-y-3 sm:space-y-4">
-            <Label className="text-sm sm:text-base font-medium dark:text-white/90">Contenido</Label>
+            <Label className="text-sm sm:text-base font-medium dark:text-white/90">{t.emailing.content}</Label>
             <div className="block sm:hidden">
               <MobileNotice />
             </div>
@@ -220,12 +221,12 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
-                Enviando...
+                {t.emailing.sending}
               </>
             ) : (
               <>
                 <Send className="h-4 w-4 sm:h-5 sm:w-5" />
-                Enviar a {recipients.length} destinatarios
+                {t.emailing.sendToRecipients(recipients.length)}
               </>
             )}
           </Button>
@@ -235,12 +236,12 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
           <div className="rounded-lg border-2 dark:border-white/[0.08] p-4 sm:p-6 bg-card/50 
             dark:bg-black/40 dark:backdrop-blur-sm">
             <h3 className="text-lg sm:text-xl font-semibold mb-4 dark:text-white/90">
-              {subject || "Sin asunto"}
+              {subject || t.emailing.noSubject}
             </h3>
             <div
               className="prose prose-sm max-w-none dark:prose-invert 
                 dark:text-white/80"
-              dangerouslySetInnerHTML={{ __html: content || "Sin contenido" }}
+              dangerouslySetInnerHTML={{ __html: content || t.emailing.noContent }}
             />
           </div>
         </TabsContent>

@@ -1,3 +1,5 @@
+"use client";
+
 import * as z from "zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -30,15 +32,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useLocale } from "@/lib/i18n";
 
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().min(1, "Content is required"),
-  learningPathId: z.string().optional(),
-  cohortId: z.string().optional(),
-  courseId: z.string().optional(),
-  meetingLink: z.string().url().optional(),
-});
+type CreatePostFormValues = {
+  title: string;
+  content: string;
+  learningPathId?: string;
+  cohortId?: string;
+  courseId?: string;
+  meetingLink?: string;
+};
 
 interface CreatePostDialogProps {
   isOpen: boolean;
@@ -55,10 +58,19 @@ export const CreatePostDialog = ({
   cohorts,
   courses,
 }: CreatePostDialogProps) => {
+  const { t } = useLocale();
   const router = useRouter();
   const [selectedLearningPath, setSelectedLearningPath] = useState<string | null>(null);
+  const formSchema = z.object({
+    title: z.string().min(1, t.forum.titleRequired),
+    content: z.string().min(1, t.forum.contentRequired),
+    learningPathId: z.string().optional(),
+    cohortId: z.string().optional(),
+    courseId: z.string().optional(),
+    meetingLink: z.string().url().optional(),
+  });
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<CreatePostFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -67,14 +79,14 @@ export const CreatePostDialog = ({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: CreatePostFormValues) => {
     try {
       await axios.post("/api/forum/posts", values);
-      toast.success("Post created successfully");
+      toast.success(t.forum.postCreated);
       router.refresh();
       onClose();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(t.common.somethingWentWrong);
     }
   };
 
@@ -86,7 +98,7 @@ export const CreatePostDialog = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Topic</DialogTitle>
+          <DialogTitle>{t.forum.createNewTopic}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -95,9 +107,9 @@ export const CreatePostDialog = ({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{t.admin.title}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Topic title" />
+                    <Input {...field} placeholder={t.forum.topicTitlePlaceholder} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -109,9 +121,9 @@ export const CreatePostDialog = ({
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Content</FormLabel>
+                  <FormLabel>{t.forum.content}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Write your post..." />
+                    <Textarea {...field} placeholder={t.forum.writePost} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -123,7 +135,7 @@ export const CreatePostDialog = ({
               name="learningPathId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Learning Path (Optional)</FormLabel>
+                  <FormLabel>{t.forum.learningPathOptional}</FormLabel>
                   <Select
                     onValueChange={(value) => {
                       field.onChange(value);
@@ -133,7 +145,7 @@ export const CreatePostDialog = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a learning path" />
+                        <SelectValue placeholder={t.forum.selectLearningPath} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -154,11 +166,11 @@ export const CreatePostDialog = ({
               name="courseId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Course (Optional)</FormLabel>
+                  <FormLabel>{t.forum.courseOptional}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a course" />
+                        <SelectValue placeholder={t.forum.selectCourse} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -179,11 +191,11 @@ export const CreatePostDialog = ({
               name="cohortId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cohort (Optional)</FormLabel>
+                  <FormLabel>{t.forum.cohortOptional}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a cohort" />
+                        <SelectValue placeholder={t.forum.selectCohort} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -204,7 +216,7 @@ export const CreatePostDialog = ({
               name="meetingLink"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Google Meet Link (Optional)</FormLabel>
+                  <FormLabel>{t.forum.googleMeetOptional}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -216,7 +228,7 @@ export const CreatePostDialog = ({
               )}
             />
 
-            <Button type="submit">Create Post</Button>
+            <Button type="submit">{t.forum.createPost}</Button>
           </form>
         </Form>
       </DialogContent>

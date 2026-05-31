@@ -20,6 +20,7 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface TitleFormProps {
   initialData: {
@@ -28,12 +29,12 @@ interface TitleFormProps {
   courseId: string;
 }
 
-const formSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-});
-
 export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
+    const { t } = useLocale();
     const router = useRouter()
+  const formSchema = z.object({
+    title: z.string().min(1, { message: t.validation.titleRequired }),
+  });
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -49,11 +50,11 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
         await axios.patch(`/api/courses/${courseId}`, values)
-        toast.success("Nombre actualizado");
+        toast.success(t.admin.titleUpdated);
         toggleEdit()
         router.refresh()
     } catch (error) {
-        toast.error("Error al actualizar nombre");
+        toast.error(t.admin.titleUpdateError);
     }
   };
 
@@ -61,15 +62,15 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
     <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium">Nombre</h3>
-          <p className="text-xs text-muted-foreground">El título público del curso.</p>
+          <h3 className="font-medium">{t.profile.fullName}</h3>
+          <p className="text-xs text-muted-foreground">{t.admin.publicCourseTitle}</p>
         </div>
         <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
-          {isEditing && <>Cancelar</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar
+              {t.common.edit}
             </>
           )}
         </Button>
@@ -89,7 +90,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="Ej. Introducción a Bitcoin"
+                      placeholder={t.admin.courseTitlePlaceholder}
                       {...field}
                     />
                   </FormControl>
@@ -99,7 +100,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Guardar
+                {t.common.save}
               </Button>
             </div>
           </form>

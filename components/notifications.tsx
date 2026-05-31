@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { SupabaseNotifications } from "@/lib/supabase/notifications";
 import { Suspense } from "react";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface Sender {
   name: string | null;
@@ -76,60 +77,64 @@ const NotificationItem = memo(({
   notification: Notification; 
   onClick: (notification: Notification) => void;
   getIcon: (type: NotificationType) => JSX.Element;
-}) => (
-  <div
-    onClick={() => onClick(notification)}
-    className={cn(
-      "group px-6 py-4 cursor-pointer transition-all duration-300",
-      "hover:bg-muted/50 dark:hover:bg-muted/10",
-      !notification.isRead && "bg-primary/5 dark:bg-primary/5",
-      "relative overflow-hidden"
-    )}
-  >
-    <div className="flex items-start gap-4">
-      <div className={cn(
-        "flex-shrink-0 mt-1 p-2 rounded-full transition-all duration-300",
-        !notification.isRead 
-          ? "bg-primary/10 scale-110" 
-          : "bg-muted group-hover:bg-muted/70 scale-100"
-      )}>
-        {getIcon(notification.type)}
-      </div>
-      <div className="flex-1 space-y-1 min-w-0">
-        <p className={cn(
-          "text-sm leading-none truncate transition-all duration-300",
+}) => {
+  const { t } = useLocale();
+
+  return (
+    <div
+      onClick={() => onClick(notification)}
+      className={cn(
+        "group px-6 py-4 cursor-pointer transition-all duration-300",
+        "hover:bg-muted/50 dark:hover:bg-muted/10",
+        !notification.isRead && "bg-primary/5 dark:bg-primary/5",
+        "relative overflow-hidden"
+      )}
+    >
+      <div className="flex items-start gap-4">
+        <div className={cn(
+          "flex-shrink-0 mt-1 p-2 rounded-full transition-all duration-300",
           !notification.isRead 
-            ? "font-semibold text-foreground" 
-            : "text-muted-foreground/70 group-hover:text-foreground/70"
+            ? "bg-primary/10 scale-110" 
+            : "bg-muted group-hover:bg-muted/70 scale-100"
         )}>
-          {notification.title}
-        </p>
-        <p className={cn(
-          "text-xs line-clamp-2 transition-all duration-300",
-          !notification.isRead 
-            ? "text-muted-foreground/90" 
-            : "text-muted-foreground/50 group-hover:text-muted-foreground/70"
-        )}>
-          {notification.body}
-        </p>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground/50">
-          <span className="group-hover:text-muted-foreground/70 transition-colors duration-300">
-            {format(new Date(notification.createdAt), 'MMM d, h:mm a')}
-          </span>
-          {!notification.isRead && (
-            <span className="flex items-center gap-1 text-primary">
-              <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              New
+          {getIcon(notification.type)}
+        </div>
+        <div className="flex-1 space-y-1 min-w-0">
+          <p className={cn(
+            "text-sm leading-none truncate transition-all duration-300",
+            !notification.isRead 
+              ? "font-semibold text-foreground" 
+              : "text-muted-foreground/70 group-hover:text-foreground/70"
+          )}>
+            {notification.title}
+          </p>
+          <p className={cn(
+            "text-xs line-clamp-2 transition-all duration-300",
+            !notification.isRead 
+              ? "text-muted-foreground/90" 
+              : "text-muted-foreground/50 group-hover:text-muted-foreground/70"
+          )}>
+            {notification.body}
+          </p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground/50">
+            <span className="group-hover:text-muted-foreground/70 transition-colors duration-300">
+              {format(new Date(notification.createdAt), "MMM d, h:mm a")}
             </span>
-          )}
+            {!notification.isRead && (
+              <span className="flex items-center gap-1 text-primary">
+                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                {t.notifications.new}
+              </span>
+            )}
+          </div>
         </div>
       </div>
+      {notification.isRead && (
+        <div className="absolute inset-y-0 left-0 w-1 bg-muted-foreground/10 group-hover:bg-muted-foreground/20 transition-colors duration-300" />
+      )}
     </div>
-    {notification.isRead && (
-      <div className="absolute inset-y-0 left-0 w-1 bg-muted-foreground/10 group-hover:bg-muted-foreground/20 transition-colors duration-300" />
-    )}
-  </div>
-));
+  );
+});
 
 NotificationItem.displayName = 'NotificationItem';
 
@@ -146,22 +151,25 @@ const NotificationContent = memo(({
   handleNotificationClick: (n: Notification) => void;
   getNotificationIcon: (type: NotificationType) => JSX.Element;
   onMarkAllAsRead: () => Promise<void>;
-}) => (
+}) => {
+  const { t } = useLocale();
+
+  return (
   <Card className="shadow-lg border-0 rounded-xl overflow-hidden">
     <CardHeader className="border-b bg-gradient-to-r from-background to-muted/30 px-6 py-4 space-y-1">
       <div className="flex items-center justify-between">
         <CardTitle className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 font-['Open_Sans']">
-          Notifications
+          {t.notifications.title}
         </CardTitle>
         {unreadCount > 0 && (
           <span className="bg-primary/10 text-primary text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" />
-            {unreadCount} New
+            {t.notifications.newCount(unreadCount)}
           </span>
         )}
       </div>
       <CardDescription className="text-muted-foreground/80 text-xs sm:block hidden">
-        Stay updated with your latest activities
+        {t.notifications.subtitle}
       </CardDescription>
     </CardHeader>
     <CardContent className="p-0 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/10 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/20">
@@ -171,9 +179,9 @@ const NotificationContent = memo(({
             <BellIcon className="w-12 h-12 text-muted-foreground/30" />
             <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-muted-foreground/20 rounded-full animate-ping" />
           </div>
-          <p className="mt-4 text-muted-foreground/60 text-sm font-medium">No notifications yet</p>
+          <p className="mt-4 text-muted-foreground/60 text-sm font-medium">{t.notifications.emptyTitle}</p>
           <p className="text-xs text-muted-foreground/40 text-center mt-1">
-            We&apos;ll notify you when something important happens
+            {t.notifications.emptyDescription}
           </p>
         </div>
       ) : (
@@ -197,18 +205,20 @@ const NotificationContent = memo(({
           className="w-full hover:bg-primary/5 hover:text-primary transition-colors text-muted-foreground/70"
           onClick={onMarkAllAsRead}
         >
-          Mark all as read
+          {t.notifications.markAllAsRead}
         </Button>
       </CardFooter>
     )}
   </Card>
-));
+  );
+});
 
 NotificationContent.displayName = 'NotificationContent';
 
 // Main notifications component with forwarded ref
 export const NotificationsComponent = memo(forwardRef<NotificationsHandle, NotificationsProps>(
   ({ notifications: initialNotifications, userId, userRole }, ref) => {
+    const { t } = useLocale();
     const [mounted, setMounted] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState<number>(0);
@@ -241,8 +251,8 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
         // Refresh server state
         router.refresh();
         
-        toast.success("All notifications marked as read", {
-          description: "Your notifications have been cleared"
+        toast.success(t.notifications.markedAllRead, {
+          description: t.notifications.cleared
         });
       } catch (error) {
         console.error("Error marking all as read:", error);
@@ -251,11 +261,11 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
         setNotifications(previousNotifications);
         setUnreadCount(previousUnreadCount);
         
-        toast.error("Failed to mark notifications as read", {
-          description: "Please try again later"
+        toast.error(t.notifications.markAllError, {
+          description: t.notifications.tryLater
         });
       }
-    }, [notifications, unreadCount, userId, router]);
+    }, [notifications, unreadCount, userId, router, t.notifications]);
 
     // Expose methods via ref
     useImperativeHandle(ref, () => ({
@@ -287,7 +297,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
             prev.map(n => n.id === notification.id ? { ...n, isRead: false } : n)
           );
           setUnreadCount(prev => prev + 1);
-          toast.error("Failed to mark notification as read");
+          toast.error(t.notifications.markOneError);
         }
       }
 
@@ -309,7 +319,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       } else if (notification.type === NotificationType.USER_SIGNUP && userRole === "ADMIN") {
         router.push("/admin/students");
       }
-    }, [userId, router, userRole]);
+    }, [userId, router, userRole, t.notifications.markOneError]);
 
     const getNotificationIcon = useCallback((type: NotificationType) => {
       switch (type) {

@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { S3FileUpload } from "@/components/file-upload";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface AttachmentFormProps {
   initialData: Chapter & {attachments: Attachment[]};
@@ -24,6 +25,7 @@ const formSchema = z.object({
 });
 
 export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: AttachmentFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -34,11 +36,11 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.post(`/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}/attachments`, values);
-      toast.success("Archivo subido");
+      toast.success(t.admin.fileUploaded);
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Error al subir archivo");
+      toast.error(t.forms.uploadError);
     }
   };
 
@@ -48,10 +50,10 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
       await axios.delete(
         `/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}/attachments/${id}`
       );
-      toast.success("Archivo eliminado");
+      toast.success(t.admin.fileDeleted);
       router.refresh();
     } catch {
-      toast.error("Error al eliminar archivo");
+      toast.error(t.admin.fileDeleteError);
       setDeletingId(null);
     }
   };
@@ -59,13 +61,13 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
   return (
     <div className="mt-6 bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Recursos
+        {t.course.resources}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
-          {isEditing && <>Cancelar</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Agregar archivo
+              {t.admin.addFile}
             </>
           )}
         </Button>
@@ -74,7 +76,7 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
         <>
           {initialData.attachments.length === 0 && (
             <p className="text-sm mt-2 text-slate-500 italic">
-              No hay archivos aún
+              {t.admin.noFiles}
             </p>
           )}
           {initialData.attachments.length > 0 && (
@@ -122,7 +124,7 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
             type="document"
           />
           <div className="text-xs text-muted-foreground mt-4">
-            Agrega archivos que tus estudiantes puedan necesitar
+            {t.forms.addFileForStudents}
           </div>
         </div>
       )}

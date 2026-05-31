@@ -1,9 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { IconBadge } from "@/components/icon-badge";
 import { BookOpen, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EnrollmentButton } from "@/components/enrollment-button";
+import { useLocale } from "@/lib/i18n";
 
 interface CourseCardProps {
   id: string;
@@ -24,6 +27,8 @@ export const CourseCard = ({
   progress,
   category,
 }: CourseCardProps) => {
+  const { t } = useLocale();
+
   return (
       <div className="group hover:shadow-sm transition overflow-hidden border rounded-md p-3 h-full w-full flex flex-col">
         <Link href={isEnrolled ? `/courses/${id}` : `/courses/preview/${id}`}>
@@ -32,7 +37,7 @@ export const CourseCard = ({
             <Image src={imageUrl} alt={title} fill className="object-cover" />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-500">No image</span>
+              <span className="text-gray-500">{t.course.noImage}</span>
             </div>
             )}
         </div>
@@ -50,7 +55,7 @@ export const CourseCard = ({
                 <div className="flex items-center gap-x-2 text-slate-500">
                     <IconBadge size="sm" icon={BookOpen}/>
                     <span>
-                        {chaptersLength} {chaptersLength === 1 ? "Chapter" : "Chapters"}
+                        {t.course.chaptersCount(chaptersLength)}
                     </span>
                 </div>
             </div>
@@ -65,7 +70,7 @@ export const CourseCard = ({
             <div className="mt-auto pt-3">
               {isEnrolled ? (
                 <Button asChild className="w-full" size="sm">
-                  <Link href={`/courses/${id}`}>Continue</Link>
+                  <Link href={`/courses/${id}`}>{t.common.continue}</Link>
                 </Button>
               ) : (
                 <EnrollmentButton
@@ -75,7 +80,7 @@ export const CourseCard = ({
                   className="w-full"
                   size="sm"
                 >
-                  Enroll for free
+                  {t.course.enrollForFree}
                 </EnrollmentButton>
               )}
             </div>

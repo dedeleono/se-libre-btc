@@ -2,6 +2,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
 import { format } from "date-fns";
+import { getServerMessages } from "@/lib/i18n-server";
 
 async function getRecentSales() {
   try {
@@ -43,6 +44,7 @@ async function getRecentSales() {
 }
 
 export async function RecentSales() {
+  const t = getServerMessages();
   const sales = await getRecentSales();
 
   if (!sales.length) {
@@ -68,9 +70,9 @@ export async function RecentSales() {
             </svg>
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-semibold">No hay pagos aún</h3>
+            <h3 className="text-lg font-semibold">{t.admin.noPaymentsYet}</h3>
             <p className="text-sm text-muted-foreground">
-              Los pagos aparecerán aquí cuando los estudiantes realicen un pago
+              {t.admin.paymentsAppear}
             </p>
           </div>
         </div>

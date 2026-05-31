@@ -11,8 +11,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Link from "next/link";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default function Home() {
+  const t = getServerMessages();
+
   return (
     <main className="min-h-screen dark:bg-background">
       <div className="relative h-screen min-h-[600px]">
@@ -43,24 +46,23 @@ export default function Home() {
             {/* Left Column: Title & Description */}
             <div className="md:w-1/2 md:sticky md:top-24">
               <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm uppercase tracking-wider">
-                Ayuda & Soporte
+                {t.public.faqEyebrow}
               </span>
               <h2 className="mt-3 text-4xl font-black tracking-tight text-primary dark:text-white/90 font-['Open_Sans']">
-                Preguntas Frecuentes
+                {t.public.faqTitle}
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
-                Resolvemos tus dudas más comunes para ayudarte a conocer mejor
-                nuestros servicios y hacer tu experiencia más sencilla.
+                {t.public.faqSubtitle}
               </p>
               <div className="mt-8 p-6 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl">
                 <p className="text-sm text-emerald-800 dark:text-emerald-300">
-                  ¿No encuentras lo que buscas?
+                  {t.public.faqMissing}
                 </p>
                 <Link
                   href="/contact"
                   className="mt-2 inline-flex items-center text-emerald-600 dark:text-emerald-400 font-semibold hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
                 >
-                  Contáctanos directamente →
+                  {t.public.contactDirectly} →
                 </Link>
               </div>
             </div>
@@ -90,14 +92,13 @@ export default function Home() {
                         </svg>
                       </span>
                       <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        ¿Cuáles son los métodos de pago?
+                        {t.public.faqs[0].question}
                       </span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 py-4 border-t border-gray-200 dark:border-gray-700/50">
                     <p className="text-gray-700 dark:text-gray-300 pl-12">
-                      Aceptamos tarjetas de crédito, débito y pagos por
-                      transferencia bancaria.
+                      {t.public.faqs[0].answer}
                     </p>
                   </AccordionContent>
                 </AccordionItem>
@@ -123,14 +124,13 @@ export default function Home() {
                         </svg>
                       </span>
                       <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        ¿Puedo acceder a los cursos en cualquier momento?
+                        {t.public.faqs[1].question}
                       </span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 py-4 border-t border-gray-200 dark:border-gray-700/50">
                     <p className="text-gray-700 dark:text-gray-300 pl-12">
-                      Sí, nuestros cursos están disponibles 24/7 para que
-                      estudies a tu ritmo.
+                      {t.public.faqs[1].answer}
                     </p>
                   </AccordionContent>
                 </AccordionItem>
@@ -233,14 +233,13 @@ export default function Home() {
                         </svg>
                       </span>
                       <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        ¿Ofrecen certificados al finalizar un curso?
+                        {t.public.faqs[2].question}
                       </span>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 py-4 border-t border-gray-200 dark:border-gray-700/50">
                     <p className="text-gray-700 dark:text-gray-300 pl-12">
-                      Sí, cada curso completado incluye un certificado de
-                      finalización.
+                      {t.public.faqs[2].answer}
                     </p>
                   </AccordionContent>
                 </AccordionItem>

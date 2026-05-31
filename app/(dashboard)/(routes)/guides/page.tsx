@@ -11,6 +11,7 @@ import { auth } from "@/lib/auth";
 import { LucideGitPullRequestDraft } from "lucide-react";
 import AnimatedSection from "./_components/animated-section";
 import GuideCard from "./_components/guide-card";
+import { getServerMessages } from "@/lib/i18n-server";
 
 enum UserType {
   ADMIN = "admin",
@@ -27,6 +28,7 @@ type GuidesByUserType = Record<UserType, GuideContent[]>;
 
 export default async function GuidesPage() {
   const session = await auth();
+  const t = getServerMessages();
 
   if (!session) {
     redirect("/sign-in");
@@ -34,136 +36,49 @@ export default async function GuidesPage() {
 
   const userType = session.user?.role?.toLowerCase() as UserType;
 
-  const guides: GuidesByUserType & { general: GuideContent[] } = {
+  const guideUrls = {
     general: [
-      {
-        title: "Creando un post",
-        description: "Aprende a crear un post dentro del foro",
-        embedUrl:
-          "https://dubble.so/guides/crea-un-post-en-el-foro-bckxx4h5rfpuvh4svaxr?embed=1",
-      },
-      {
-        title: "Como comentar un post",
-        description: "Haz tantos comentarios como quisieras",
-        embedUrl:
-          "https://dubble.so/guides/guide-with-vercel-j6imk6qdgac2hgwkoamk?embed=1",
-      },
-      {
-        title: "Como eliminar un post",
-        description: "Aprende a eliminar posts",
-        embedUrl:
-          "https://dubble.so/guides/como-eliminar-un-post-4rtkg87p1z7yf5pejak6?embed=1",
-      },
-      {
-        title: "Como ser parte de las discusiones en vivo",
-        description: "Aprende a ingresar las meetings disponibles en posts",
-        embedUrl:
-          "https://dubble.so/guides/ingresa-a-una-meeting-disponible-en-un-post-pqifmi9tvkqomfekxema?embed=1",
-      },
-      {
-        title: "Actualizando tu perfil",
-        description:
-          "Cambia la información básica de tu perfil cuando lo necesites",
-        embedUrl:
-          "https://dubble.so/guides/actualizando-mi-perfil-u34jldhwruizikjoh10r?embed=1",
-      },
+      "https://dubble.so/guides/crea-un-post-en-el-foro-bckxx4h5rfpuvh4svaxr?embed=1",
+      "https://dubble.so/guides/guide-with-vercel-j6imk6qdgac2hgwkoamk?embed=1",
+      "https://dubble.so/guides/como-eliminar-un-post-4rtkg87p1z7yf5pejak6?embed=1",
+      "https://dubble.so/guides/ingresa-a-una-meeting-disponible-en-un-post-pqifmi9tvkqomfekxema?embed=1",
+      "https://dubble.so/guides/actualizando-mi-perfil-u34jldhwruizikjoh10r?embed=1",
     ],
     admin: [
-      {
-        title: "Enviando Correos",
-        description: "Aprende a enviar correos desde la plataforma",
-        embedUrl:
-          "https://dubble.so/guides/como-enviar-un-correo-desde-la-plataforma-hlmqr6bkrizjgllbkm11?embed=1",
-      },
-      {
-        title: "Ver un curso en modo estudiante",
-        description:
-          "Aprende como los estudiantes ven y utilizan la plataforma",
-        embedUrl:
-          "https://dubble.so/guides/ver-un-curso-en-modo-estudiante-nwm0ktqdw21jkstejjuq?embed=1",
-      },
-      {
-        title: "Como asignar a tus maestros a diferentes grados",
-        description: "Asignalos a tantos como sea necesario",
-        embedUrl:
-          "https://dubble.so/guides/como-asignar-a-tus-maestros-a-diferentes-grados-mpa3sabaoukkvuzu2fp8?embed=1",
-      },
-      {
-        title: "Como agregar un nuevo usuario",
-        description: "Agrega estudiantes o maestros desde la plataforma",
-        embedUrl:
-          "https://dubble.so/guides/como-agregar-un-nuevo-usuario-a-la-plataforma-tgn50pgz5hdiv4mv1yyg?embed=1",
-      },
-      {
-        title: "Como ver el perfil de un estudiante",
-        description:
-          "Ve en tiempo real el progreso de cualquier estudiante en específico",
-        embedUrl:
-          "https://dubble.so/guides/como-ver-el-perfil-de-un-estudiante-px7lrgw5lanuv2yh1u0z?embed=1",
-      },
-      {
-        title: "Como duplicar un grado",
-        description: "Optimiza tu trabajo",
-        embedUrl:
-          "https://dubble.so/guides/como-duplicar-un-grado-xfconwdlqrkcucd65a9d?embed=1",
-      },
-      {
-        title: "Como eliminar un grado",
-        description: "No te preocupes si cometes un error",
-        embedUrl:
-          "https://dubble.so/guides/como-eliminar-un-grado-cncchl9mcnitra0m3vwp?embed=1",
-      },
-      {
-        title: "Como agregar un grado",
-        description: "Agrega nuevos grados y niveles a tu institución",
-        embedUrl:
-          "https://dubble.so/guides/como-agregar-un-nuevo-grado-psvi0eph8itnjbkti5sa?embed=1",
-      },
-      {
-        title: "Crea un nuevo curso",
-        description: "Tu también puedes crear tantos cursos como desees",
-        embedUrl:
-          "https://dubble.so/guides/crea-un-nuevo-curso-srcr6ruq4zku9hwknexj?embed=1",
-      },
-      {
-        title: "Edita tus cursos",
-        description: "Cambia lo que creas necesario",
-        embedUrl:
-          "https://dubble.so/guides/como-editar-un-curso-f0znti290dukdw9e7vfg?embed=1",
-      },
-      {
-        title: "Ver Historial de Pagos",
-        description: "Identifica todos los pagos y sus estados",
-        embedUrl:
-          "https://dubble.so/guides/como-ver-el-historial-de-pagos-nr9xebfqepoaa0giyhcs?embed=1",
-      },
-      {
-        title: "Cambia tus precios",
-        description: "Cambia los precios de inscripción y mensualidad cuando lo creas necesario",
-        embedUrl:
-          "https://dubble.so/guides/cambiar-los-precios-de-inscripcion-y-mensualidad-sex64llhqfc4pelysp4m?embed=1",
-      },
+      "https://dubble.so/guides/como-enviar-un-correo-desde-la-plataforma-hlmqr6bkrizjgllbkm11?embed=1",
+      "https://dubble.so/guides/ver-un-curso-en-modo-estudiante-nwm0ktqdw21jkstejjuq?embed=1",
+      "https://dubble.so/guides/como-asignar-a-tus-maestros-a-diferentes-grados-mpa3sabaoukkvuzu2fp8?embed=1",
+      "https://dubble.so/guides/como-agregar-un-nuevo-usuario-a-la-plataforma-tgn50pgz5hdiv4mv1yyg?embed=1",
+      "https://dubble.so/guides/como-ver-el-perfil-de-un-estudiante-px7lrgw5lanuv2yh1u0z?embed=1",
+      "https://dubble.so/guides/como-duplicar-un-grado-xfconwdlqrkcucd65a9d?embed=1",
+      "https://dubble.so/guides/como-eliminar-un-grado-cncchl9mcnitra0m3vwp?embed=1",
+      "https://dubble.so/guides/como-agregar-un-nuevo-grado-psvi0eph8itnjbkti5sa?embed=1",
+      "https://dubble.so/guides/crea-un-nuevo-curso-srcr6ruq4zku9hwknexj?embed=1",
+      "https://dubble.so/guides/como-editar-un-curso-f0znti290dukdw9e7vfg?embed=1",
+      "https://dubble.so/guides/como-ver-el-historial-de-pagos-nr9xebfqepoaa0giyhcs?embed=1",
+      "https://dubble.so/guides/cambiar-los-precios-de-inscripcion-y-mensualidad-sex64llhqfc4pelysp4m?embed=1",
     ],
     student: [
-      {
-        title: "Ver tus cursos asignados",
-        description: "Navega la plataforma para ver todos tus cursos",
-        embedUrl:
-          "https://dubble.so/guides/ver-tus-cursos-asignados-a9of1xnztqyypfosibgx?embed=1",
-      },
-      {
-        title: "Como ver tu portafolio y tareas calificadas",
-        description: "Está al pendiente de todas tus entregas",
-        embedUrl:
-          "https://dubble.so/guides/como-ver-tu-portafolio-y-tareas-ya-calificadas-uyk0lypvfehf6livtwtk?embed=1",
-      },
-      {
-        title: "Como entregar tus tareas y resolver quizzes en línea",
-        description: "Aprende como entregar tus tareas",
-        embedUrl:
-          "https://dubble.so/guides/como-entregar-tus-tareas-y-resolver-tus-quizzes-c69sb8xflxr6kfdrlduh?embed=1",
-      },
+      "https://dubble.so/guides/ver-tus-cursos-asignados-a9of1xnztqyypfosibgx?embed=1",
+      "https://dubble.so/guides/como-ver-tu-portafolio-y-tareas-ya-calificadas-uyk0lypvfehf6livtwtk?embed=1",
+      "https://dubble.so/guides/como-entregar-tus-tareas-y-resolver-tus-quizzes-c69sb8xflxr6kfdrlduh?embed=1",
     ],
+  };
+
+  const buildGuides = (
+    entries: string[][],
+    urls: string[]
+  ): GuideContent[] =>
+    entries.map((entry, index) => ({
+      title: entry[0] ?? "",
+      description: entry[1] ?? "",
+      embedUrl: urls[index],
+    }));
+
+  const guides: GuidesByUserType & { general: GuideContent[] } = {
+    general: buildGuides(t.dashboard.guides.general, guideUrls.general),
+    admin: buildGuides(t.dashboard.guides.admin, guideUrls.admin),
+    student: buildGuides(t.dashboard.guides.student, guideUrls.student),
   };
 
   const userGuides = [...guides.general, ...(guides[userType] || [])];
@@ -187,10 +102,10 @@ export default async function GuidesPage() {
                   bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
                   dark:from-white dark:to-white/70 font-['Open_Sans']"
                 >
-                  Guías de Uso
+                  {t.dashboard.guidesTitle}
                 </h2>
                 <p className="text-muted-foreground/80 text-sm dark:text-white/50 font-['Open_Sans'] mt-1">
-                  Explora nuestras guías interactivas para aprender a utilizar la plataforma
+                  {t.dashboard.guidesSubtitle}
                 </p>
               </div>
             </div>

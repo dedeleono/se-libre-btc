@@ -16,13 +16,14 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { Button } from "@/components/ui/button";
-import { Loader2, Pencil, PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Course, CourseModule } from "@prisma/client";
 import { ModulesList } from "./modules-list";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ModulesFormProps {
   initialData: Course & { modules: CourseModule[] };
@@ -34,6 +35,7 @@ const formSchema = z.object({
 });
 
 export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isCreating, setIsCreating] = useState(false);
@@ -53,11 +55,11 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.post(`/api/courses/${courseId}/course-modules`, values);
-      toast.success("Módulo creado");
+      toast.success(t.admin.moduleCreated);
       toggleCreating();
       router.refresh();
     } catch (error) {
-      toast.error("Error al crear módulo");
+      toast.error(t.admin.moduleCreateError);
     }
   };
 
@@ -68,11 +70,11 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
         list: updateData
       })
 
-      toast.success("Módulos reordenados");
+      toast.success(t.admin.modulesReordered);
       router.refresh()
       
     } catch (error) {
-      toast.error("Error al reordenar módulos");
+      toast.error(t.admin.modulesReorderError);
     } finally {
       setIsUpdating(false)
     }
@@ -89,8 +91,8 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
       )}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium">Módulos del curso</h3>
-          <p className="text-xs text-muted-foreground">Organiza el contenido en bloques claros.</p>
+          <h3 className="font-medium">{t.admin.courseModulesTitle}</h3>
+          <p className="text-xs text-muted-foreground">{t.admin.courseModulesDescription}</p>
         </div>
         <Button
           onClick={toggleCreating}
@@ -98,11 +100,11 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
           size="sm"
           className="shrink-0"
         >
-          {isCreating && <>Cancelar</>}
+          {isCreating && <>{t.common.cancel}</>}
           {!isCreating && (
             <>
               <PlusCircle className="w-4 h-4 mr-2" />
-              Agregar un módulo
+              {t.admin.addModule}
             </>
           )}
         </Button>
@@ -122,7 +124,7 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g 'Introducción al curso'"
+                      placeholder={t.admin.moduleTitlePlaceholder}
                       {...field}
                     />
                   </FormControl>
@@ -132,7 +134,7 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
             />
 
             <Button disabled={!isValid || isSubmitting} type="submit">
-              Crear
+              {t.common.create}
             </Button>
           </form>
         </Form>
@@ -144,13 +146,13 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
             !initialData.modules.length && "text-slate-500 italic"
           )}
         >
-          {!initialData.modules.length && "No hay módulos"}
+          {!initialData.modules.length && t.admin.noModules}
           <ModulesList onEdit={onEdit} onReorder={onReorder} items={initialData.modules || []}/>
         </div>
       )}
       {!isCreating && (
         <p className="text-xs text-muted-foreground mt-4">
-          Arrastra y suelta para reordenar.
+          {t.admin.dragToReorder}
         </p>
       )}
     </div>

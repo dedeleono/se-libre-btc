@@ -30,16 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().min(1, "Content is required"),
-  learningPathId: z.string().optional(),
-  cohortId: z.string().optional(),
-  courseId: z.string().optional(),
-  meetingLink: z.string().url().optional().or(z.literal("")),
-  meetingDate: z.string().optional(),
-});
+import { useLocale } from "@/lib/i18n";
 
 export interface CreateForumFormRef {
   open: () => void;
@@ -58,9 +49,19 @@ interface CreateForumFormProps {
 
 export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormProps>(
   ({ learningPaths, cohorts, courses }, ref) => {
+    const { t } = useLocale();
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
     const [selectedLearningPath, setSelectedLearningPath] = useState<string | null>(null);
+    const formSchema = z.object({
+      title: z.string().min(1, t.validation.titleRequired),
+      content: z.string().min(1, t.forum.contentRequired),
+      learningPathId: z.string().optional(),
+      cohortId: z.string().optional(),
+      courseId: z.string().optional(),
+      meetingLink: z.string().url().optional().or(z.literal("")),
+      meetingDate: z.string().optional(),
+    });
 
     useImperativeHandle(ref, () => ({
       open: () => setIsOpen(true),
@@ -80,11 +81,11 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
       try {
         await axios.post("/api/forum", values);
-        toast.success("Forum created successfully");
+        toast.success(t.forum.createSuccess);
         router.refresh();
         setIsOpen(false);
       } catch (error) {
-        toast.error("Something went wrong");
+        toast.error(t.common.somethingWentWrong);
       }
     };
 
@@ -96,7 +97,7 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Forum Topic</DialogTitle>
+            <DialogTitle>{t.forum.createTopic}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -105,9 +106,9 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>{t.admin.title}</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Forum title" />
+                      <Input {...field} placeholder={t.forum.titlePlaceholder} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,9 +120,9 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                 name="content"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Content</FormLabel>
+                    <FormLabel>{t.forum.content}</FormLabel>
                     <FormControl>
-                      <Textarea {...field} placeholder="Write your post..." />
+                      <Textarea {...field} placeholder={t.forum.writePost} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -133,7 +134,7 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                 name="learningPathId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Learning Path (Optional)</FormLabel>
+                    <FormLabel>{t.forum.learningPathOptional}</FormLabel>
                     <Select
                       onValueChange={(value) => {
                         field.onChange(value);
@@ -143,7 +144,7 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a learning path" />
+                          <SelectValue placeholder={t.forum.selectLearningPath} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -164,11 +165,11 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                 name="cohortId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cohort (Optional)</FormLabel>
+                    <FormLabel>{t.forum.cohortOptional}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a cohort" />
+                          <SelectValue placeholder={t.forum.selectCohort} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -189,11 +190,11 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                 name="courseId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Course (Optional)</FormLabel>
+                    <FormLabel>{t.forum.courseOptional}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a course" />
+                          <SelectValue placeholder={t.forum.selectCourse} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -214,7 +215,7 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                 name="meetingLink"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Meeting Link (Optional)</FormLabel>
+                    <FormLabel>{t.forum.meetingLinkOptional}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -231,7 +232,7 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                 name="meetingDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Meeting Date (Optional)</FormLabel>
+                    <FormLabel>{t.forum.meetingDateOptional}</FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} />
                     </FormControl>
@@ -240,7 +241,7 @@ export const CreateForumForm = forwardRef<CreateForumFormRef, CreateForumFormPro
                 )}
               />
 
-              <Button type="submit">Create Forum</Button>
+              <Button type="submit">{t.forum.createForum}</Button>
             </form>
           </Form>
         </DialogContent>

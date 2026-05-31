@@ -34,6 +34,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type QuizQuestionWithOptions = QuizQuestion & {
@@ -154,6 +155,7 @@ export const QuizBuilder = ({
   chapterDescription,
   quiz,
 }: QuizBuilderProps) => {
+  const { t } = useLocale();
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState({
@@ -172,6 +174,31 @@ export const QuizBuilder = ({
   );
 
   const isEditingQuestion = Boolean(editingQuestionId);
+  const localizedQuestionTypes = [
+    {
+      value: "MULTIPLE_CHOICE" as QuizQuestionType,
+      label: t.admin.multipleChoice,
+      description: t.admin.multipleChoiceHelp,
+      icon: ClipboardList,
+    },
+    {
+      value: "TRUE_FALSE" as QuizQuestionType,
+      label: t.admin.trueFalse,
+      description: t.admin.trueFalseHelp,
+      icon: ToggleLeft,
+    },
+    {
+      value: "FILL_IN_THE_BLANK" as QuizQuestionType,
+      label: t.admin.fillBlank,
+      description: t.admin.fillBlankHelp,
+      icon: Type,
+    },
+  ];
+  const localizedTypeLabels: Record<QuizQuestionType, string> = {
+    MULTIPLE_CHOICE: t.admin.multipleChoice,
+    TRUE_FALSE: t.admin.trueFalse,
+    FILL_IN_THE_BLANK: t.admin.fillBlank,
+  };
 
   const resetQuestionForm = () => {
     setDraft(createDraft());
@@ -283,15 +310,15 @@ export const QuizBuilder = ({
     const correctOptionCount = selectedCorrectIndexes.filter((index) => options[index]?.trim()).length;
 
     if (cleanedOptions.length < 2) {
-      return { error: "Add at least two answer options." };
+      return { error: t.admin.addTwoOptions };
     }
 
     if (!hasCorrectOption) {
-      return { error: "Mark at least one answer option that has text." };
+      return { error: t.admin.markOneTextOption };
     }
 
     if (draft.allowMultipleAnswers && correctOptionCount < 2) {
-      return { error: "Select at least two correct answers for a multiple-answer question." };
+      return { error: t.admin.selectTwoCorrectAnswers };
     }
 
     return {
@@ -315,7 +342,7 @@ export const QuizBuilder = ({
 
     const result = buildQuestionPayload();
     if ("error" in result) {
-      setFormError(result.error || "Review the question details before saving.");
+      setFormError(result.error || t.admin.reviewQuestionBeforeSaving);
       return;
     }
 
@@ -329,7 +356,7 @@ export const QuizBuilder = ({
         await axios.post(`/api/quizzes/${quizId}/questions`, result.payload);
       }
 
-      toast.success(editingQuestionId ? "Question saved" : "Question added");
+      toast.success(editingQuestionId ? t.admin.questionSaved : t.admin.questionAdded);
       resetQuestionForm();
       router.refresh();
     } catch (error: any) {
@@ -387,7 +414,7 @@ export const QuizBuilder = ({
       if (editingQuestionId === questionId) {
         resetQuestionForm();
       }
-      toast.success("Question deleted");
+      toast.success(t.admin.questionDeleted);
       router.refresh();
     } catch {
       toast.error("Could not delete question");
@@ -457,25 +484,25 @@ export const QuizBuilder = ({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <FileQuestion className="h-4 w-4 text-primary" />
-              <h3 className="font-medium">Self-check behavior</h3>
+              <h3 className="font-medium">{t.admin.selfCheckBehavior}</h3>
             </div>
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-              <Badge variant="secondary">{sortedQuestions.length} questions</Badge>
-              <Badge variant="secondary">Equal weight</Badge>
-              <Badge variant={quiz ? "default" : "outline"}>{quiz ? "Configured" : "Draft"}</Badge>
+              <Badge variant="secondary">{t.admin.questionsCount(sortedQuestions.length)}</Badge>
+              <Badge variant="secondary">{t.admin.equalWeight}</Badge>
+              <Badge variant={quiz ? "default" : "outline"}>{quiz ? t.admin.configured : t.common.draft}</Badge>
             </div>
           </div>
           <Button onClick={saveSettings} disabled={isSaving} className="w-full sm:w-auto">
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            Save rules
+            {t.admin.saveRules}
           </Button>
         </div>
 
         <div className="grid gap-4 p-5 lg:grid-cols-2">
           <label className="flex min-h-20 items-center justify-between gap-4 rounded-md border bg-background p-4">
             <div>
-              <p className="text-sm font-medium">Allow retries</p>
-              <p className="text-xs text-muted-foreground">Learners can repeat the self-check for practice.</p>
+              <p className="text-sm font-medium">{t.admin.allowRetries}</p>
+              <p className="text-xs text-muted-foreground">{t.admin.allowRetriesHelp}</p>
             </div>
             <Switch
               checked={settings.allowRetries}
@@ -485,8 +512,8 @@ export const QuizBuilder = ({
 
           <label className="flex min-h-20 items-center justify-between gap-4 rounded-md border bg-background p-4">
             <div>
-              <p className="text-sm font-medium">Show answers</p>
-              <p className="text-xs text-muted-foreground">Reveal correct answers after submission.</p>
+              <p className="text-sm font-medium">{t.admin.showAnswers}</p>
+              <p className="text-xs text-muted-foreground">{t.admin.showAnswersHelp}</p>
             </div>
             <Switch
               checked={settings.showCorrectAnswers}
@@ -505,18 +532,18 @@ export const QuizBuilder = ({
               ) : (
                 <Plus className="h-4 w-4 text-primary" />
               )}
-              <h3 className="font-medium">{isEditingQuestion ? "Edit question" : "Add question"}</h3>
+              <h3 className="font-medium">{isEditingQuestion ? t.admin.editQuestion : t.admin.addQuestion}</h3>
             </div>
             <p className="text-xs text-muted-foreground">
               {draft.type === "MULTIPLE_CHOICE" && draft.allowMultipleAnswers
-                ? "Multiple answers"
-                : typeLabels[draft.type]}
+                ? t.admin.multipleAnswers
+                : localizedTypeLabels[draft.type]}
             </p>
           </div>
           {isEditingQuestion && (
             <Button type="button" variant="outline" onClick={resetQuestionForm} disabled={isSaving}>
               <X className="mr-2 h-4 w-4" />
-              Cancel edit
+              {t.admin.cancelEdit}
             </Button>
           )}
         </div>
@@ -529,21 +556,21 @@ export const QuizBuilder = ({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="questionPrompt">Question prompt</Label>
+            <Label htmlFor="questionPrompt">{t.admin.questionPrompt}</Label>
             <Textarea
               id="questionPrompt"
               value={draft.prompt}
               onChange={(event) => setDraft((current) => ({ ...current, prompt: event.target.value }))}
-              placeholder="Write the question students will answer"
+              placeholder={t.admin.questionPromptPlaceholder}
               className="min-h-24 resize-y"
             />
           </div>
 
           <div className="space-y-2">
             <div className="space-y-2">
-              <Label>Question type</Label>
+              <Label>{t.admin.questionType}</Label>
               <div className="grid gap-2 sm:grid-cols-3">
-                {questionTypes.map((item) => {
+                {localizedQuestionTypes.map((item) => {
                   const Icon = item.icon;
                   const isSelected = draft.type === item.value;
 
@@ -582,7 +609,7 @@ export const QuizBuilder = ({
           {draft.type === "MULTIPLE_CHOICE" && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Answer behavior</Label>
+                <Label>{t.admin.answerBehavior}</Label>
                 <div className="grid gap-2 sm:grid-cols-2">
                   <button
                     type="button"
@@ -597,8 +624,8 @@ export const QuizBuilder = ({
                         : "bg-background hover:bg-muted/60"
                     )}
                   >
-                    <span className="block text-sm font-medium">Single answer</span>
-                    <span className="block text-xs text-muted-foreground">Learners see radio buttons.</span>
+                    <span className="block text-sm font-medium">{t.admin.singleAnswer}</span>
+                    <span className="block text-xs text-muted-foreground">{t.admin.singleAnswerHelp}</span>
                   </button>
                   <button
                     type="button"
@@ -610,14 +637,14 @@ export const QuizBuilder = ({
                         : "bg-background hover:bg-muted/60"
                     )}
                   >
-                    <span className="block text-sm font-medium">Multiple answers</span>
-                    <span className="block text-xs text-muted-foreground">Learners see checkboxes.</span>
+                    <span className="block text-sm font-medium">{t.admin.multipleAnswers}</span>
+                    <span className="block text-xs text-muted-foreground">{t.admin.multipleAnswersHelp}</span>
                   </button>
                 </div>
               </div>
 
               <div className="flex items-center justify-between gap-3">
-                <Label>Answer options</Label>
+                <Label>{t.admin.answerOptions}</Label>
                 <Button
                   type="button"
                   variant="outline"
@@ -625,7 +652,7 @@ export const QuizBuilder = ({
                   onClick={() => setOptions((current) => [...current, ""])}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Add option
+                  {t.admin.addOption}
                 </Button>
               </div>
               <div className="space-y-2">
@@ -642,7 +669,7 @@ export const QuizBuilder = ({
                           ? "border-emerald-600 bg-emerald-50 text-emerald-700"
                           : "bg-background text-muted-foreground"
                       )}
-                      aria-label={`Mark option ${index + 1} as correct`}
+                      aria-label={t.admin.markOptionCorrect(index + 1)}
                     >
                       {correctOptionIndexes.includes(index) ? (
                         <CheckCircle2 className="h-4 w-4" />
@@ -653,7 +680,7 @@ export const QuizBuilder = ({
                     <Input
                       value={option}
                       onChange={(event) => updateOption(index, event.target.value)}
-                      placeholder={`Option ${index + 1}`}
+                      placeholder={t.admin.optionPlaceholder(index + 1)}
                     />
                     <Button
                       type="button"
@@ -661,7 +688,7 @@ export const QuizBuilder = ({
                       size="icon"
                       disabled={options.length <= 2}
                       onClick={() => removeOption(index)}
-                      aria-label={`Remove option ${index + 1}`}
+                      aria-label={t.admin.removeOption(index + 1)}
                     >
                       <Trash className="h-4 w-4" />
                     </Button>
@@ -673,9 +700,9 @@ export const QuizBuilder = ({
 
           {draft.type === "TRUE_FALSE" && (
             <div className="space-y-2">
-              <Label>Correct answer</Label>
+              <Label>{t.admin.correctAnswer}</Label>
               <div className="grid gap-2 sm:grid-cols-2">
-                {["True", "False"].map((label, index) => (
+                {[t.admin.true, t.admin.false].map((label, index) => (
                   <button
                     key={label}
                     type="button"
@@ -698,12 +725,12 @@ export const QuizBuilder = ({
           {draft.type === "FILL_IN_THE_BLANK" && (
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="correctAnswer">Correct answer</Label>
+                <Label htmlFor="correctAnswer">{t.admin.correctAnswer}</Label>
                 <Input
                   id="correctAnswer"
                   value={draft.correctAnswer}
                   onChange={(event) => setDraft((current) => ({ ...current, correctAnswer: event.target.value }))}
-                  placeholder="Exact expected answer"
+                  placeholder={t.admin.exactExpectedAnswer}
                 />
                 <label className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Checkbox
@@ -712,16 +739,16 @@ export const QuizBuilder = ({
                       setDraft((current) => ({ ...current, caseSensitive: checked === true }))
                     }
                   />
-                  Case-sensitive matching
+                  {t.admin.caseSensitive}
                 </label>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="acceptedAnswers">Accepted alternatives</Label>
+                <Label htmlFor="acceptedAnswers">{t.admin.acceptedAlternatives}</Label>
                 <Textarea
                   id="acceptedAnswers"
                   value={draft.acceptedAnswers}
                   onChange={(event) => setDraft((current) => ({ ...current, acceptedAnswers: event.target.value }))}
-                  placeholder="One accepted answer per line"
+                  placeholder={t.admin.acceptedAnswersPlaceholder}
                   className="min-h-24"
                 />
               </div>
@@ -729,12 +756,12 @@ export const QuizBuilder = ({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="questionExplanation">Explanation</Label>
+            <Label htmlFor="questionExplanation">{t.admin.explanation}</Label>
             <Textarea
               id="questionExplanation"
               value={draft.explanation}
               onChange={(event) => setDraft((current) => ({ ...current, explanation: event.target.value }))}
-              placeholder="Optional feedback shown after the attempt"
+              placeholder={t.admin.explanationPlaceholder}
               className="min-h-20"
             />
           </div>
@@ -742,11 +769,11 @@ export const QuizBuilder = ({
           <div className="flex flex-col-reverse gap-2 border-t pt-5 sm:flex-row sm:items-center sm:justify-end">
             <Button type="button" variant="ghost" onClick={resetQuestionForm} disabled={isSaving}>
               <RotateCcw className="mr-2 h-4 w-4" />
-              Reset
+              {t.admin.reset}
             </Button>
             <Button type="submit" disabled={isSaving}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-              {isEditingQuestion ? "Save question" : "Add question"}
+              {isEditingQuestion ? t.admin.saveChanges : t.admin.addQuestion}
             </Button>
           </div>
         </div>
@@ -755,11 +782,11 @@ export const QuizBuilder = ({
       <div className="rounded-md border bg-card shadow-sm">
         <div className="flex flex-col gap-3 border-b p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <h3 className="font-medium">Question bank</h3>
+            <h3 className="font-medium">{t.admin.questionBank}</h3>
             <p className="text-xs text-muted-foreground">
               {sortedQuestions.length
-                ? `${sortedQuestions.length} saved question${sortedQuestions.length === 1 ? "" : "s"}`
-                : "No questions added yet"}
+                ? t.admin.savedQuestionsCount(sortedQuestions.length)
+                : t.admin.noQuestionsYet}
             </p>
           </div>
         </div>
@@ -770,8 +797,8 @@ export const QuizBuilder = ({
               <FileQuestion className="h-6 w-6 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-sm font-medium">Start with the first question</p>
-              <p className="text-xs text-muted-foreground">Saved questions appear here for review and ordering.</p>
+              <p className="text-sm font-medium">{t.admin.startFirstQuestion}</p>
+              <p className="text-xs text-muted-foreground">{t.admin.savedQuestionsHelp}</p>
             </div>
           </div>
         ) : (
@@ -794,13 +821,13 @@ export const QuizBuilder = ({
                       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline">{typeLabels[item.type]}</Badge>
+                            <Badge variant="outline">{localizedTypeLabels[item.type]}</Badge>
                             {item.type === "MULTIPLE_CHOICE" && (
                               <Badge variant="secondary">
                                 {metadata.multipleAnswers ||
                                 item.options.filter((option) => option.isCorrect).length > 1
-                                  ? "Multiple answers"
-                                  : "Single answer"}
+                                  ? t.admin.multipleAnswers
+                                  : t.admin.singleAnswer}
                               </Badge>
                             )}
                           </div>
@@ -813,7 +840,7 @@ export const QuizBuilder = ({
                             size="icon"
                             disabled={index === 0 || isSaving}
                             onClick={() => reorderQuestion(item.id, "up")}
-                            aria-label="Move question up"
+                            aria-label={t.admin.moveQuestionUp}
                           >
                             <ArrowUp className="h-4 w-4" />
                           </Button>
@@ -822,7 +849,7 @@ export const QuizBuilder = ({
                             size="icon"
                             disabled={index === sortedQuestions.length - 1 || isSaving}
                             onClick={() => reorderQuestion(item.id, "down")}
-                            aria-label="Move question down"
+                            aria-label={t.admin.moveQuestionDown}
                           >
                             <ArrowDown className="h-4 w-4" />
                           </Button>
@@ -831,7 +858,7 @@ export const QuizBuilder = ({
                             size="icon"
                             disabled={isSaving}
                             onClick={() => editQuestion(item)}
-                            aria-label="Edit question"
+                            aria-label={t.admin.editQuestion}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -840,7 +867,7 @@ export const QuizBuilder = ({
                             size="icon"
                             disabled={isSaving}
                             onClick={() => deleteQuestion(item.id)}
-                            aria-label="Delete question"
+                            aria-label={t.forum.deletePost}
                           >
                             <Trash className="h-4 w-4" />
                           </Button>
@@ -854,7 +881,7 @@ export const QuizBuilder = ({
                               {answer}
                             </Badge>
                           ))}
-                          {metadata.caseSensitive && <Badge variant="outline">Case-sensitive</Badge>}
+                          {metadata.caseSensitive && <Badge variant="outline">{t.admin.caseSensitive}</Badge>}
                         </div>
                       ) : (
                         <div className="grid gap-2">
