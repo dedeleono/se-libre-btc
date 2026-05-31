@@ -28,6 +28,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Chapter } from "@prisma/client";
+import { useLocale } from "@/lib/i18n";
 
 interface ChapterTimeFrameFormProps {
   initialData: Chapter;
@@ -36,17 +37,10 @@ interface ChapterTimeFrameFormProps {
   chapterId: string;
 }
 
-const formSchema = z
-  .object({
-    startTime: z.date(),
-    endTime: z.date().min(new Date(), {
-      message: "End date must be in the future",
-    }),
-  })
-  .refine((data) => data.endTime > data.startTime, {
-    message: "End date must be after start date",
-    path: ["endTime"],
-  });
+type TimeFrameFormValues = {
+  startTime: Date;
+  endTime: Date;
+};
 
 export const ChapterTimeFrameForm = ({
   initialData,
@@ -54,12 +48,24 @@ export const ChapterTimeFrameForm = ({
   moduleId,
   chapterId,
 }: ChapterTimeFrameFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const formSchema = z
+    .object({
+      startTime: z.date(),
+      endTime: z.date().min(new Date(), {
+        message: t.admin.endDateFuture,
+      }),
+    })
+    .refine((data) => data.endTime > data.startTime, {
+      message: t.admin.endDateAfterStart,
+      path: ["endTime"],
+    });
 
   const toggleEdit = () => setIsEditing((prev) => !prev);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<TimeFrameFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       startTime: initialData.startTime || new Date(),
@@ -69,31 +75,31 @@ export const ChapterTimeFrameForm = ({
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: TimeFrameFormValues) => {
     try {
       await axios.patch(
         `/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}`,
         values
       );
-      toast.success("Time frame updated");
+      toast.success(t.admin.timeFrameUpdated);
       toggleEdit();
       router.refresh();
     } catch {
-      toast.error("Something went wrong");
+      toast.error(t.common.somethingWentWrong);
     }
   };
 
   return (
     <div className="mt-6 bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Time Frame
+        {t.admin.timeFrame}
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
-            "Cancel"
+            t.common.cancel
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit Time Frame
+              {t.admin.editTimeFrame}
             </>
           )}
         </Button>
@@ -104,19 +110,19 @@ export const ChapterTimeFrameForm = ({
           <div className="flex items-center gap-x-2 text-sm">
             <CalendarIcon className="h-4 w-4" />
             <span>
-              Start:{" "}
+              {t.admin.start}:{" "}
               {initialData.startTime
                 ? format(new Date(initialData.startTime), "PPP")
-                : "Not set"}
+                : t.admin.notSet}
             </span>
           </div>
           <div className="flex items-center gap-x-2 text-sm">
             <CalendarIcon className="h-4 w-4" />
             <span>
-              End:{" "}
+              {t.admin.end}:{" "}
               {initialData.endTime
                 ? format(new Date(initialData.endTime), "PPP")
-                : "Not set"}
+                : t.admin.notSet}
             </span>
           </div>
         </div>
@@ -147,7 +153,7 @@ export const ChapterTimeFrameForm = ({
                             {field.value ? (
                               format(field.value, "PPP")
                             ) : (
-                              <span>Pick a start date</span>
+                              <span>{t.admin.pickStartDate}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -186,7 +192,7 @@ export const ChapterTimeFrameForm = ({
                             {field.value ? (
                               format(field.value, "PPP")
                             ) : (
-                              <span>Pick an end date</span>
+                              <span>{t.admin.pickEndDate}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -212,7 +218,7 @@ export const ChapterTimeFrameForm = ({
             </div>
 
             <Button disabled={!isValid || isSubmitting} type="submit">
-              Save
+              {t.common.save}
             </Button>
           </form>
         </Form>

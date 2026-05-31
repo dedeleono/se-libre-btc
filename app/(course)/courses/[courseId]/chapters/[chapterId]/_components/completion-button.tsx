@@ -6,6 +6,7 @@ import { Loader2, FileText, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface CompletionButtonProps {
   courseId: string;
@@ -19,6 +20,7 @@ export interface CompletionButtonRef {
 
 export const CompletionButton = forwardRef<CompletionButtonRef, CompletionButtonProps>(
   ({ courseId, chapterId, nextChapterId }, ref) => {
+    const { t } = useLocale();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
@@ -29,7 +31,7 @@ export const CompletionButton = forwardRef<CompletionButtonRef, CompletionButton
         await axios.put(`/api/courses/${courseId}/chapters/${chapterId}/progress`);
         
         setIsCompleted(true);
-        toast.success("¡Lección completada!");
+        toast.success(t.course.lessonCompleted);
         
         // Force revalidation of the course data
         router.refresh();
@@ -38,7 +40,7 @@ export const CompletionButton = forwardRef<CompletionButtonRef, CompletionButton
           router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
         }
       } catch (error) {
-        toast.error("Error al actualizar el progreso");
+        toast.error(t.course.progressError);
       } finally {
         setIsLoading(false);
       }
@@ -56,10 +58,10 @@ export const CompletionButton = forwardRef<CompletionButtonRef, CompletionButton
           className="flex items-center gap-x-2"
         >
           {!nextChapterId ? (
-            "Última lección"
+            t.course.lastLesson
           ) : (
             <>
-              Siguiente lección
+              {t.course.nextLesson}
               <ChevronRight className="h-4 w-4" />
             </>
           )}
@@ -78,7 +80,7 @@ export const CompletionButton = forwardRef<CompletionButtonRef, CompletionButton
         ) : (
           <FileText className="h-4 w-4" />
         )}
-        Marcar como Completado
+        {t.course.markCompleted}
       </Button>
     );
   }

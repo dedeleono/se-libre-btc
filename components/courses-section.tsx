@@ -7,6 +7,7 @@ import { BookOpen, Route } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLocale } from "@/lib/i18n";
 
 interface LearningPath {
   id: string;
@@ -19,6 +20,7 @@ interface LearningPath {
 }
 
 const CoursesSection = () => {
+  const { t } = useLocale();
   const [learningPaths, setLearningPaths] = useState<LearningPath[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,21 +34,21 @@ const CoursesSection = () => {
         setLearningPaths(await response.json());
       } catch (error) {
         console.error("Error fetching learning paths:", error);
-        setError("Failed to load learning paths. Please try again later.");
+        setError(t.public.loadPathsError);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchLearningPaths();
-  }, []);
+  }, [t.public.loadPathsError]);
 
   if (isLoading) {
     return <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">{[1, 2, 3].map((i) => <div key={i} className="h-48 animate-pulse rounded-2xl bg-gray-200" />)}</div>;
   }
 
   if (error) {
-    return <div className="py-10 text-center"><p className="text-red-500">{error}</p><Button onClick={() => window.location.reload()} className="mt-4" variant="outline">Try again</Button></div>;
+    return <div className="py-10 text-center"><p className="text-red-500">{error}</p><Button onClick={() => window.location.reload()} className="mt-4" variant="outline">{t.common.retry}</Button></div>;
   }
 
   return (
@@ -54,10 +56,10 @@ const CoursesSection = () => {
       <div className="mb-16 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
           <h2 className="bg-gradient-to-r from-accent via-secondary to-tertiary bg-clip-text text-4xl font-black tracking-tight text-transparent sm:text-5xl">
-            Bitcoin Learning Paths
+            {t.public.learningPathsTitle}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600 dark:text-white/70">
-            Follow curated paths or explore standalone courses at your own pace.
+            {t.public.learningPathsSubtitle}
           </p>
         </motion.div>
       </div>
@@ -69,18 +71,18 @@ const CoursesSection = () => {
               <CardHeader>
                 <div className="mb-4 flex items-center justify-between">
                   <div className="rounded-lg bg-primary/10 p-2"><Route className="h-6 w-6 text-primary" /></div>
-                  <span className="rounded-full bg-secondary/10 px-3 py-1 text-sm font-medium">{path.courses.length} courses</span>
+                  <span className="rounded-full bg-secondary/10 px-3 py-1 text-sm font-medium">{t.public.coursesCount(path.courses.length)}</span>
                 </div>
                 <CardTitle className="text-xl font-bold">{path.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 text-gray-600 dark:text-white/70">
                   <BookOpen className="h-4 w-4" />
-                  <span className="text-sm">{path.enrollments.length} learners enrolled</span>
+                  <span className="text-sm">{t.public.learnersCount(path.enrollments.length)}</span>
                 </div>
-                <p className="mt-4 line-clamp-3 text-sm text-muted-foreground">{path.description || "A guided Bitcoin education path."}</p>
+                <p className="mt-4 line-clamp-3 text-sm text-muted-foreground">{path.description || t.public.defaultPathDescription}</p>
                 <Button variant="outline" size="sm" className="mt-6 w-full" asChild>
-                  <Link href={`/learning-paths/${path.slug}`}>View path</Link>
+                  <Link href={`/learning-paths/${path.slug}`}>{t.public.viewPath}</Link>
                 </Button>
               </CardContent>
             </Card>

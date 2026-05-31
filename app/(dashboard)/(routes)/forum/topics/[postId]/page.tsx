@@ -10,6 +10,7 @@ import { Video, ArrowLeft } from "lucide-react";
 import { CommentsSection } from "../../_components/comments-section";
 import Link from "next/link";
 import { MeetingButton } from "./_components/meeting-button";
+import { getServerMessages } from "@/lib/i18n-server";
 
 interface PostPageProps {
   params: {
@@ -19,6 +20,7 @@ interface PostPageProps {
 
 export default async function PostPage({ params }: PostPageProps) {
   const session = await auth();
+  const t = getServerMessages();
   if (!session?.user) {
     return redirect("/");
   }
@@ -125,7 +127,7 @@ export default async function PostPage({ params }: PostPageProps) {
             transition-colors group"
         >
           <ArrowLeft className="h-4 w-4 mr-2 group-hover:transform group-hover:-translate-x-1 transition-transform" />
-          Back to forum
+          {t.forum.backToForum}
         </Link>
       </div>
 
@@ -223,7 +225,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
       {/* Comments Section */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold dark:text-white/90">Comments</h2>
+        <h2 className="text-xl font-semibold dark:text-white/90">{t.forum.comments}</h2>
         <Card
           className="border dark:border-white/[0.08]
           bg-gradient-to-br from-card/30 to-transparent

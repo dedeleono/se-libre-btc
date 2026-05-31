@@ -14,6 +14,7 @@ import { ChapterActions } from "./_components/chapter-actions";
 import { ChapterType } from "@prisma/client";
 import { ChapterContentForm } from "./_components/chapter-content-form";
 import { QuizBuilder } from "./_components/quiz-builder";
+import { getServerMessages } from "@/lib/i18n-server";
 
 
 export default async function ChapterIdPage({
@@ -21,6 +22,7 @@ export default async function ChapterIdPage({
 }: {
   params: { courseId: string; moduleId: string; chapterId: string };
 }) {
+  const t = getServerMessages();
   const moduleChapter = await prisma.chapter.findFirst({
     where: {
       id: params.chapterId,
@@ -79,7 +81,7 @@ export default async function ChapterIdPage({
               <div>
                 <div className="flex items-center gap-x-2">
                   <IconBadge icon={LayoutDashboard} />
-                  <h2 className="text-xl">Edita la lección</h2>
+                  <h2 className="text-xl">{t.admin.editLesson}</h2>
                 </div>
                 <ChapterTitleForm
                   initialData={moduleChapter}
@@ -97,7 +99,7 @@ export default async function ChapterIdPage({
               <div>
                 <div className="flex items-center gap-x-2">
                   <IconBadge icon={Eye} />
-                  <h2 className="text-xl">Configuración de Acceso</h2>
+                  <h2 className="text-xl">{t.admin.accessSettings}</h2>
                 </div>
                 <ChapterIntroForm
                   initialData={moduleChapter}
@@ -110,7 +112,7 @@ export default async function ChapterIdPage({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={VideoIcon} />
-                <h2 className="text-xl">Agregar Contenido</h2>
+                <h2 className="text-xl">{t.admin.addContent}</h2>
               </div>
               {moduleChapter.type === ChapterType.QUIZ ? (
                 <QuizBuilder
@@ -146,7 +148,7 @@ export default async function ChapterIdPage({
       {!moduleChapter.isPublished && (
         <Banner
           variant="warning"
-          label="Esta lección aún no se ha publicado. No será visible bajo ninguna circunstancia."
+          label={t.admin.chapterUnpublishedWarning}
         />
       )}
       <div className="p-6">
@@ -157,15 +159,15 @@ export default async function ChapterIdPage({
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Ir atrás
+              {t.admin.goBack}
             </Link>
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col gap-y-2">
                 <h1 className="font-medium text-2xl">
-                  Creación y Edición de Lección
+                  {t.admin.lessonCreationEditing}
                 </h1>
                 <span className="text-sm text-slate-700">
-                  Completa todos los campos {completionText}
+                  {t.admin.completeAllFields(completionText)}
                 </span>
               </div>
               <ChapterActions

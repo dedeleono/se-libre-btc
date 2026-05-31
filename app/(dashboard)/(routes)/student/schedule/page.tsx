@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function StudentSchedulePage() {
   const session = await auth();
+  const t = getServerMessages();
   const liveSessions = session?.user?.id
     ? await prisma.liveSession.findMany({
         where: {
@@ -21,8 +23,8 @@ export default async function StudentSchedulePage() {
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Schedule</h1>
-        <p className="text-sm text-muted-foreground">Upcoming live sessions from your cohorts and courses.</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t.nav.schedule}</h1>
+        <p className="text-sm text-muted-foreground">{t.student.scheduleSubtitle}</p>
       </div>
       <div className="grid gap-4">
         {liveSessions.map((session) => (
@@ -31,7 +33,7 @@ export default async function StudentSchedulePage() {
             <CardContent className="text-sm text-muted-foreground">{session.startsAt.toLocaleString()}</CardContent>
           </Card>
         ))}
-        {liveSessions.length === 0 && <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">No upcoming live sessions.</CardContent></Card>}
+        {liveSessions.length === 0 && <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">{t.student.noUpcomingSessions}</CardContent></Card>}
       </div>
     </div>
   );

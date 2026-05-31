@@ -4,22 +4,24 @@ import { BookOpen, File, Computer } from "lucide-react";
 
 import React from "react";
 import { motion } from "framer-motion";
+import { useLocale } from "@/lib/i18n";
 
 const InfoSection = () => {
+  const { t } = useLocale();
   const features = [
     {
-      title: "Cursos guiados por expertos",
-      description: "Aprende de profesionales de la industria",
+      title: t.public.features[0].title,
+      description: t.public.features[0].description,
       icon: BookOpen,
     },
     {
-      title: "Acceso a recursos exclusivos",
-      description: "Accede a materiales y herramientas de aprendizaje",
+      title: t.public.features[1].title,
+      description: t.public.features[1].description,
       icon: File,
     },
     {
-      title: "Últimas tecnologías",
-      description: "Aprende de forma interactiva con las últimas tecnologías",
+      title: t.public.features[2].title,
+      description: t.public.features[2].description,
       icon: Computer,
     },
   ];

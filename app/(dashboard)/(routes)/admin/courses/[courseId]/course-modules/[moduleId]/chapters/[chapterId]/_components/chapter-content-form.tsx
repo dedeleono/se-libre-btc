@@ -16,6 +16,7 @@ import { Preview } from "@/components/preview";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ChapterContentFormProps {
   initialData: Chapter & {
@@ -43,6 +44,7 @@ export const ChapterContentForm = ({
   moduleId,
   chapterId,
 }: ChapterContentFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [contentType, setContentType] = useState<"video" | "youtube" | "pdf" | "richText">(
@@ -82,7 +84,7 @@ export const ChapterContentForm = ({
       router.refresh();
     } catch (error) {
       console.error("Error updating chapter content:", error);
-      toast.error("Error al actualizar el contenido");
+      toast.error(t.admin.contentUpdateError);
     }
   };
 
@@ -90,9 +92,9 @@ export const ChapterContentForm = ({
     <div className="mt-6 rounded-md border bg-card p-4 shadow-sm md:p-6">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium">Contenido de la lección</h3>
+          <h3 className="font-medium">{t.admin.lessonContent}</h3>
           <p className="text-xs text-muted-foreground">
-            Elige un formato y agrega el material principal.
+            {t.admin.lessonContentHelp}
           </p>
         </div>
         <Button
@@ -102,7 +104,7 @@ export const ChapterContentForm = ({
           className="shrink-0"
         >
           {isEditing && (
-            <span className="flex items-center text-slate-600">Cancelar</span>
+            <span className="flex items-center text-slate-600">{t.common.cancel}</span>
           )}
           {!isEditing &&
             !initialData.videoUrl &&
@@ -111,7 +113,7 @@ export const ChapterContentForm = ({
             !initialData.youtubeUrl && (
               <span className="flex items-center text-indigo-600">
                 <PlusCircle className="h-4 w-4 mr-2" />
-                Agregar contenido
+                {t.admin.addContent}
               </span>
             )}
           {!isEditing &&
@@ -121,7 +123,7 @@ export const ChapterContentForm = ({
               initialData.youtubeUrl) && (
               <span className="flex items-center text-slate-600">
                 <Pencil className="h-4 w-4 mr-2" />
-                Cambiar contenido
+                {t.common.edit}
               </span>
             )}
         </Button>
@@ -257,7 +259,7 @@ export const ChapterContentForm = ({
               >
                 <div className="space-y-4">
                   <div>
-                    <Label>Upload Video</Label>
+                    <Label>{t.admin.addVideo}</Label>
                     <S3FileUpload
                       onUploadComplete={(url) => {
                         if (url) {
@@ -266,7 +268,7 @@ export const ChapterContentForm = ({
                       }}
                       onUploadError={(error) => {
                         console.error("Upload error:", error);
-                        toast.error("Error uploading video");
+                        toast.error(t.admin.videoUploadError);
                       }}
                       type="video"
                       acceptedFileTypes={["video/mp4"]}
@@ -377,7 +379,7 @@ export const ChapterContentForm = ({
                     />
                     <Button
                       onClick={async () => {
-                        const toastId = toast.loading("Procesando URL de YouTube...");
+                        const toastId = toast.loading(t.admin.youtubeProcessing);
                         try {
                           const response = await axios.post("/api/s3/yt", {
                             youtubeUrl,
@@ -386,20 +388,20 @@ export const ChapterContentForm = ({
                           
                           if (response.data.url) {
                             await onSubmit({ youtubeUrl: response.data.url });
-                            toast.success("Video de YouTube agregado correctamente!", {
+                            toast.success(t.admin.youtubeAdded, {
                               id: toastId
                             });
                           }
                         } catch (error) {
                           console.error("Error procesando URL de YouTube:", error);
-                          toast.error("Error al procesar URL de YouTube", {
+                          toast.error(t.admin.youtubeProcessError, {
                             id: toastId
                           });
                         }
                       }}
                       disabled={!youtubeUrl}
                     >
-                      Agregar
+                      {t.admin.add}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">

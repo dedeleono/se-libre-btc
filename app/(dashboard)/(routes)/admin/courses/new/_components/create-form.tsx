@@ -17,17 +17,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/lib/i18n";
 
-const courseSchema = z.object({
-  title: z.string().min(1, {
-    message: "Title is required",
-  }),
-});
-
-type CourseFormData = z.infer<typeof courseSchema>;
+type CourseFormData = {
+  title: string;
+};
 
 const CourseFormCreate = () => {
+  const { t } = useLocale();
   const router = useRouter();
+  const courseSchema = z.object({
+    title: z.string().min(1, {
+      message: t.validation.titleRequired,
+    }),
+  });
 
   const form = useForm<CourseFormData>({
     resolver: zodResolver(courseSchema),
@@ -42,9 +45,9 @@ const CourseFormCreate = () => {
     try {
       const response = await axios.post("/api/courses", values);
       router.push(`/admin/courses/${response.data.id}`);
-      toast.success("Curso creado");
+      toast.success(t.admin.courseCreated);
     } catch (error) {
-      toast.error("Algo salió mal");
+      toast.error(t.common.somethingWentWrong);
     }
   };
 
@@ -60,11 +63,11 @@ const CourseFormCreate = () => {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre</FormLabel>
+                <FormLabel>{t.admin.title}</FormLabel>
                 <FormControl>
                   <Input
                     disabled={isSubmitting}
-                    placeholder="e.g. 'Bitcoin desde cero'"
+                    placeholder={t.admin.courseTitlePlaceholder}
                     {...field}
                   />
                 </FormControl>
@@ -80,10 +83,10 @@ const CourseFormCreate = () => {
               onClick={() => router.back()}
               disabled={isSubmitting}
             >
-              Cancelar
+              {t.common.cancel}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              Crear Curso
+              {t.admin.createCourse}
             </Button>
           </div>
         </form>

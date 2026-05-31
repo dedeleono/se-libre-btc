@@ -2,8 +2,28 @@ import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { BookOpen, LineChart, GraduationCap } from "lucide-react";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default function AboutPage() {
+  const t = getServerMessages();
+  const features = [
+    {
+      title: t.public.aboutFeatures[0].title,
+      description: t.public.aboutFeatures[0].description,
+      icon: <BookOpen className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
+    },
+    {
+      title: t.public.aboutFeatures[1].title,
+      description: t.public.aboutFeatures[1].description,
+      icon: <LineChart className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
+    },
+    {
+      title: t.public.aboutFeatures[2].title,
+      description: t.public.aboutFeatures[2].description,
+      icon: <GraduationCap className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
+    },
+  ];
+
   return (
     <div
       className="bg-gradient-to-br from-emerald-50 via-white to-emerald-50 
@@ -30,8 +50,7 @@ export default function AboutPage() {
                 Se Libre BTC
               </h1>
               <p className="text-lg max-w-2xl mx-auto text-white/90">
-                Empoderando estudiantes con experiencias de aprendizaje en línea
-                innovadoras y tecnología educativa de vanguardia.
+                {t.public.aboutSubtitle}
               </p>
             </div>
           </div>
@@ -43,16 +62,12 @@ export default function AboutPage() {
         >
           <CardHeader>
             <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-400 font-['Open_Sans'] font-bold">
-              Nosotros
+              {t.public.aboutUsTitle}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-600 leading-relaxed dark:text-white/70">
-              Nuestra plataforma está dedicada a proporcionar educación de alta
-              calidad a través de experiencias de aprendizaje innovadoras.
-              Buscamos empoderar estudiantes con conocimientos y habilidades que
-              les ayudarán a tener éxito en sus vidas académicas y
-              profesionales.
+              {t.public.aboutUsBody}
             </p>
           </CardContent>
         </Card>
@@ -64,15 +79,12 @@ export default function AboutPage() {
           >
             <CardHeader>
               <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-400 font-['Open_Sans'] font-bold">
-                Misión
+                {t.public.missionTitle}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 leading-relaxed dark:text-white/70">
-                Somos una institución que brinda formación integral y
-                disciplinada, con principios éticos que forman profesionales
-                capaces de enfrentar día a día los cambios tecnológicos y
-                sociales.
+                {t.public.missionBody}
               </p>
             </CardContent>
           </Card>
@@ -83,15 +95,12 @@ export default function AboutPage() {
           >
             <CardHeader>
               <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-400 font-['Open_Sans'] font-bold">
-                Visión
+                {t.public.visionTitle}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 leading-relaxed dark:text-white/70">
-                Ser una institución educativa que se identifique en su comunidad
-                por formar alumnos con excelencia, basada en principios éticos y
-                religiosos, que le permitan desenvolverse y desarrollarse con
-                excelencia en el ámbito personal profesional y laboral.
+                {t.public.visionBody}
               </p>
             </CardContent>
           </Card>
@@ -101,7 +110,7 @@ export default function AboutPage() {
 
         <section className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-black text-primary dark:text-secondary mb-8 font-['Open_Sans']">
-            Características
+            {t.public.featuresTitle}
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
@@ -127,21 +136,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
-const features = [
-  {
-    title: "Aprendizaje interactivo",
-    description: "Aprende con materiales de curso dinámicos y herramientas de colaboración",
-    icon: <BookOpen className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
-  },
-  {
-    title: "Crecimiento personal",
-    description: "Rastrea tu progreso y alcanza tus objetivos de aprendizaje a tu propio ritmo",
-    icon: <LineChart className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
-  },
-  {
-    title: "Soporte experto",
-    description: "Acceso a instructores cualificados y recursos de aprendizaje completos",
-    icon: <GraduationCap className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
-  },
-];

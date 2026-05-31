@@ -20,6 +20,7 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ChapterTitleFormProps {
   initialData: {
@@ -40,6 +41,7 @@ export const ChapterTitleForm = ({
   moduleId,
   chapterId,
 }: ChapterTitleFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -59,24 +61,24 @@ export const ChapterTitleForm = ({
         `/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}`,
         values
       );
-      toast.success("Nombre actualizado");
+      toast.success(t.admin.titleUpdated);
       toggleEdit();
       router.refresh();
     } catch (error) {
-        toast.error("Error al actualizar nombre");
+        toast.error(t.admin.titleUpdateError);
     }
   };
 
   return (
     <div className="mt-6 bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Nombre
+        {t.admin.lessonName}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
-          {isEditing && <>Cancel</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar Nombre
+              {t.admin.editLessonName}
             </>
           )}
         </Button>
@@ -96,7 +98,7 @@ export const ChapterTitleForm = ({
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g 'Módulo 1 - Introducción'"
+                      placeholder={t.admin.moduleTitlePlaceholderSpecific}
                       {...field}
                       className="bg-white border-black border-2"
                     />
@@ -107,7 +109,7 @@ export const ChapterTitleForm = ({
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Guardar
+                {t.common.save}
               </Button>
             </div>
           </form>

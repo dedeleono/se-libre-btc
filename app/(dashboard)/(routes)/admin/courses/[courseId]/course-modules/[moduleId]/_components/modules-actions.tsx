@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ModuleActionsProps {
   courseId: string;
@@ -18,6 +19,7 @@ export const ModuleActions = ({
   courseId,
   moduleId,
 }: ModuleActionsProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +30,7 @@ export const ModuleActions = ({
       await axios.delete(
         `/api/courses/${courseId}/course-modules/${moduleId}`
       );
-      toast.success("Módulo eliminado");
+      toast.success(t.admin.moduleDeleted);
 
       router.push(`/admin/courses/${courseId}`);
 
@@ -36,7 +38,7 @@ export const ModuleActions = ({
         router.refresh();
       }, 1500);
     } catch (error) {
-      toast.error("Error al eliminar módulo");
+      toast.error(t.admin.moduleDeleteError);
     } finally {
       setIsLoading(false);
     }

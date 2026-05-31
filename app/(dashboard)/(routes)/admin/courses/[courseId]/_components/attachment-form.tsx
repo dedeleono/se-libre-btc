@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { S3FileUpload } from "@/components/file-upload";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface AttachmentFormProps {
   initialData: Course & {attachments: Attachment[]};
@@ -21,6 +22,7 @@ const formSchema = z.object({
 });
 
 export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -31,11 +33,11 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.post(`/api/courses/${courseId}/attachments`, values);
-      toast.success("Archivo agregado");
+      toast.success(t.admin.fileAdded);
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Algo salió mal");
+      toast.error(t.common.somethingWentWrong);
     }
   };
 
@@ -43,10 +45,10 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
     try {
       setDeletingId(id);
       await axios.delete(`/api/courses/${courseId}/attachments/${id}`);
-      toast.success("Archivo eliminado");
+      toast.success(t.admin.fileDeleted);
       router.refresh();
     } catch {
-      toast.error("Algo salió mal");
+      toast.error(t.common.somethingWentWrong);
       setDeletingId(null);
     }
   };
@@ -55,15 +57,15 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
     <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium">Recursos</h3>
-          <p className="text-xs text-muted-foreground">Archivos descargables para estudiantes.</p>
+          <h3 className="font-medium">{t.course.resources}</h3>
+          <p className="text-xs text-muted-foreground">{t.admin.downloadableFiles}</p>
         </div>
         <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
-          {isEditing && <>Cancelar</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Agregar archivo
+              {t.admin.addFile}
             </>
           )}
         </Button>
@@ -72,7 +74,7 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
         <>
           {initialData.attachments.length === 0 && (
             <p className="text-sm mt-2 text-slate-500 italic">
-              No hay archivos aún
+              {t.admin.noFiles}
             </p>
           )}
           {initialData.attachments.length > 0 && (
@@ -117,7 +119,7 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
             }}
             onUploadError={(error) => {
               console.error("Upload error:", error);
-              toast.error("Error al subir archivo");
+              toast.error(t.forms.uploadError);
             }}
             type="document"
           />

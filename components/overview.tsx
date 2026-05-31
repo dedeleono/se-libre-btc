@@ -14,12 +14,15 @@ import {
 import { Card } from "@/components/ui/card";
 import { formatPrice } from "@/lib/utils";
 import type { OverviewData } from "@/actions/get-overview-data";
+import { useLocale } from "@/lib/i18n";
 
 interface OverviewProps {
   data: OverviewData[];
 }
 
 export function Overview({ data }: OverviewProps) {
+  const { t } = useLocale();
+
   if (!data.length) {
     return (
       <div className="h-[400px] flex items-center justify-center">
@@ -40,9 +43,9 @@ export function Overview({ data }: OverviewProps) {
             </svg>
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-semibold">No hay datos disponibles</h3>
+            <h3 className="text-lg font-semibold">{t.dashboard.noData}</h3>
             <p className="text-sm text-muted-foreground">
-              Las estadísticas aparecerán aquí a medida que la plataforma crezca.
+              {t.dashboard.statsAppear}
             </p>
           </div>
         </div>
@@ -76,7 +79,7 @@ export function Overview({ data }: OverviewProps) {
                     <div className="grid grid-cols-2 gap-2">
                       <div className="flex flex-col">
                         <span className="text-[0.70rem] uppercase text-muted-foreground">
-                          Ingresos
+                          {t.dashboard.revenue}
                         </span>
                         <span className="font-bold text-muted-foreground">
                           {formatPrice((payload[0]?.value as number) ?? 0)}
@@ -84,7 +87,7 @@ export function Overview({ data }: OverviewProps) {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-[0.70rem] uppercase text-muted-foreground">
-                          Estudiantes
+                          {t.dashboard.students}
                         </span>
                         <span className="font-bold text-muted-foreground">
                           {(payload[1]?.value as number) ?? 0}
@@ -92,7 +95,7 @@ export function Overview({ data }: OverviewProps) {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-[0.70rem] uppercase text-muted-foreground">
-                          Cursos
+                          {t.dashboard.courses}
                         </span>
                         <span className="font-bold text-muted-foreground">
                           {(payload[2]?.value as number) ?? 0}
@@ -110,21 +113,21 @@ export function Overview({ data }: OverviewProps) {
             dataKey="revenue"
             stroke="#8884d8"
             strokeWidth={2}
-            name="Revenue"
+            name={t.dashboard.revenue}
           />
           <Line
             type="monotone"
             dataKey="students"
             stroke="#82ca9d"
             strokeWidth={2}
-            name="New Students"
+            name={t.dashboard.newStudents}
           />
           <Line
             type="monotone"
             dataKey="courses"
             stroke="#ffc658"
             strokeWidth={2}
-            name="New Courses"
+            name={t.dashboard.newCourses}
           />
           <Legend />
         </LineChart>

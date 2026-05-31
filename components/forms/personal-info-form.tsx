@@ -8,19 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { User, Mail, Phone, CreditCard } from "lucide-react";
-import { PersonalInfo } from "@/types/checkout";
 import { useSearchParams } from "next/navigation";
+import { useLocale } from "@/lib/i18n";
 
-// Define the validation schema
-const personalInfoSchema = z.object({
-  name: z.string().min(1, { message: 'Nombre es requerido' }),
-  email: z.string().email({ message: 'Correo electrónico inválido' }),
-  phone: z.string().regex(/^[0-9]+$/, { message: 'Número de teléfono debe contener solo dígitos' }),
-  dpi: z.string().min(16, { message: 'DPI es requerido' }),
-});
-
-// Infer the type from the schema
-type PersonalInfoInputs = z.infer<typeof personalInfoSchema>;
+type PersonalInfoInputs = {
+  name: string;
+  email: string;
+  phone: string;
+  dpi: string;
+};
 
 interface PersonalInfoFormProps {
   initialData: {
@@ -33,9 +29,16 @@ interface PersonalInfoFormProps {
 }
 
 export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfoFormProps) {
+  const { t } = useLocale();
   const { nextStep } = useStepper();
   const searchParams = useSearchParams();
   const emailFromParams = searchParams.get("email");
+  const personalInfoSchema = z.object({
+    name: z.string().min(1, { message: t.validation.nameRequired }),
+    email: z.string().email({ message: t.validation.email }),
+    phone: z.string().regex(/^[0-9]+$/, { message: t.forms.phoneDigitsOnly }),
+    dpi: z.string().min(16, { message: t.forms.dpiRequired }),
+  });
 
   const {
     register,
@@ -73,7 +76,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
               className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2"
             >
               <User className="h-4 w-4 text-gray-500 dark:text-white/50" />
-              Nombre completo
+              {t.forms.fullName}
             </Label>
             <Input
               {...register("name")}
@@ -84,7 +87,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
                 dark:focus:border-blue-400 dark:focus:ring-blue-400/20 ${
                   errors.name ? "border-red-500 dark:border-red-500" : ""
                 }`}
-              placeholder="Ingresa tu nombre completo"
+              placeholder={t.forms.fullNamePlaceholder}
             />
             {errors.name && (
               <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
@@ -103,7 +106,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
               className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2"
             >
               <Mail className="h-4 w-4 text-gray-500 dark:text-white/50" />
-              Correo electrónico
+              {t.auth.email}
             </Label>
             <Input
               {...register("email")}
@@ -114,7 +117,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
                 dark:focus:border-blue-400 dark:focus:ring-blue-400/20 ${
                   errors.email ? "border-red-500 dark:border-red-500" : ""
                 } ${emailFromParams ? "bg-gray-100" : ""}`}
-              placeholder="Ingresa tu correo electrónico"
+              placeholder={t.forms.emailPlaceholderLong}
               disabled={!!emailFromParams}
               readOnly={!!emailFromParams}
             />
@@ -135,7 +138,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
               className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2"
             >
               <Phone className="h-4 w-4 text-gray-500 dark:text-white/50" />
-              Número de teléfono
+              {t.forms.phoneNumber}
             </Label>
             <Input
               {...register("phone")}
@@ -146,7 +149,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
                 dark:focus:border-blue-400 dark:focus:ring-blue-400/20 ${
                   errors.phone ? "border-red-500 dark:border-red-500" : ""
                 }`}
-              placeholder="Ingresa tu número de teléfono"
+              placeholder={t.forms.phoneNumberPlaceholder}
             />
             {errors.phone && (
               <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
@@ -165,7 +168,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
               className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2"
             >
               <CreditCard className="h-4 w-4 text-gray-500 dark:text-white/50" />
-              Número de DPI
+              {t.forms.dpiNumber}
             </Label>
             <Input
               {...register("dpi")}
@@ -176,7 +179,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
                 dark:focus:border-blue-400 dark:focus:ring-blue-400/20 ${
                   errors.dpi ? "border-red-500 dark:border-red-500" : ""
                 }`}
-              placeholder="Ingresa tu número de DPI"
+              placeholder={t.forms.dpiPlaceholder}
             />
             {errors.dpi && (
               <p className="text-red-500 text-sm mt-1">{errors.dpi.message}</p>
@@ -195,7 +198,7 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
             className="w-full bg-sky-900 hover:bg-sky-800 dark:bg-sky-700/90 dark:hover:bg-sky-800/90 
               text-white transition-colors duration-200 py-6"
           >
-            Continuar
+            {t.common.continue}
           </Button>
         </motion.div>
       </motion.form>

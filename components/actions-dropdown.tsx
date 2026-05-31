@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 interface ActionProps {
   courseId: string;
 }
@@ -20,6 +21,7 @@ interface ActionProps {
 export default function ActionsDropdown({
   courseId,
 }: ActionProps) {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isDeleting, setIsDeleting] = useState(false);
@@ -32,10 +34,10 @@ export default function ActionsDropdown({
     setIsDeleting(true);
     try {
       await axios.delete(`/api/courses/${courseId}`);
-      toast.success("Curso eliminado");
+      toast.success(t.toasts.courseDeleted);
       router.refresh();
     } catch (error) {
-      toast.error("Error al eliminar curso");
+      toast.error(t.toasts.courseDeleteError);
     } finally {
       setIsDeleting(false); // Stop loading
     }
@@ -49,12 +51,12 @@ export default function ActionsDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuLabel>{t.common.actions}</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => handleEditProduct(courseId)}>
-          Edit
+          {t.common.edit}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleDeleteProduct(courseId)}>
-          Delete
+          {t.common.delete}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -10,9 +10,11 @@ import { AttachmentForm } from "./_components/attachment-form";
 import { ModulesForm } from "./_components/modules-form";
 import { Banner } from "@/components/banner";
 import { CourseActions } from "./_components/course-actions";
+import { getServerMessages } from "@/lib/i18n-server";
 // import { auth } from "@/lib/auth";
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
+  const t = getServerMessages();
 
   // const session = await auth()
 
@@ -89,15 +91,15 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       {!course.isPublished && (
         <Banner
           variant="warning"
-          label="Este curso aún no se ha publicado. No será visible a los estudiantes."
+          label={t.admin.courseUnpublishedWarning}
         />
       )}
       <div className="p-6 ">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
-            <h1 className="text-2xl font-medium">Configuración de Curso</h1>
+            <h1 className="text-2xl font-medium">{t.admin.courseSetup}</h1>
             <span className="text-sm text-slate-700">
-              Campos completados {completionText}
+              {t.admin.completedFields(completionText)}
             </span>
           </div>
           <CourseActions
@@ -110,7 +112,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
           <div>
             <div className="flex items-center gap-x-2">
               <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-xl">Edita tu Curso</h2>
+              <h2 className="text-xl">{t.admin.editCourse}</h2>
             </div>
             <TitleForm initialData={course} courseId={params.courseId} />
             <DescriptionForm initialData={course} courseId={params.courseId} />
@@ -125,14 +127,14 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
             <div className="">
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">Modúlos del Curso</h2>
+                <h2 className="text-xl">{t.admin.courseChapters}</h2>
               </div>
               <ModulesForm initialData={course} courseId={params.courseId} />
             </div>
             <div className="">
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={File} />
-                <h2 className="text-xl">Recursos & Archivos</h2>
+                <h2 className="text-xl">{t.admin.resourcesAndFiles}</h2>
               </div>
               <AttachmentForm initialData={course} courseId={params.courseId} />
             </div>

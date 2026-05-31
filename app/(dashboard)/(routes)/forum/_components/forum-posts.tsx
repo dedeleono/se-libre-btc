@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { DeletePostModal, DeletePostModalRef } from "./delete-post-modal";
 import { useRef, useState } from "react";
+import { useLocale } from "@/lib/i18n";
 
 interface ForumPostsProps {
   posts: (ForumPost & {
@@ -50,6 +51,7 @@ const item = {
 };
 
 export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
+  const { t } = useLocale();
   const router = useRouter();
   const deleteModalRef = useRef<DeletePostModalRef>(null);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
@@ -65,10 +67,10 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
     
     try {
       await axios.delete(`/api/forum/${postToDelete}`);
-      toast.success("Post deleted successfully");
+      toast.success(t.forum.postDeleted);
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(t.common.somethingWentWrong);
       throw error; // Re-throw to show loading state in modal
     }
   };
@@ -83,9 +85,9 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
           dark:text-white/70 rounded-lg"
       >
         <MessageCircle className="h-10 w-10 text-primary/70 mb-4" />
-        <h3 className="text-lg font-medium dark:text-white/90">No hay discusiones</h3>
+        <h3 className="text-lg font-medium dark:text-white/90">{t.forum.noContentYet}</h3>
         <p className="text-sm dark:text-white/50 mt-2">
-          Sé el primero en empezar una discusión!
+          {t.forum.emptyPrompt}
         </p>
       </motion.div>
     );
@@ -161,9 +163,9 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                         >
                           <Video className="h-3 w-3 mr-1" />
                           <span className="hidden sm:inline">
-                            Reunión disponible
+                            {t.forum.meetingAvailable}
                           </span>
-                          <span className="sm:hidden">Reunión</span>
+                          <span className="sm:hidden">{t.forum.meeting}</span>
                         </Badge>
                       )}
                     </div>
@@ -183,7 +185,7 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                             className="text-red-600 cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Eliminar Post
+                            {t.forum.deletePost}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -199,7 +201,7 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                         hover:text-orange-400 transition-colors"
                       >
                         <Video className="h-4 w-4" />
-                        <span className="text-xs font-medium">Meeting</span>
+                        <span className="text-xs font-medium">{t.forum.meeting}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1.5 hover:text-white/70 transition-colors">

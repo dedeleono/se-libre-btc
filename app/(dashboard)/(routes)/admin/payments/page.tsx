@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { DollarSign, Users, CreditCard, AlertCircle } from "lucide-react";
 import { PaymentsTable } from "./_components/payments-table";
 import { formatPrice } from "@/lib/utils";
+import { getServerMessages } from "@/lib/i18n-server";
 
 async function getPaymentsData() {
   const today = new Date();
@@ -47,6 +48,7 @@ async function getPaymentsData() {
 }
 
 export default async function PaymentsPage() {
+  const t = getServerMessages();
   const data = await getPaymentsData();
 
   return (
@@ -63,10 +65,10 @@ export default async function PaymentsPage() {
               <h2 className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl
                 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
                 dark:from-white dark:to-white/70 font-['Open_Sans']">
-                Pagos
+                {t.nav.payments}
               </h2>
               <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans']">
-Manage course, learning path, and subscription payments
+                {t.admin.paymentsSubtitle}
               </p>
             </div>
           </div>
@@ -80,7 +82,7 @@ Manage course, learning path, and subscription payments
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                  Ingresos Totales
+                  {t.dashboard.totalRevenue}
                 </p>
                 <p className="text-xl sm:text-2xl font-bold">
                   {formatPrice(data.totalRevenue)}
@@ -96,7 +98,7 @@ Manage course, learning path, and subscription payments
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                  Ingresos Mensuales
+                  {t.admin.monthlyRevenue}
                 </p>
                 <p className="text-xl sm:text-2xl font-bold">
                   {formatPrice(data.monthlyRevenue)}
@@ -112,7 +114,7 @@ Manage course, learning path, and subscription payments
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                  Pagos Completados
+                  {t.admin.totalPayments}
                 </p>
                 <p className="text-xl sm:text-2xl font-bold">{data.totalPayments}</p>
               </div>
@@ -126,7 +128,7 @@ Manage course, learning path, and subscription payments
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                  Pagos Pendientes
+                  {t.admin.pendingPayments}
                 </p>
                 <p className="text-xl sm:text-2xl font-bold">{data.pendingPayments}</p>
               </div>

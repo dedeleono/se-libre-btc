@@ -4,8 +4,10 @@ import { CreditCard } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { auth } from "@/lib/auth";
 import { PaymentsTable } from "./_components/payments-table";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function PaymentsPage() {
+  const t = getServerMessages();
 
   const session = await auth();
 
@@ -33,10 +35,10 @@ export default async function PaymentsPage() {
                 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
                 dark:from-white dark:to-white/70 font-['Open_Sans']"
               >
-                Historial de Pagos
+                {t.payments.historyTitle}
               </h2>
               <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans']">
-                Aquí puedes ver el historial de tus pagos
+                {t.payments.historySubtitle}
               </p>
             </div>
           </div>

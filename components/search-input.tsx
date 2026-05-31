@@ -8,8 +8,10 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import qs from "query-string";  
+import { useLocale } from "@/lib/i18n";
 
 export const SearchInput = () => {
+  const { t } = useLocale();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -40,7 +42,7 @@ export const SearchInput = () => {
         onChange={(e) => setValue(e.target.value)}
         type="text"
         className="w-full md:w-[300px] pl-12 border-slate-200 focus:ring-slate-200"
-        placeholder="Search for a course"
+        placeholder={t.nav.browseCourses}
       />
     </div>
   );

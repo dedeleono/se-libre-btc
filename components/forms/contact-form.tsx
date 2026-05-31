@@ -14,27 +14,26 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useRouter } from "next/navigation";
-import { Mail, Send, User } from "lucide-react";
+import { Send } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { useLocale } from "@/lib/i18n";
 
-const contactFormSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email({ message: "Enter a valid email address" }),
-  message: z.string().min(1, { message: "Message is required" }),
-});
-
-type ContactFormValue = z.infer<typeof contactFormSchema>;
+type ContactFormValue = {
+  name: string;
+  email: string;
+  message: string;
+};
 
 export default function ContactForm() {
-  const router = useRouter();
+  const { t } = useLocale();
+  const contactFormSchema = z.object({
+    name: z.string().min(1, { message: t.validation.nameRequired }),
+    email: z.string().email({ message: t.validation.email }),
+    message: z.string().min(1, { message: t.validation.messageRequired }),
+  });
 
   const form = useForm<ContactFormValue>({
     resolver: zodResolver(contactFormSchema),
@@ -69,11 +68,11 @@ export default function ContactForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-sky-900 dark:text-white/90">
-                      Nombre
+                      {t.forms.name}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="¿Cuál es tu nombre?"
+                        placeholder={t.forms.namePlaceholder}
                         disabled={isPending}
                         className="dark:bg-white/[0.06] dark:border-white/[0.05] dark:placeholder:text-white/50 dark:text-white/90"
                         {...field}
@@ -90,12 +89,12 @@ export default function ContactForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium text-sky-900 dark:text-white/90">
-                      Correo
+                      {t.forms.email}
                     </FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="Ingresa tu correo"
+                        placeholder={t.auth.emailPlaceholder}
                         disabled={isPending}
                         className="dark:bg-white/[0.06] dark:border-white/[0.05] dark:placeholder:text-white/50 dark:text-white/90"
                         {...field}
@@ -113,11 +112,11 @@ export default function ContactForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium text-sky-900 dark:text-white/90">
-                    Tu mensaje
+                    {t.forms.message}
                   </FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Escribe tu mensaje aquí..."
+                      placeholder={t.forms.messagePlaceholder}
                       disabled={isPending}
                       className="min-h-[120px] resize-none dark:bg-white/[0.06] dark:border-white/[0.05] dark:placeholder:text-white/50 dark:text-white/90"
                       {...field}
@@ -138,7 +137,7 @@ export default function ContactForm() {
               ) : (
                 <Send className="h-4 w-4 mr-2" />
               )}
-              {isPending ? "Enviando..." : "Enviar mensaje"}
+              {isPending ? t.forms.sending : t.forms.sendMessage}
             </Button>
           </form>
         </Form>

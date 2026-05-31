@@ -22,21 +22,22 @@ import { Course } from "@prisma/client";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface DescriptionFormProps {
   initialData: Course;
   courseId: string;
 }
 
-const formSchema = z.object({
-  description: z.string().min(1, { message: "Description is required" }),
-});
-
 export const DescriptionForm = ({
   initialData,
   courseId,
 }: DescriptionFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
+  const formSchema = z.object({
+    description: z.string().min(1, { message: t.validation.descriptionRequired }),
+  });
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -54,11 +55,11 @@ export const DescriptionForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(`/api/courses/${courseId}`, values);
-      toast.success("Descripción actualizada");
+      toast.success(t.admin.descriptionUpdated);
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Error al actualizar descripción");
+      toast.error(t.admin.descriptionUpdateError);
     }
   };
 
@@ -66,15 +67,15 @@ export const DescriptionForm = ({
     <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium">Descripción</h3>
-          <p className="text-xs text-muted-foreground">Explica el valor y el alcance del curso.</p>
+          <h3 className="font-medium">{t.admin.description}</h3>
+          <p className="text-xs text-muted-foreground">{t.admin.courseDescriptionHelp}</p>
         </div>
         <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
-          {isEditing && <>Cancelar</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar
+              {t.common.edit}
             </>
           )}
         </Button>
@@ -86,7 +87,7 @@ export const DescriptionForm = ({
             !initialData.description && "text-slate-500 italic"
           )}
         >
-          {!initialData.description && "Sin descripción"}
+          {!initialData.description && t.admin.noDescription}
           {initialData.description && (
             <Preview value={initialData.description} />
           )}
@@ -115,7 +116,7 @@ export const DescriptionForm = ({
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Guardar
+                {t.common.save}
               </Button>
             </div>
           </form>

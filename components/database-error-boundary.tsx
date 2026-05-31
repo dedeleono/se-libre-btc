@@ -1,9 +1,11 @@
 "use client";
 
-import React,{ useEffect } from "react";
+import React from "react";
+import { useLocale, type Messages } from "@/lib/i18n";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
+  labels: Messages["errors"];
 }
 
 interface ErrorBoundaryState {
@@ -29,9 +31,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       return (
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center">
-            <h2 className="text-xl font-semibold">Error de conexión</h2>
+            <h2 className="text-xl font-semibold">{this.props.labels.connectionTitle}</h2>
             <p className="text-muted-foreground">
-              Por favor, intente recargar la página
+              {this.props.labels.connectionDescription}
             </p>
             <button
               onClick={() => {
@@ -40,7 +42,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               }}
               className="mt-4 rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90"
             >
-              Recargar página
+              {this.props.labels.reloadPage}
             </button>
           </div>
         </div>
@@ -51,6 +53,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-export default function DatabaseErrorBoundary({ children }: ErrorBoundaryProps) {
-  return <ErrorBoundary>{children}</ErrorBoundary>;
+export default function DatabaseErrorBoundary({ children }: { children: React.ReactNode }) {
+  const { t } = useLocale();
+  return <ErrorBoundary labels={t.errors}>{children}</ErrorBoundary>;
 } 

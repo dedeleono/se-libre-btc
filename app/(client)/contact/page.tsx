@@ -1,16 +1,19 @@
 import ContactForm from "@/components/forms/contact-form";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default function ContactPage() {
+  const t = getServerMessages();
+
   return (
     <div className="space-y-10">
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight text-success font-['Open_Sans']">
-          Contáctanos
+          {t.public.contactTitle}
         </h1>
         <p className="text-muted-foreground dark:text-white/70 sm:text-sm text-xs ">
-          Nos pondremos en contacto contigo lo antes posible
+          {t.public.contactResponse}
         </p>
       </div>
 
@@ -25,7 +28,7 @@ export default function ContactPage() {
           </div>
           <div>
             <h3 className="font-medium text-sky-900 dark:text-white/90 font-['Open_Sans']">
-              Ubicación
+              {t.public.location}
             </h3>
             <p className="text-sm text-muted-foreground dark:text-white/70">
               6ta Avenida 8-25 zona 2, Avenida Simeón Cañas, Apto &quot;A&quot;,
@@ -54,7 +57,7 @@ export default function ContactPage() {
           </div>
           <div>
             <h3 className="font-medium text-sky-900 dark:text-white/90 font-['Open_Sans']">
-              Teléfono
+              {t.public.phone}
             </h3>
             <p className="text-sm text-muted-foreground dark:text-white/70">
               +1 234 567 890 • Lun - Vie, 8:00 AM - 6:00 PM

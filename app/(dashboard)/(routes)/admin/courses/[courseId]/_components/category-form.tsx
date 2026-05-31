@@ -23,6 +23,7 @@ import { Course, CourseCategory } from "@prisma/client";
 import Combobox from "@/components/ui/combobox";
 import CategoryFormCreate from "./category-form-create";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface CategoryFormProps {
   initialData: Course & {categories: CourseCategory[]};
@@ -39,6 +40,7 @@ export const CategoryForm = ({
   courseId,
   options,
 }: CategoryFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const formCategoryCreateRef = useRef<{ open: () => void; close: () => void }>(
@@ -66,11 +68,11 @@ export const CategoryForm = ({
         courseId,
         categoryIds: values.categoryIds
       });
-      toast.success("Categorías actualizadas");
+      toast.success(t.admin.categoriesUpdated);
       toggleEdit();
       router.refresh();
     } catch (error) {
-      toast.error("Error al actualizar categorías");
+      toast.error(t.admin.categoriesUpdateError);
     }
   };
 
@@ -82,15 +84,15 @@ export const CategoryForm = ({
     <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium">Categorías</h3>
-          <p className="text-xs text-muted-foreground">Ayudan a filtrar y descubrir este curso.</p>
+          <h3 className="font-medium">{t.admin.categories}</h3>
+          <p className="text-xs text-muted-foreground">{t.admin.categoriesHelp}</p>
         </div>
         <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
-          {isEditing && <>Cancelar</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Editar
+              {t.common.edit}
             </>
           )}
         </Button>
@@ -104,7 +106,7 @@ export const CategoryForm = ({
         >
           {selectedOptions.length > 0
             ? selectedOptions.map((option) => option.label).join(", ")
-            : "Sin categorías"}
+            : t.admin.noCategories}
         </p>
       )}
       {isEditing && (

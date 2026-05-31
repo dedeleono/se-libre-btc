@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { StepperProviderRef } from "./stepper/context";
 import axios from "axios";
+import { useLocale } from "@/lib/i18n";
 
 interface CheckoutStep {
   id: string;
@@ -22,33 +23,6 @@ interface CheckoutStep {
   icon: LucideIcon;
   description: string;
 }
-
-const steps: CheckoutStep[] = [
-  {
-    id: "personal-info",
-    label: "Información personal",
-    icon: User,
-    description: "Cuéntanos sobre ti"
-  },
-  {
-    id: "product-selection",
-    label: "Learning path",
-    icon: GraduationCap,
-    description: "Choose your learning path"
-  },
-  {
-    id: "payment",
-    label: "Pago",
-    icon: CreditCard,
-    description: "Completa tu pago"
-  },
-  {
-    id: "confirmation",
-    label: "Confirmación",
-    icon: CheckCircle,
-    description: "Revisa tu información"
-  }
-];
 
 const StepIcon = ({ 
   icon: Icon, 
@@ -108,7 +82,35 @@ interface CheckoutStepperProps {
 }
 
 export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperProps) {
+  const { t } = useLocale();
   const searchParams = useSearchParams();
+  const steps: CheckoutStep[] = [
+    {
+      id: "personal-info",
+      label: t.onboarding.personalInfo,
+      icon: User,
+      description: t.onboarding.personalInfoDescription,
+    },
+    {
+      id: "product-selection",
+      label: t.student.learningPaths,
+      icon: GraduationCap,
+      description: t.forms.learningPathDescription,
+    },
+    {
+      id: "payment",
+      label: t.forms.payment,
+      icon: CreditCard,
+      description: t.forms.paymentDescription,
+    },
+    {
+      id: "confirmation",
+      label: t.forms.confirmation,
+      icon: CheckCircle,
+      description: t.forms.confirmationDescription,
+    }
+  ];
+
   const [formData, setFormData] = useState<CheckoutFormData>(() => {
     // Initialize with default values
     const initialData: CheckoutFormData = {
@@ -173,7 +175,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
       }));
 
       if (!data) {
-        throw new Error("Invalid form data");
+        throw new Error(t.forms.invalidFormData);
       }
 
       // If this is the payment step and we have a pending invitation, update it
@@ -190,7 +192,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
       
       // If this is the final step (confirmation), redirect to onboarding
       if (currentStepIndex === steps.length - 1) {
-        toast.success("¡Inscripción completada! Redirigiendo...");
+        toast.success(t.forms.enrollmentCompletedRedirecting);
         // Add a small delay to show the success message
         await new Promise(resolve => setTimeout(resolve, 1500));
         window.location.href = '/onboarding';
@@ -202,7 +204,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
     } catch (error) {
       console.error("Error submitting step:", error);
       setStepStates(prev => ({ ...prev, [stepId]: 'error' }));
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t.onboarding.stepError);
     } finally {
       setIsTransitioning(false);
     }
@@ -236,11 +238,10 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
       <div className="bg-white dark:bg-black/40 rounded-2xl shadow-lg border border-gray-100 dark:border-white/[0.05]">
         <div className="md:p-6 p-4 border-b border-gray-100 dark:border-white/[0.05]">
           <h1 className="md:text-2xl text-xl font-semibold text-success dark:text-secondary">
-            Completa tu inscripción
+            {t.forms.completeEnrollment}
           </h1>
           <p className="mt-2 text-sm text-gray-500 dark:text-white/70">
-            Por favor, completa la siguiente información para completar tu
-            inscripción
+            {t.forms.completeEnrollmentDescription}
           </p>
         </div>
 
@@ -255,7 +256,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
                 1
               </div>
               <span className="ml-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
-                Inscripción y Pago
+                {t.forms.enrollmentAndPayment}
               </span>
             </div>
             <div className="flex-1 h-[2px] bg-gray-200 dark:bg-white/10 mx-4" />
@@ -267,7 +268,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
                 2
               </div>
               <span className="ml-2 text-sm font-medium text-gray-500 dark:text-white/70">
-                Perfil
+                {t.profile.title}
               </span>
             </div>
           </div>
@@ -319,9 +320,9 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
             
           >
             <Step
-              label="Información personal"
+              label={t.onboarding.personalInfo}
               icon={User}
-              description="Cuéntanos sobre ti"
+              description={t.onboarding.personalInfoDescription}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -337,9 +338,9 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
               </motion.div>
             </Step>
             <Step
-              label="Learning path"
+              label={t.student.learningPaths}
               icon={GraduationCap}
-              description="Choose the learning path you want to study"
+              description={t.forms.learningPathDescription}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -356,9 +357,9 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
               </motion.div>
             </Step>
             <Step
-              label="Pago"
+              label={t.forms.payment}
               icon={CreditCard}
-              description="Completa tu pago"
+              description={t.forms.paymentDescription}
             >
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

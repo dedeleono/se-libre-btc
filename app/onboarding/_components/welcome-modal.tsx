@@ -1,7 +1,10 @@
+"use client";
+
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import Logo from '@/components/logo';
+import { useLocale } from '@/lib/i18n';
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -10,6 +13,8 @@ interface WelcomeModalProps {
 }
 
 export function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
+  const { t } = useLocale();
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -29,7 +34,7 @@ export function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
             transition={{ delay: 0.2 }}
           >
             <p className="mb-6 text-muted-foreground text-left">
-              Termina de configurar tu cuenta y aprende más sobre la plataforma de Se Libre:
+              {t.onboarding.welcomeDescription}
             </p>
           </motion.div>
 
@@ -44,24 +49,24 @@ export function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
                 <div className="rounded-full bg-primary/10 p-2">
                   <motion.div whileHover={{ scale: 1.1 }}>🎨</motion.div>
                 </div>
-                <span>Edita tu perfil</span>
+                <span>{t.onboarding.editProfile}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="rounded-full bg-primary/10 p-2">
                   <motion.div whileHover={{ scale: 1.1 }}>📚</motion.div>
                 </div>
-                <span>Accesa nuestras guías de uso</span>
+                <span>{t.onboarding.accessGuides}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="rounded-full bg-primary/10 p-2">
                   <motion.div whileHover={{ scale: 1.1 }}>🚀</motion.div>
                 </div>
-                <span>Comienza con tu primer curso</span>
+                <span>{t.onboarding.startFirstCourse}</span>
               </div>
             </div>
 
             <Button onClick={onClose} className="w-full" size="lg">
-              Comencemos
+              {t.onboarding.getStarted}
             </Button>
           </motion.div>
         </motion.div>

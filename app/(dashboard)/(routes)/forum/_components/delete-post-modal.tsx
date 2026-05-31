@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useLocale } from "@/lib/i18n";
 
 interface DeletePostModalProps {
   onConfirm: () => Promise<void>;
@@ -20,6 +21,7 @@ export type DeletePostModalRef = {
 
 export const DeletePostModal = forwardRef<DeletePostModalRef, DeletePostModalProps>(
   ({ onConfirm }, ref) => {
+    const { t } = useLocale();
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -42,9 +44,9 @@ export const DeletePostModal = forwardRef<DeletePostModalRef, DeletePostModalPro
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Eliminar Post</DialogTitle>
+            <DialogTitle>{t.forum.deletePostTitle}</DialogTitle>
             <DialogDescription>
-              Estás seguro de que quieres eliminar este post? Esta acción no se puede deshacer.
+              {t.forum.deletePostDescription}
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-2">
@@ -53,7 +55,7 @@ export const DeletePostModal = forwardRef<DeletePostModalRef, DeletePostModalPro
               onClick={() => setIsOpen(false)}
               disabled={isLoading}
             >
-              Cancelar
+              {t.common.cancel}
             </Button>
             <Button
               variant="destructive"
@@ -63,10 +65,10 @@ export const DeletePostModal = forwardRef<DeletePostModalRef, DeletePostModalPro
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Eliminando...
+                  {t.forum.deleting}
                 </>
               ) : (
-                "Eliminar"
+                t.common.delete
               )}
             </Button>
           </div>

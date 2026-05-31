@@ -4,8 +4,10 @@ import { Route } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/db";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function AdminLearningPathsPage() {
+  const t = getServerMessages();
   const learningPaths = await prisma.learningPath.findMany({
     include: { _count: { select: { courses: true, enrollments: true } } },
     orderBy: { position: "asc" },
@@ -19,12 +21,12 @@ export default async function AdminLearningPathsPage() {
             <Route className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Learning Paths</h1>
-            <p className="text-sm text-muted-foreground">Bundle standalone courses into guided Bitcoin curricula.</p>
+            <h1 className="text-3xl font-bold tracking-tight">{t.nav.learningPaths}</h1>
+            <p className="text-sm text-muted-foreground">{t.admin.bundleCourses}</p>
           </div>
         </div>
         <Button asChild>
-          <Link href="/admin/learning-paths/new">New path</Link>
+          <Link href="/admin/learning-paths/new">{t.admin.newPath}</Link>
         </Button>
       </div>
 
@@ -34,25 +36,25 @@ export default async function AdminLearningPathsPage() {
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <div>
                 <CardTitle>{path.title}</CardTitle>
-                <p className="mt-1 text-sm text-muted-foreground">{path.description || "No description yet."}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{path.description || t.admin.noDescriptionYet}</p>
               </div>
               <div className="flex items-center gap-2">
                 <Button asChild variant="outline" size="sm">
-                  <Link href={`/learning-paths/${path.slug}`}>Preview</Link>
+                  <Link href={`/learning-paths/${path.slug}`}>{t.public.preview}</Link>
                 </Button>
                 <Button asChild size="sm">
-                  <Link href={`/admin/learning-paths/${path.id}`}>Manage</Link>
+                  <Link href={`/admin/learning-paths/${path.id}`}>{t.admin.manage}</Link>
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
-              <div>Status: {path.isPublished ? "Published" : "Draft"}</div>
-              <div>Courses: {path._count.courses}</div>
-              <div>Enrollments: {path._count.enrollments}</div>
+              <div>{t.admin.status}: {path.isPublished ? t.common.published : t.common.draft}</div>
+              <div>{t.nav.courses}: {path._count.courses}</div>
+              <div>{t.admin.enrollments}: {path._count.enrollments}</div>
             </CardContent>
           </Card>
         ))}
-        {learningPaths.length === 0 && <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">No learning paths yet.</CardContent></Card>}
+        {learningPaths.length === 0 && <Card><CardContent className="p-8 text-center text-sm text-muted-foreground">{t.admin.noLearningPathsYet}</CardContent></Card>}
       </div>
     </div>
   );

@@ -2,15 +2,14 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Loader2, Mail } from "lucide-react";
-import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 function VerifyRequestContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const email = searchParams.get("email");
+  const { t } = useLocale();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
@@ -32,7 +31,7 @@ function VerifyRequestContent() {
           transition={{ delay: 0.2 }}
           className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2"
         >
-          Revisa tu correo
+          {t.auth.checkEmail}
         </motion.h2>
         <motion.p
           initial={{ y: 20, opacity: 0 }}
@@ -40,8 +39,7 @@ function VerifyRequestContent() {
           transition={{ delay: 0.4 }}
           className="text-gray-600 dark:text-gray-400"
         >
-          Hemos enviado un enlace de inicio de sesión a{" "}
-          <span className="font-semibold">{email}</span>
+          {t.auth.magicLinkSent(email ?? "")}
         </motion.p>
         <motion.p
           initial={{ y: 20, opacity: 0 }}
@@ -49,7 +47,7 @@ function VerifyRequestContent() {
           transition={{ delay: 0.6 }}
           className="text-sm text-gray-500 dark:text-gray-400 mt-4"
         >
-          Haz clic en el enlace para continuar
+          {t.auth.clickLinkToContinue}
         </motion.p>
       </motion.div>
     </div>
@@ -57,6 +55,8 @@ function VerifyRequestContent() {
 }
 
 export default function VerifyRequest() {
+  const { t } = useLocale();
+
   return (
     <Suspense fallback={
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
@@ -65,10 +65,10 @@ export default function VerifyRequest() {
             <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
           </div>
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
-            Cargando...
+            {t.common.loading}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Por favor, espera un momento
+            {t.auth.pleaseWait}
           </p>
         </div>
       </div>

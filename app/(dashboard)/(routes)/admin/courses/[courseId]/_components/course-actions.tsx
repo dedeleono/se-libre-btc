@@ -6,6 +6,8 @@ import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ActionsProps {
   disabled: boolean;
@@ -18,6 +20,7 @@ export const CourseActions = ({
   courseId,
   isPublished,
 }: ActionsProps) => {
+  const { t } = useLocale();
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -29,17 +32,17 @@ export const CourseActions = ({
         await axios.patch(
           `/api/courses/${courseId}/unpublish`
         );
-        console.log("course unpublished");
+        toast.success(t.admin.courseUnpublished);
       } else {
         await axios.patch(
           `/api/courses/${courseId}/publish`
         );
-        console.log("course published");
+        toast.success(t.admin.coursePublished);
       }
 
       router.refresh();
     } catch (error) {
-      console.log("shfkjdshf chapter actinos onClick", error);
+      toast.error(t.common.somethingWentWrong);
     } finally {
       setIsLoading(false);
     }
@@ -51,11 +54,11 @@ export const CourseActions = ({
       await axios.delete(
         `/api/courses/${courseId}`
       );
-      console.log("course deleted");
+      toast.success(t.toasts.courseDeleted);
       router.refresh();
       router.push(`/admin/courses`);
     } catch (error) {
-      console.log("error, chapter actions", error);
+      toast.error(t.toasts.courseDeleteError);
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +72,7 @@ export const CourseActions = ({
         size={"default"}
         variant={"outline"}
       >
-        {isPublished ? "Bajar" : "Publicar"}
+        {isPublished ? t.admin.lower : t.admin.publish}
       </Button>
       <ConfirmModal onConfirm={onDelete}>
         <Button size={"icon"} disabled={isLoading} variant={"destructive"}>

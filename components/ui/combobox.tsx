@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useLocale } from "@/lib/i18n";
 
 interface ComboBoxProps {
   options: { label: string; value: string }[];
@@ -32,6 +33,7 @@ const Combobox = ({
   onChange,
   multiple = false, // Default to single selection
 }: ComboBoxProps) => {
+  const { t } = useLocale();
   const [open, setOpen] = React.useState(false);
 
   const handleSelect = (selectedValue: string) => {
@@ -56,12 +58,12 @@ const Combobox = ({
             (v) =>
               options.find((option) => option.value.toString() === v)?.label
           )
-          .join(", ") || "Selecciona una opción"
+          .join(", ") || t.common.selectOption
       );
     } else {
       return (
         options.find((option) => option.value.toString() === value)?.label ||
-        "Selecciona una opción"
+        t.common.selectOption
       );
     }
   };
@@ -81,8 +83,8 @@ const Combobox = ({
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
-          <CommandInput placeholder="Search option..." />
-          <CommandEmpty>No option found.</CommandEmpty>
+          <CommandInput placeholder={t.common.searchOption} />
+          <CommandEmpty>{t.common.noOptionFound}</CommandEmpty>
           <CommandList>
             <CommandGroup>
               {options.map((option) => (

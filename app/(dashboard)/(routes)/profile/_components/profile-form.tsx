@@ -24,13 +24,7 @@ import { Input } from "@/components/ui/input";
 import { S3FileUpload } from "@/components/file-upload";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@prisma/client";
-
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Name is required",
-  }),
-  phone: z.string().optional(),
-});
+import { useLocale } from "@/lib/i18n";
 
 interface ProfileFormProps {
   initialData: {
@@ -43,10 +37,17 @@ interface ProfileFormProps {
 }
 
 export default function ProfileForm({ initialData }: ProfileFormProps) {
+  const { t } = useLocale();
   const [imageUrl, setImageUrl] = useState<string | null>(initialData.image || null);
   const [isUploading, setIsUploading] = useState(false);
   const router = useRouter();
   const { refetch } = useSession();
+  const formSchema = z.object({
+    name: z.string().min(1, {
+      message: t.validation.nameRequired,
+    }),
+    phone: z.string().optional(),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,10 +69,10 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
       await updateUser({ name: values.name, image: imageUrl });
       await refetch();
 
-      toast.success("Profile updated successfully");
+      toast.success(t.profile.updated);
       router.refresh();
     } catch {
-      toast.error("Something went wrong");
+      toast.error(t.common.somethingWentWrong);
     }
   };
 
@@ -84,7 +85,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
             <div className="group relative h-40 w-40">
               <Image
                 src={imageUrl}
-                alt="Profile"
+                alt={t.profile.imageAlt}
                 fill
                 className="rounded-full object-cover ring-2 ring-border transition-all duration-300 group-hover:ring-primary"
               />
@@ -103,11 +104,11 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
               <S3FileUpload
                 onUploadComplete={(url) => {
                   setImageUrl(url);
-                  toast.success('Profile image uploaded successfully');
+                  toast.success(t.profile.imageUploaded);
                   setIsUploading(false);
                 }}
                 onUploadError={() => {
-                  toast.error('Upload failed');
+                  toast.error(t.profile.uploadFailed);
                   setIsUploading(false);
                 }}
                 type="image"
@@ -115,7 +116,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                 acceptedFileTypes={['image/*']}
               />
               <div className="text-xs text-muted-foreground">
-                Recommended: Square image (1:1 ratio)
+                {t.profile.recommendedImage}
               </div>
             </>
           )}
@@ -130,7 +131,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
               <FormItem>
                 <FormLabel className="flex items-center space-x-2">
                   <User className="h-4 w-4" />
-                  <span>Nombre</span>
+                  <span>{t.profile.fullName}</span>
                 </FormLabel>
                 <FormControl>
                   <Input 
@@ -139,7 +140,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                       "transition-all duration-300 focus:scale-[1.002]",
                       "bg-background"
                     )}
-                    placeholder="Tu nombre completo"
+                    placeholder={t.profile.fullNamePlaceholder}
                   />
                 </FormControl>
                 <FormMessage />
@@ -153,7 +154,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
               <FormItem>
                 <FormLabel className="flex items-center space-x-2">
                   <Phone className="h-4 w-4" />
-                  <span>Teléfono</span>
+                  <span>{t.profile.phone}</span>
                 </FormLabel>
                 <FormControl>
                   <Input 
@@ -162,7 +163,7 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                       "transition-all duration-300 focus:scale-[1.002]",
                       "bg-background"
                     )}
-                    placeholder="Tu número de teléfono"
+                    placeholder={t.profile.phonePlaceholder}
                   />
                 </FormControl>
                 <FormMessage />
@@ -185,10 +186,10 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
           {isSubmitting ? (
             <div className="flex items-center space-x-2">
               <Upload className="h-4 w-4 animate-spin" />
-              <span>Guardando...</span>
+              <span>{t.profile.saving}</span>
             </div>
           ) : (
-            <span>Guardar Cambios</span>
+            <span>{t.profile.saveChanges}</span>
           )}
         </Button>
       </form>

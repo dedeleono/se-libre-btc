@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { ImageIcon, Search } from "lucide-react";
 import Image from "next/image";
+import { useLocale } from "@/lib/i18n";
 
 interface GuideContent {
   title: string;
@@ -30,6 +31,7 @@ const ExpandableGuideCards = ({
 }: {
   guides: { embedUrl: string, title: string, description: string, imageUrl?: string }[];
 }) => {
+  const { t } = useLocale();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredGuides = guides.filter(
@@ -43,7 +45,7 @@ const ExpandableGuideCards = ({
       <div className="relative w-full max-w-md mx-auto">
         <Input
           type="text"
-          placeholder="Buscar guía..."
+          placeholder={t.public.searchGuide}
           className="w-full p-4 pl-12 pr-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-gray-800/50 dark:text-white dark:border-gray-600/50 backdrop-blur-sm"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

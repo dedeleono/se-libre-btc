@@ -1,6 +1,7 @@
 "use client";
 
 import { Languages } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/lib/i18n";
@@ -12,6 +13,7 @@ type LanguageToggleProps = {
 
 export function LanguageToggle({ className }: LanguageToggleProps) {
   const { locale, setLocale, t } = useLocale();
+  const router = useRouter();
   const nextLocale = locale === "es" ? "en" : "es";
 
   return (
@@ -20,7 +22,10 @@ export function LanguageToggle({ className }: LanguageToggleProps) {
       variant="ghost"
       size="sm"
       aria-label={`${t.languageLabel}: ${locale.toUpperCase()}`}
-      onClick={() => setLocale(nextLocale)}
+      onClick={() => {
+        setLocale(nextLocale);
+        router.refresh();
+      }}
       className={cn("gap-2 px-2", className)}
     >
       <Languages className="h-4 w-4" />

@@ -22,8 +22,8 @@ const HeaderMenu = () => {
   const pathname = usePathname();
   const { t } = useLocale();
   const navItems = [
-    { label: t.about, href: "/about" },
-    { label: t.contact, href: "/contact" },
+    { label: t.nav.about, href: "/about" },
+    { label: t.nav.contact, href: "/contact" },
   ] as const;
 
   return (
@@ -71,7 +71,7 @@ const HeaderMenu = () => {
               className="bg-sky-900 hover:bg-sky-800 
               dark:bg-sky-700/90 dark:hover:bg-sky-800/90 dark:text-white"
             >
-              {t.signIn}
+              {t.nav.signIn}
             </Button>
           </Link>
         </div>
@@ -96,7 +96,7 @@ const HeaderMenu = () => {
             >
               <SheetHeader>
                 <SheetTitle className="text-left dark:text-white/90">
-                  {t.menu}
+                  {t.nav.menu}
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-4 mt-4">
@@ -121,7 +121,7 @@ const HeaderMenu = () => {
                       className="bg-sky-900 hover:bg-sky-800 w-full 
                       dark:bg-sky-700/90 dark:hover:bg-sky-800/90 dark:text-white"
                     >
-                      {t.signIn}
+                      {t.nav.signIn}
                     </Button>
                   </Link>
                 </div>

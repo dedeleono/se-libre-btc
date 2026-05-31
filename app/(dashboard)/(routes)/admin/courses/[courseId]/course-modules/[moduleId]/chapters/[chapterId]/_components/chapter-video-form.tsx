@@ -11,6 +11,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { S3FileUpload, S3FileUploadRef } from "@/components/file-upload";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ChapterVideoProps {
   initialData: Chapter
@@ -29,6 +30,7 @@ export const ChapterVideoForm = ({
   moduleId,
   chapterId,
 }: ChapterVideoProps) => {
+  const { t } = useLocale();
   const fileUploadRef = useRef<S3FileUploadRef>(null);
 
   const router = useRouter();
@@ -43,12 +45,12 @@ export const ChapterVideoForm = ({
         `/api/courses/${courseId}/course-modules/${moduleId}/chapters/${chapterId}`,
         values
       );
-      toast.success("Vídeo cargado");
+      toast.success(t.admin.videoUploaded);
       toggleEdit();
       fileUploadRef.current?.stopUpload();
       router.refresh();
     } catch (error) {
-      toast.error("Error al subir vídeo");
+      toast.error(t.admin.videoUploadError);
       fileUploadRef.current?.stopUpload();
     }
   };
@@ -56,19 +58,19 @@ export const ChapterVideoForm = ({
   return (
     <div className="mt-6 bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        Vídeo de la lección
+        {t.admin.lessonVideo}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
-          {isEditing && <>Cancelar</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && !initialData.videoUrl && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Agregar vídeo
+              {t.admin.addVideo}
             </>
           )}
           {!isEditing && initialData.videoUrl && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Cambiar vídeo
+              {t.admin.changeVideo}
             </>
           )}
         </Button>
@@ -97,20 +99,19 @@ export const ChapterVideoForm = ({
               }
             }}
             onUploadError={(error) => {
-              toast.error("Error al subir vídeo");
+              toast.error(t.admin.videoUploadError);
             }}
             type="video"
             ref={fileUploadRef}
           />
           <div className="text-xs text-muted-foreground mt-4">
-            Subir vídeo para esta lección
+            {t.admin.uploadVideoForLesson}
           </div>
         </div>
       )}
       {initialData.videoUrl && !isEditing && (
         <div className="text-xs text-muted-foreground mt-2">
-          Los videos pueden tomar unos minutos en procesar. Refresca la página
-          si tu vídeo no aparece.
+          {t.admin.videoProcessingHelp}
         </div>
       )}
     </div>

@@ -9,12 +9,14 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { EnrollmentButton } from "@/components/enrollment-button";
 import { prisma } from "@/lib/db";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function CoursePreviewPage({
   params,
 }: {
   params: { courseId: string };
 }) {
+  const t = getServerMessages();
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
     include: {
@@ -74,7 +76,7 @@ export default async function CoursePreviewPage({
             <Button asChild variant="ghost" className="px-0">
               <Link href="/courses">
                 <ChevronLeft className="mr-2 h-4 w-4" />
-                Back to catalog
+                {t.course.backToCatalog}
               </Link>
             </Button>
 
@@ -103,15 +105,15 @@ export default async function CoursePreviewPage({
               <div className="flex flex-wrap gap-5 text-sm text-muted-foreground">
                 <span className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
-                  {course.modules.length} modules
+                  {t.course.modulesCount(course.modules.length)}
                 </span>
                 <span className="flex items-center gap-2">
                   <PlayCircle className="h-4 w-4" />
-                  {publishedChapters.length} lessons
+                  {t.course.lessonsCount(publishedChapters.length)}
                 </span>
                 <span className="flex items-center gap-2">
                   <Users className="h-4 w-4" />
-                  {course.enrollments.length} enrolled
+                  {t.course.enrolledCount(course.enrollments.length)}
                 </span>
                 {course.estimatedDuration && (
                   <span className="flex items-center gap-2">
@@ -140,9 +142,9 @@ export default async function CoursePreviewPage({
             </div>
             <div className="space-y-4 p-5">
               <div>
-                <p className="text-2xl font-bold">Free</p>
+                <p className="text-2xl font-bold">{t.common.free}</p>
                 {instructor?.name && (
-                  <p className="text-sm text-muted-foreground">By {instructor.name}</p>
+                  <p className="text-sm text-muted-foreground">{t.course.byInstructor(instructor.name)}</p>
                 )}
               </div>
               <div className="grid gap-2">
@@ -152,12 +154,12 @@ export default async function CoursePreviewPage({
                   redirectTo={`/courses/${course.id}`}
                   className="w-full"
                 >
-                  Enroll for free
+                  {t.course.enrollForFree}
                 </EnrollmentButton>
                 {introChapter && (
                   <Button asChild variant="outline" className="w-full">
                     <Link href={`/courses/${course.id}/chapters/${introChapter.id}`}>
-                      Preview lesson
+                      {t.course.previewLesson}
                     </Link>
                   </Button>
                 )}
@@ -171,7 +173,7 @@ export default async function CoursePreviewPage({
         <div className="space-y-8">
           {course.description && (
             <Card className="p-6">
-              <h2 className="mb-3 text-2xl font-semibold">About this course</h2>
+              <h2 className="mb-3 text-2xl font-semibold">{t.course.aboutThisCourse}</h2>
               <div className="prose max-w-none text-muted-foreground">
                 <p>{course.description}</p>
               </div>
@@ -179,13 +181,13 @@ export default async function CoursePreviewPage({
           )}
 
           <Card className="p-6">
-            <h2 className="mb-5 text-2xl font-semibold">Course content</h2>
+            <h2 className="mb-5 text-2xl font-semibold">{t.course.courseContent}</h2>
             <Accordion type="single" collapsible className="space-y-3">
               {course.modules.map((module, index) => (
                 <AccordionItem key={module.id} value={module.id} className="rounded-md border px-4">
                   <AccordionTrigger>
                     <span className="text-left">
-                      Module {index + 1}: {module.title}
+                      {t.course.moduleNumber(index + 1)}: {module.title}
                     </span>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -201,7 +203,7 @@ export default async function CoursePreviewPage({
                             <span>{chapter.title}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            {chapter.isIntro && <Badge variant="secondary">Preview</Badge>}
+                            {chapter.isIntro && <Badge variant="secondary">{t.course.preview}</Badge>}
                             <Badge variant="outline">{chapter.type.replace("_", " ")}</Badge>
                           </div>
                         </div>
@@ -216,7 +218,7 @@ export default async function CoursePreviewPage({
 
         <aside className="space-y-6">
           <Card className="p-6">
-            <h2 className="mb-4 text-lg font-semibold">Included resources</h2>
+            <h2 className="mb-4 text-lg font-semibold">{t.course.includedResources}</h2>
             <div className="space-y-3">
               {course.attachments.length ? (
                 course.attachments.map((attachment) => (
@@ -230,7 +232,7 @@ export default async function CoursePreviewPage({
                   </a>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">No downloadable resources yet.</p>
+                <p className="text-sm text-muted-foreground">{t.course.noDownloadableResources}</p>
               )}
             </div>
           </Card>

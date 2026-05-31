@@ -19,20 +19,23 @@ import { useState } from "react";
 import { CheckCircle2, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { signInWithGoogle, signInWithMagicLink } from "@/lib/auth-client";
+import { useLocale } from "@/lib/i18n";
 
-const loginFormSchema = z.object({
-  email: z.string().email({ message: "Enter a valid email address" }),
-});
-
-type UserFormValue = z.infer<typeof loginFormSchema>;
+type UserFormValue = {
+  email: string;
+};
 
 export default function UserAuthForm() {
+  const { t } = useLocale();
   const [emailSent, setEmailSent] = useState(false);
   const [sentEmail, setSentEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
+  const loginFormSchema = z.object({
+    email: z.string().email({ message: t.validation.email }),
+  });
 
   const form = useForm<UserFormValue>({
     resolver: zodResolver(loginFormSchema),
@@ -50,18 +53,18 @@ export default function UserAuthForm() {
       const result = await signInWithMagicLink(data.email, callbackUrl);
 
       if (result?.error) {
-        setError(result.error.message ?? "Failed to send verification email");
-        toast.error("Failed to send verification email. Please try again.");
+        setError(result.error.message ?? t.toasts.verificationEmailError);
+        toast.error(t.toasts.verificationEmailError);
         return;
       }
 
       setSentEmail(data.email);
       setEmailSent(true);
-      toast.success("Verification email sent. Please check your inbox.");
+      toast.success(t.toasts.verificationEmailSent);
     } catch (error) {
       console.error("Error during sign in:", error);
-      setError(error instanceof Error ? error.message : 'Failed to send login link');
-      toast.error("An unexpected error occurred. Please try again.");
+      setError(error instanceof Error ? error.message : t.toasts.verificationEmailError);
+      toast.error(t.toasts.unexpectedError);
     } finally {
       setLoading(false);
     }
@@ -72,11 +75,11 @@ export default function UserAuthForm() {
       const result = await signInWithGoogle(callbackUrl);
 
       if (result?.error) {
-        toast.error(result.error.message ?? "Failed to sign in with Google");
+        toast.error(result.error.message ?? t.toasts.googleSignInError);
       }
     } catch (error) {
       console.error("Failed to sign in with Google:", error);
-      toast.error("Failed to sign in with Google");
+      toast.error(t.toasts.googleSignInError);
     }
   };
 
@@ -97,11 +100,10 @@ export default function UserAuthForm() {
             </div>
             <div className="space-y-2">
               <h3 className="text-2xl font-semibold tracking-tight">
-                Revisa tu correo
+                {t.auth.checkEmail}
               </h3>
               <p className="text-muted-foreground max-w-sm mx-auto">
-                Te enviamos un link de login a <br />
-                <span className="font-medium text-primary">{sentEmail}</span>
+                {t.auth.magicLinkSent(sentEmail)}
               </p>
             </div>
 
@@ -111,7 +113,7 @@ export default function UserAuthForm() {
             >
               <div className="flex items-center space-x-3 text-sm text-muted-foreground">
                 <Mail className="h-5 w-5 text-primary/70" />
-                <span>No olvides revisar tu carpeta de spam</span>
+                <span>{t.auth.checkSpam}</span>
               </div>
             </div>
 
@@ -121,7 +123,7 @@ export default function UserAuthForm() {
                 dark:border-white/10 transition-colors"
               onClick={() => setEmailSent(false)}
             >
-              Usar un correo diferente
+              {t.auth.differentEmail}
             </Button>
           </motion.div>
         )}
@@ -146,13 +148,13 @@ export default function UserAuthForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel htmlFor="email" className="text-foreground/90">
-                        Correo electrónico
+                        {t.auth.email}
                       </FormLabel>
                       <FormControl>
                         <Input
                           id="email"
                           type="email"
-                          placeholder="Enter your email"
+                          placeholder={t.auth.emailPlaceholder}
                           disabled={isPending}
                           {...field}
                           autoComplete="email"
@@ -172,7 +174,7 @@ export default function UserAuthForm() {
                     dark:bg-primary/80 dark:hover:bg-primary/70 transition-colors"
                   type="submit"
                 >
-                  Continuar con mi correo
+                  {t.auth.continueWithEmail}
                 </Button>
               </form>
             </Form>
@@ -186,7 +188,7 @@ export default function UserAuthForm() {
                   className="bg-background px-2 text-muted-foreground 
                   dark:bg-black/20 dark:text-white/60"
                 >
-                  O continua con
+                  {t.auth.orContinueWith}
                 </span>
               </div>
             </div>
@@ -201,7 +203,7 @@ export default function UserAuthForm() {
                 disabled={isPending}
               >
                 <FcGoogle className="w-5 h-5 mr-2" />
-                Continuar con Google
+                {t.auth.continueWithGoogle}
               </Button>
             </div>
           </motion.div>

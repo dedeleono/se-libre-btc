@@ -7,8 +7,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Info } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { useLocale } from "@/lib/i18n";
 
 const HeroSection = () => {
+    const { t } = useLocale();
+
     return (
       <div className="relative min-h-[600px] h-screen">
         <div className="absolute inset-0">
@@ -29,7 +32,7 @@ const HeroSection = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl font-bold tracking-tight text-white sm:text-6xl max-w-3xl"
             >
-              Aprende y domina el desarrollo moderno
+              {t.public.heroTitle}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -37,7 +40,7 @@ const HeroSection = () => {
               transition={{ delay: 0.2 }}
               className="mt-6 text-lg leading-8 text-gray-100 max-w-2xl"
             >
-              Únete a nuestra comunidad de estudiantes y eleva tus habilidades
+              {t.public.heroSubtitle}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -49,7 +52,7 @@ const HeroSection = () => {
                 href="/courses"
                 className="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold text-white rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500/90 dark:hover:bg-emerald-600/90 shadow-lg hover:shadow-emerald-500/25"
               >
-                Comenzar
+                {t.public.start}
                 <ArrowRight className="w-5 h-5" />
               </Link>
               {/* <Link
@@ -62,7 +65,7 @@ const HeroSection = () => {
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className="inline-flex items-center gap-2 px-6 py-7 text-base font-semibold text-white rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-sky-700 hover:bg-sky-800 dark:bg-sky-600/90 dark:hover:bg-sky-700/90 shadow-lg hover:shadow-sky-500/25">
-                    Ver Tutorial
+                    {t.public.viewTutorial}
                     <Info className="w-5 h-5" />
                   </Button>
                 </DialogTrigger>
@@ -71,7 +74,7 @@ const HeroSection = () => {
                 <DialogContent className="max-w-3xl">
                   <DialogHeader>
                     <DialogTitle className="text-xl font-semibold">
-                      Como inscribirte utilizando nuestra plataforma
+                      {t.public.tutorialTitle}
                     </DialogTitle>
                   </DialogHeader>
 

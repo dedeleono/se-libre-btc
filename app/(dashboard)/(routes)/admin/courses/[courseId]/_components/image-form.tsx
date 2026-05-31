@@ -11,18 +11,19 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { S3FileUpload, S3FileUploadRef } from "@/components/file-upload";
 import { toast } from "sonner";
+import { useLocale } from "@/lib/i18n";
 
 interface ImageFormProps {
   initialData: Course;
   courseId: string;
 }
 
-const formSchema = z.object({
-  imageUrl: z.string().min(1, { message: "Image is required" }),
-});
-
 export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
+  const { t } = useLocale();
   const fileUploadRef = useRef<S3FileUploadRef>(null);
+  const formSchema = z.object({
+    imageUrl: z.string().min(1, { message: t.admin.imageRequired }),
+  });
 
   const router = useRouter();
 
@@ -33,12 +34,12 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(`/api/courses/${courseId}`, { imageUrl: values.imageUrl });
-      toast.success("Imagen actualizada");
+      toast.success(t.admin.imageUpdated);
       toggleEdit();
       fileUploadRef.current?.stopUpload();
       router.refresh();
     } catch (error) {
-      toast.error("Error al actualizar imagen");
+      toast.error(t.admin.imageUpdateError);
     }
   };
 
@@ -46,21 +47,21 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
     <div className="mt-6 rounded-md border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium">Imagen</h3>
-          <p className="text-xs text-muted-foreground">Portada visible en catálogo y preview.</p>
+          <h3 className="font-medium">{t.admin.image}</h3>
+          <p className="text-xs text-muted-foreground">{t.admin.imageHelp}</p>
         </div>
         <Button onClick={toggleEdit} variant="ghost" size="sm" className="shrink-0">
-          {isEditing && <>Cancelar</>}
+          {isEditing && <>{t.common.cancel}</>}
           {!isEditing && !initialData.imageUrl && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
-              Agregar imagen
+              {t.admin.addImage}
             </>
           )}
           {!isEditing && initialData.imageUrl && (
             <>
               <Pencil className="w-4 h-4 mr-2" />
-              Cambiar imagen
+              {t.admin.changeImage}
             </>
           )}
         </Button>
@@ -89,12 +90,12 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
               }
             }}
             onUploadError={(error) => {
-              toast.error("Error al subir imagen");
+              toast.error(t.admin.imageUploadError);
             }}
             type="image"
           />
           <div className="text-xs text-muted-foreground mt-4">
-            Relación de aspecto 16:9 recomendada
+            {t.admin.recommendedAspectRatio}
           </div>
         </div>
       )}

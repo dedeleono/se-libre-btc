@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useLocale } from "@/lib/i18n";
 
 type Option = {
   id: string;
@@ -60,6 +61,7 @@ const emptySession: LiveSessionFormData = {
 };
 
 export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormProps) => {
+  const { t } = useLocale();
   const router = useRouter();
   const isNew = !initialData?.id;
   const [isSaving, setIsSaving] = useState(false);
@@ -97,15 +99,15 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
 
       if (isNew) {
         const response = await axios.post("/api/cohorts", payload);
-        toast.success("Cohort created");
+        toast.success(t.admin.cohortCreated);
         router.push(`/admin/cohorts/${response.data.id}`);
       } else {
         await axios.patch(`/api/cohorts/${initialData.id}`, payload);
-        toast.success("Cohort saved");
+        toast.success(t.admin.cohortSaved);
         router.refresh();
       }
     } catch {
-      toast.error("Could not save cohort");
+      toast.error(t.admin.cohortSaveError);
     } finally {
       setIsSaving(false);
     }
@@ -118,10 +120,10 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
       setIsSaving(true);
       await axios.post(`/api/cohorts/${initialData.id}/live-sessions`, newSession);
       setNewSession(emptySession);
-      toast.success("Live session created");
+      toast.success(t.admin.liveSessionCreated);
       router.refresh();
     } catch {
-      toast.error("Could not create live session");
+      toast.error(t.admin.liveSessionCreateError);
     } finally {
       setIsSaving(false);
     }
@@ -133,10 +135,10 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
     try {
       setIsSaving(true);
       await axios.patch(`/api/live-sessions/${session.id}`, session);
-      toast.success("Live session saved");
+      toast.success(t.admin.liveSessionSaved);
       router.refresh();
     } catch {
-      toast.error("Could not save live session");
+      toast.error(t.admin.liveSessionSaveError);
     } finally {
       setIsSaving(false);
     }
@@ -146,10 +148,10 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
     try {
       setIsSaving(true);
       await axios.delete(`/api/live-sessions/${sessionId}`);
-      toast.success("Live session deleted");
+      toast.success(t.admin.liveSessionDeleted);
       router.refresh();
     } catch {
-      toast.error("Could not delete live session");
+      toast.error(t.admin.liveSessionDeleteError);
     } finally {
       setIsSaving(false);
     }
@@ -168,29 +170,29 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
       <Link href="/admin/cohorts" className="flex items-center text-sm transition hover:opacity-75">
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to cohorts
+        {t.admin.backToCohorts}
       </Link>
 
       <Card>
         <CardHeader>
-          <CardTitle>{isNew ? "New Cohort" : "Cohort Details"}</CardTitle>
-          <p className="text-sm text-muted-foreground">Configure target, capacity, dates, and status.</p>
+          <CardTitle>{isNew ? t.admin.newCohort : t.admin.cohortDetails}</CardTitle>
+          <p className="text-sm text-muted-foreground">{t.admin.configureCohort}</p>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-4 md:grid-cols-2">
-            <Input value={formData.title} onChange={(event) => setFormData((current) => ({ ...current, title: event.target.value }))} placeholder="Title" />
-            <Input value={formData.slug} onChange={(event) => setFormData((current) => ({ ...current, slug: event.target.value }))} placeholder="Slug" />
+            <Input value={formData.title} onChange={(event) => setFormData((current) => ({ ...current, title: event.target.value }))} placeholder={t.admin.title} />
+            <Input value={formData.slug} onChange={(event) => setFormData((current) => ({ ...current, slug: event.target.value }))} placeholder={t.admin.slug} />
           </div>
-          <Textarea value={formData.description} onChange={(event) => setFormData((current) => ({ ...current, description: event.target.value }))} placeholder="Description" />
+          <Textarea value={formData.description} onChange={(event) => setFormData((current) => ({ ...current, description: event.target.value }))} placeholder={t.admin.description} />
           <div className="grid gap-4 md:grid-cols-3">
             <select value={formData.status} onChange={(event) => setFormData((current) => ({ ...current, status: event.target.value as CohortStatus }))} className="rounded-md border bg-background px-3 py-2 text-sm">
-              <option value="DRAFT">Draft</option>
-              <option value="OPEN">Open</option>
-              <option value="IN_PROGRESS">In progress</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="DRAFT">{t.common.draft}</option>
+              <option value="OPEN">{t.admin.open}</option>
+              <option value="IN_PROGRESS">{t.admin.inProgress}</option>
+              <option value="COMPLETED">{t.course.completed}</option>
+              <option value="CANCELLED">{t.admin.cancelled}</option>
             </select>
-            <Input value={formData.capacity} onChange={(event) => setFormData((current) => ({ ...current, capacity: event.target.value }))} placeholder="Capacity" type="number" />
+            <Input value={formData.capacity} onChange={(event) => setFormData((current) => ({ ...current, capacity: event.target.value }))} placeholder={t.admin.capacity} type="number" />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <Input value={formData.startDate} onChange={(event) => setFormData((current) => ({ ...current, startDate: event.target.value }))} type="date" />
@@ -198,16 +200,16 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <select value={formData.courseId} onChange={(event) => setFormData((current) => ({ ...current, courseId: event.target.value, learningPathId: "" }))} className="rounded-md border bg-background px-3 py-2 text-sm">
-              <option value="">No course target</option>
+              <option value="">{t.admin.noCourseTarget}</option>
               {courses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}
             </select>
             <select value={formData.learningPathId} onChange={(event) => setFormData((current) => ({ ...current, learningPathId: event.target.value, courseId: "" }))} className="rounded-md border bg-background px-3 py-2 text-sm">
-              <option value="">No learning path target</option>
+              <option value="">{t.admin.noLearningPathTarget}</option>
               {learningPaths.map((path) => <option key={path.id} value={path.id}>{path.title}</option>)}
             </select>
           </div>
           <Button onClick={saveCohort} disabled={isSaving || !formData.title.trim()}>
-            {isNew ? "Create cohort" : "Save changes"}
+            {isNew ? t.admin.createCohort : t.admin.saveChanges}
           </Button>
         </CardContent>
       </Card>
@@ -216,19 +218,19 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
         <>
           <Card>
             <CardHeader>
-              <CardTitle>Live Sessions</CardTitle>
-              <p className="text-sm text-muted-foreground">Create and edit the live schedule for this cohort.</p>
+              <CardTitle>{t.admin.liveSessions}</CardTitle>
+              <p className="text-sm text-muted-foreground">{t.admin.createEditLiveSchedule}</p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-3 rounded-md border p-3">
-                <Input value={newSession.title} onChange={(event) => setNewSession((current) => ({ ...current, title: event.target.value }))} placeholder="Session title" />
-                <Textarea value={newSession.description} onChange={(event) => setNewSession((current) => ({ ...current, description: event.target.value }))} placeholder="Description" />
+                <Input value={newSession.title} onChange={(event) => setNewSession((current) => ({ ...current, title: event.target.value }))} placeholder={t.admin.sessionTitle} />
+                <Textarea value={newSession.description} onChange={(event) => setNewSession((current) => ({ ...current, description: event.target.value }))} placeholder={t.admin.description} />
                 <div className="grid gap-3 md:grid-cols-3">
                   <Input value={newSession.startsAt} onChange={(event) => setNewSession((current) => ({ ...current, startsAt: event.target.value }))} type="datetime-local" />
                   <Input value={newSession.endsAt} onChange={(event) => setNewSession((current) => ({ ...current, endsAt: event.target.value }))} type="datetime-local" />
-                  <Input value={newSession.meetingUrl} onChange={(event) => setNewSession((current) => ({ ...current, meetingUrl: event.target.value }))} placeholder="Meeting URL" />
+                  <Input value={newSession.meetingUrl} onChange={(event) => setNewSession((current) => ({ ...current, meetingUrl: event.target.value }))} placeholder={t.admin.meetingUrl} />
                 </div>
-                <Button onClick={createLiveSession} disabled={isSaving || !newSession.title || !newSession.startsAt}>Add session</Button>
+                <Button onClick={createLiveSession} disabled={isSaving || !newSession.title || !newSession.startsAt}>{t.admin.addSession}</Button>
               </div>
 
               {(formData.liveSessions || []).map((session) => (
@@ -236,36 +238,36 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
                   <div className="grid gap-3 md:grid-cols-2">
                     <Input value={session.title} onChange={(event) => updateSessionState(session.id!, { title: event.target.value })} />
                     <select value={session.status} onChange={(event) => updateSessionState(session.id!, { status: event.target.value as LiveSessionStatus })} className="rounded-md border bg-background px-3 py-2 text-sm">
-                      <option value="SCHEDULED">Scheduled</option>
-                      <option value="LIVE">Live</option>
-                      <option value="COMPLETED">Completed</option>
-                      <option value="CANCELLED">Cancelled</option>
+                      <option value="SCHEDULED">{t.admin.scheduled}</option>
+                      <option value="LIVE">{t.admin.live}</option>
+                      <option value="COMPLETED">{t.course.completed}</option>
+                      <option value="CANCELLED">{t.admin.cancelled}</option>
                     </select>
                   </div>
                   <Textarea value={session.description} onChange={(event) => updateSessionState(session.id!, { description: event.target.value })} />
                   <div className="grid gap-3 md:grid-cols-3">
                     <Input value={session.startsAt} onChange={(event) => updateSessionState(session.id!, { startsAt: event.target.value })} type="datetime-local" />
                     <Input value={session.endsAt} onChange={(event) => updateSessionState(session.id!, { endsAt: event.target.value })} type="datetime-local" />
-                    <Input value={session.meetingUrl} onChange={(event) => updateSessionState(session.id!, { meetingUrl: event.target.value })} placeholder="Meeting URL" />
+                    <Input value={session.meetingUrl} onChange={(event) => updateSessionState(session.id!, { meetingUrl: event.target.value })} placeholder={t.admin.meetingUrl} />
                   </div>
                   <div className="flex gap-2">
-                    <Button onClick={() => updateLiveSession(session)} disabled={isSaving}>Save session</Button>
+                    <Button onClick={() => updateLiveSession(session)} disabled={isSaving}>{t.admin.saveSession}</Button>
                     <Button variant="ghost" onClick={() => deleteLiveSession(session.id!)} disabled={isSaving}>
                       <Trash className="mr-2 h-4 w-4" />
-                      Delete
+                      {t.common.delete}
                     </Button>
                   </div>
                 </div>
               ))}
               {(formData.liveSessions || []).length === 0 && (
-                <div className="rounded-md border p-4 text-center text-sm text-muted-foreground">No live sessions yet.</div>
+                <div className="rounded-md border p-4 text-center text-sm text-muted-foreground">{t.admin.noLiveSessionsYet}</div>
               )}
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Enrolled Students</CardTitle>
+              <CardTitle>{t.admin.enrolledStudents}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               {(formData.enrollments || []).map((enrollment) => (
@@ -275,7 +277,7 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
                 </div>
               ))}
               {(formData.enrollments || []).length === 0 && (
-                <div className="rounded-md border p-4 text-center text-sm text-muted-foreground">No students enrolled yet.</div>
+                <div className="rounded-md border p-4 text-center text-sm text-muted-foreground">{t.admin.noStudentsEnrolledYet}</div>
               )}
             </CardContent>
           </Card>

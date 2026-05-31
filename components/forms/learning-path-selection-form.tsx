@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/lib/i18n";
 
 interface LearningPathWithCourses extends LearningPath {
   courses: { id: string }[];
@@ -27,6 +28,7 @@ export default function LearningPathSelectionForm({
   onSubmit,
   onBack
 }: LearningPathSelectionFormProps) {
+  const { t } = useLocale();
   const [learningPaths, setLearningPaths] = useState<LearningPathWithCourses[]>([]);
   const [selectedLearningPath, setSelectedLearningPath] = useState(initialData.productId);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,14 +43,14 @@ export default function LearningPathSelectionForm({
         setLearningPaths(response.data);
       } catch (error) {
         console.error("Error fetching learning paths:", error);
-        setError("Failed to load learning paths");
+        setError(t.forms.loadLearningPathsError);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchLearningPaths();
-  }, []);
+  }, [t.forms.loadLearningPathsError]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,11 +73,11 @@ export default function LearningPathSelectionForm({
       <CardContent className="p-6">
         <div className="space-y-6">
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white/90">Choose a learning path</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white/90">{t.forms.chooseLearningPath}</h2>
             <p className="text-sm text-gray-500 dark:text-white/70">
               {isFromInvitation 
-                ? "Your learning path has been pre-selected by the administrator"
-                : "Select the learning path you want to join"}
+                ? t.forms.preselectedLearningPath
+                : t.forms.selectLearningPath}
             </p>
           </div>
 
@@ -145,11 +147,11 @@ export default function LearningPathSelectionForm({
                             <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-white/70">
                               <span className="flex items-center gap-1">
                                 <GraduationCap className="h-4 w-4" />
-                                {learningPath.courses.length} courses
+                                {t.public.coursesCount(learningPath.courses.length)}
                               </span>
                               <span className="flex items-center gap-1">
                                 <Users className="h-4 w-4" />
-                                {learningPath.enrollments.length} learners
+                                {t.forms.learners(learningPath.enrollments.length)}
                               </span>
                             </div>
                           </div>
@@ -174,14 +176,14 @@ export default function LearningPathSelectionForm({
               className="text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Regresar
+              {t.payments.goBack}
             </Button>
             <Button 
               onClick={handleSubmit} 
               disabled={!selectedLearningPath}
               className="bg-sky-900 hover:bg-primary/90"
             >
-              Continuar
+              {t.common.continue}
             </Button>
           </div>
         </div>

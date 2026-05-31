@@ -6,8 +6,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { GradientDivider } from "@/components/gradient-divider";
 import { QuickActions } from "./_components/quick-actions";
 import { Mail, Sparkles } from "lucide-react";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function EmailingPage() {
+  const t = getServerMessages();
   const session = await auth();
 
   if (!session?.user || session.user.role !== "ADMIN") {
@@ -77,10 +79,10 @@ export default async function EmailingPage() {
               <h2 className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl 
                 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
                 dark:from-white dark:to-white/70 font-['Open_Sans']">
-                Emails
+                {t.emailing.title}
               </h2>
               <p className="text-xs dark:text-white/50 font-['Open_Sans']">
-                Envía emails personalizados a estudiantes y grupos de forma sencilla
+                {t.emailing.subtitle}
               </p>
             </div>
           </div>

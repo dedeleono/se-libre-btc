@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { ForumReply } from "@prisma/client";
 import { User } from "@prisma/client";
 import { UserAvatar } from "@/components/user-avatar";
+import { useLocale } from "@/lib/i18n";
 
 // Add this interface to define the shape of comments with author
 interface CommentWithAuthor extends ForumReply {
@@ -26,6 +27,7 @@ interface CommentsProps {
 }
 
 export function CommentsSection({ postId, comments, currentUser }: CommentsProps) {
+  const { t } = useLocale();
   const router = useRouter();
   const [showCommentBox, setShowCommentBox] = useState(comments.length === 0);
   const [newComment, setNewComment] = useState("");
@@ -50,10 +52,10 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
       });
       setNewComment("");
       setShowCommentBox(false);
-      toast.success("Comment posted successfully");
+      toast.success(t.forum.commentPosted);
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(t.common.somethingWentWrong);
     } finally {
       setIsSubmitting(false);
     }
@@ -68,10 +70,10 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
       });
       setReplyingTo(null);
       setReplyContent("");
-      toast.success("Reply posted successfully");
+      toast.success(t.forum.replyPosted);
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong");
+      toast.error(t.common.somethingWentWrong);
     } finally {
       setIsSubmitting(false);
     }
@@ -109,7 +111,7 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
                     className="text-muted-foreground"
                   >
                     <Reply className="h-4 w-4 mr-2" />
-                    Reply
+                    {t.forum.reply}
                   </Button>
                   {comment.replies && comment.replies.length > 0 && (
                     <Button
@@ -124,7 +126,7 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
                       >
                         <ChevronDown className="h-4 w-4 mr-2" />
                       </motion.div>
-                      {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                      {t.forum.repliesCount(comment.replies.length)}
                     </Button>
                   )}
                 </div>
@@ -137,7 +139,7 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
                 <Textarea
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
-                  placeholder="Write a reply..."
+                  placeholder={t.forum.writeReply}
                   className="min-h-[100px]"
                 />
                 <div className="flex gap-2">
@@ -145,13 +147,13 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
                     onClick={() => onSubmitReply(comment.id)}
                     disabled={!replyContent.trim() || isSubmitting}
                   >
-                    Post Reply
+                    {t.forum.postReply}
                   </Button>
                   <Button
                     variant="ghost"
                     onClick={() => setReplyingTo(null)}
                   >
-                    Cancel
+                    {t.common.cancel}
                   </Button>
                 </div>
               </div>
@@ -215,7 +217,7 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
           <Textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment..."
+            placeholder={t.forum.writeComment}
             className="min-h-[100px]"
           />
           <div className="flex gap-2">
@@ -223,13 +225,13 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
               onClick={onSubmitComment}
               disabled={!newComment.trim() || isSubmitting}
             >
-              Post Comment
+              {t.forum.postComment}
             </Button>
             <Button
               variant="ghost"
               onClick={() => setShowCommentBox(false)}
             >
-              Cancel
+              {t.common.cancel}
             </Button>
           </div>
         </div>
