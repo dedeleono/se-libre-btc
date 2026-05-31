@@ -52,6 +52,16 @@ function encodeKeyForUrl(key: string) {
     return key.split('/').map(encodeURIComponent).join('/');
 }
 
+function getB2FriendlyDownloadHost(endpointHost: string) {
+    const regionMatch = endpointHost.match(/s3[.-](.+)\.backblazeb2\.com/i);
+    if (!regionMatch?.[1]) return null;
+
+    const region = regionMatch[1];
+    const cluster = region.match(/(\d+)$/)?.[1];
+
+    return cluster ? `f${cluster}.backblazeb2.com` : null;
+}
+
 function stripLeadingSlash(value: string) {
     return value.replace(/^\/+/, '');
 }
@@ -119,8 +129,17 @@ export function createPublicFileUrl(key: string) {
     const config = getStorageConfig();
     const encodedKey = encodeKeyForUrl(key);
 
+    if (process.env.STORAGE_PUBLIC_ACCESS !== 'true') {
+        return `/api/s3/file/${encodedKey}`;
+    }
+
     if (config.publicUrl) {
         return `${stripTrailingSlash(config.publicUrl)}/${encodedKey}`;
+    }
+
+    const friendlyDownloadHost = getB2FriendlyDownloadHost(config.endpointHost);
+    if (friendlyDownloadHost) {
+        return `https://${friendlyDownloadHost}/file/${encodeURIComponent(config.bucketName)}/${encodedKey}`;
     }
 
     return `https://${config.bucketName}.${config.endpointHost}/${encodedKey}`;
@@ -132,9 +151,27 @@ export async function getPresignedDownloadUrl(key: string, expiresIn = 3600) {
     return getSignedUrl(getS3Client(), command, { expiresIn });
 }
 
+export async function getFileObject(key: string) {
+    const command = new GetObjectCommand({
+        Bucket: getStorageConfig().bucketName,
+        Key: key,
+    });
+
+    try {
+        return await getS3Client().send(command);
+    } catch (error) {
+        console.error("Error reading file:", error);
+        throw new Error(getStorageErrorMessage(error));
+    }
+}
+
 export function getStorageKeyFromUrl(fileUrlOrKey: string) {
     try {
         const config = getStorageConfig();
+        if (fileUrlOrKey.startsWith('/api/s3/file/')) {
+            return stripLeadingSlash(decodeURIComponent(fileUrlOrKey.replace(/^\/api\/s3\/file\//, '')));
+        }
+
         const file = new URL(fileUrlOrKey);
         const publicUrl = config.publicUrl ? new URL(config.publicUrl) : null;
 
@@ -162,6 +199,36 @@ export function getStorageKeyFromUrl(fileUrlOrKey: string) {
     }
 }
 
+export function getStorageErrorMessage(error: unknown) {
+    const candidate = error as {
+        name?: string;
+        Code?: string;
+        code?: string;
+        message?: string;
+        $metadata?: { httpStatusCode?: number };
+    };
+
+    const code = candidate?.Code ?? candidate?.code ?? candidate?.name;
+    const message = candidate?.message ?? "";
+
+    if (
+        code === "UnauthorizedAccess" ||
+        message.toLowerCase().includes("bucket is not authorized")
+    ) {
+        return `Storage bucket is not authorized for the configured application key. Check that the Backblaze B2 key has read/write access to bucket "${getStorageConfig().bucketName}".`;
+    }
+
+    if (code === "NoSuchBucket") {
+        return `Storage bucket "${getStorageConfig().bucketName}" does not exist or is not available at the configured endpoint.`;
+    }
+
+    if (code === "AccessDenied" || candidate?.$metadata?.httpStatusCode === 403) {
+        return "Storage access was denied. Check the bucket name, endpoint, region, and application key permissions.";
+    }
+
+    return message || "Storage request failed.";
+}
+
 export async function uploadFile(file: Buffer, fileName: string, contentType: string, type: S3AssetType) {
     const key = createStorageKey(fileName, type);
     const command = new PutObjectCommand({
@@ -179,7 +246,7 @@ export async function uploadFile(file: Buffer, fileName: string, contentType: st
         console.error("File Name:", fileName);
         console.error("Content Type:", contentType);
         console.error("Type:", type);
-        throw new Error("Failed to upload file");
+        throw new Error(getStorageErrorMessage(error));
     }
 }
 
@@ -195,6 +262,6 @@ export async function deleteFile(fileUrlOrKey: string) {
         await getS3Client().send(command);
     } catch (error) {
         console.error("Error deleting file:", error);
-        throw new Error("Failed to delete file");
+        throw new Error(getStorageErrorMessage(error));
     }
 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { auth } from '@/lib/auth';
-import { createPublicFileUrl, createStorageKey, getS3Client, getStorageConfig, sanitizePresignedUrl, S3AssetType } from '@/lib/s3';
+import { createPublicFileUrl, createStorageKey, getS3Client, getStorageConfig, getStorageErrorMessage, sanitizePresignedUrl, S3AssetType } from '@/lib/s3';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +40,13 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Error generating pre-signed URL:', error);
-    return NextResponse.json({ error: 'Error generating pre-signed URL' }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error instanceof Error
+          ? getStorageErrorMessage(error)
+          : 'Error generating pre-signed URL',
+      },
+      { status: 500 }
+    );
   }
 }
