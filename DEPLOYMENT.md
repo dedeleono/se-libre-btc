@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide covers deployment for the Se Libre BTC course platform.
+This guide covers deployment for the Se Libre BTC course platform
 
 ## Pre-Deployment Checklist
 
