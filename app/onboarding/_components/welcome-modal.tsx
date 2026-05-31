@@ -1,8 +1,7 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
-import { Logo } from '@/app/(dashboard)/_components/logo';
+import { motion } from 'framer-motion';
+import Logo from '@/components/logo';
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -21,7 +20,7 @@ export function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
           className="text-center"
         >
           <div className="relative mx-auto py-2 pb-4 flex justify-center h-18 w-18">
-            <Logo />
+            <Logo width={130} height={130} />
           </div>
 
           <motion.div

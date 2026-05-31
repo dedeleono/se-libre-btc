@@ -1,7 +1,7 @@
 import { NavbarRoutes } from "@/components/navbar-routes";
 import { MobileSidebar } from "../../(dashboard)/_components/mobile-sidebar";
-import { NotificationType, UserRole } from "@prisma/client";
-import Image from 'next/image'
+import { UserRole } from "@prisma/client";
+import Logo from "@/components/logo";
 
 interface NavbarProps {
   userId?: string;
@@ -15,7 +15,7 @@ export const Navbar = ({ userId, userRole }: NavbarProps) => {
       dark-gradient dark:border-white/[0.05] dark-glass"
     >
       <MobileSidebar />
-      <Image src={"/logo.png"} width={150} height={150} alt="" />
+      <Logo width={150} height={150} alt="" />
 
       <div className="ml-auto flex items-center ">
         <NavbarRoutes />

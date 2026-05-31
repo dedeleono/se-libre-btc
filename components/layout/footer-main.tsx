@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 // import FooterCards from "../footercards/page";
-import Logo from "./logo";
+import Logo from "@/components/logo";
 
 const Footer = () => {
   return (

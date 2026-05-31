@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import Logo from "@/components/logo";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -39,7 +39,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           
             <Link href={"/"} className="mx-auto">
-              <Image src="/logo.png" alt="Logo" width={200} height={200} />
+              <Logo alt="Logo" width={200} height={200} />
             </Link>
           
           {children}

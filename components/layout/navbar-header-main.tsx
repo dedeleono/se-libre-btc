@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
+import Logo from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import {
@@ -32,8 +32,7 @@ const HeaderMenu = () => {
       <div className="flex h-16 items-center justify-between px-4 md:px-8">
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-2 pl-5">
-          <Image
-            src="/logo.png"
+          <Logo
             alt="Logo"
             width={125}
             height={125}

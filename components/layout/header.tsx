@@ -1,8 +1,6 @@
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import Image from 'next/image';
+import Logo from '@/components/logo';
 
-// import ThemeAwareLogo from './logo';
 // import { MobileSidebar } from './mobile-sidebar';
 // import { UserNav } from './user-nav';
 
@@ -11,8 +9,7 @@ export default function Header() {
     <div className="supports-backdrop-blur:bg-background/60 fixed left-0 right-0 top-0 z-20 border-b bg-background/95 backdrop-blur">
       <nav className="flex h-14 items-center justify-between px-4">
         <div className="hidden lg:block">
-          <Image
-            src="/logo.png"
+          <Logo
             alt="Logo"
             width={125}
             height={125}
