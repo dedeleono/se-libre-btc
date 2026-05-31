@@ -1,6 +1,6 @@
 # API Documentation
 
-This API supports the Se Libre BTC course platform with global `ADMIN` and `STUDENT` roles.
+This API supports the Se Libre BTC course platform with global `ADMIN` and `STUDENT` roles
 
 ## Courses
 
