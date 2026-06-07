@@ -50,12 +50,12 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
     <TooltipProvider delayDuration={150}>
       <div
         data-dashboard-sidebar={collapsed ? "collapsed" : "expanded"}
-        className="h-full w-full max-w-full overflow-x-hidden"
+        className="dl-app h-full w-full max-w-full overflow-x-hidden"
       >
       <div
         className={cn(
-          "fixed inset-x-0 top-0 z-50 h-[80px] w-full transition-[padding] duration-200",
-          collapsed ? "lg:pl-20" : "lg:pl-56"
+          "fixed inset-x-0 top-0 z-50 h-16 w-full transition-[padding] duration-200",
+          collapsed ? "lg:pl-20" : "lg:pl-60"
         )}
       >
         {navbar}
@@ -63,8 +63,8 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 hidden flex-col overflow-hidden border-r bg-background transition-[width] duration-200 lg:flex",
-          collapsed ? "w-20" : "w-56"
+          "fixed inset-y-0 left-0 z-50 hidden flex-col overflow-hidden border-r-2 border-foreground bg-background transition-[width] duration-200 lg:flex",
+          collapsed ? "w-20" : "w-60"
         )}
       >
         <Tooltip>
@@ -74,7 +74,7 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
               variant="ghost"
               size="icon"
               onClick={toggleCollapsed}
-              className="absolute right-2 top-4 z-10 h-8 w-8 bg-background/80 shadow-sm backdrop-blur"
+              className="absolute right-2 top-3 z-10 h-8 w-8 bg-background/90"
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? (
@@ -93,8 +93,8 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
 
       <main
         className={cn(
-          "flex h-full min-h-screen w-full max-w-full flex-col bg-foreground/5 pt-[80px] transition-[padding] duration-200 dark:bg-sky-100/5",
-          collapsed ? "lg:pl-20" : "lg:pl-56"
+          "dl-stamped flex h-full min-h-screen w-full max-w-full flex-col bg-muted pt-16 transition-[padding] duration-200 dark:bg-background",
+          collapsed ? "lg:pl-20" : "lg:pl-60"
         )}
       >
         {children}

@@ -30,29 +30,29 @@ export const CourseCard = ({
   const { t } = useLocale();
 
   return (
-      <div className="group hover:shadow-sm transition overflow-hidden border rounded-md p-3 h-full w-full flex flex-col">
+      <div className="stamp-card group flex h-full w-full flex-col overflow-hidden p-3 transition">
         <Link href={isEnrolled ? `/courses/${id}` : `/courses/preview/${id}`}>
-        <div className="relative w-full aspect-video rounded-md overflow-hidden">
+        <div className="relative w-full aspect-video overflow-hidden border-2 border-foreground">
           {imageUrl ? (
             <Image src={imageUrl} alt={title} fill className="object-cover" />
           ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-500">{t.course.noImage}</span>
+            <div className="flex h-full w-full items-center justify-center bg-secondary dl-stamped">
+              <span className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">{t.course.noImage}</span>
             </div>
             )}
         </div>
         </Link>
         <div className="flex flex-col pt-2">
           <Link href={isEnrolled ? `/courses/${id}` : `/courses/preview/${id}`}>
-            <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition line-clamp-2">
+            <div className="line-clamp-2 font-[var(--font-display)] text-2xl uppercase leading-none transition group-hover:text-[var(--terracota-500)]">
                 {title}
             </div>
           </Link>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
                 {category}
             </p>
             <div className="flex items-center my-3 text-sm md:text-xs">
-                <div className="flex items-center gap-x-2 text-slate-500">
+                <div className="flex items-center gap-x-2 text-muted-foreground">
                     <IconBadge size="sm" icon={BookOpen}/>
                     <span>
                         {t.course.chaptersCount(chaptersLength)}

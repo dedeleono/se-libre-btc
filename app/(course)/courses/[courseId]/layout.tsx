@@ -84,21 +84,21 @@ const CourseLayout = async ({
     }
 
     return (
-      <div className="h-full w-full max-w-full overflow-x-hidden">
+      <div className="dl-app h-full w-full max-w-full overflow-x-hidden">
         {currentChapter && (
           <PreviewAccessCheck 
             chapterId={currentChapter.id} 
             isIntro={currentChapter.isIntro} 
           />
         )}
-        <div className="h-[77px] md:pl-80 fixed inset-x-0 top-0 z-50 w-full">
+        <div className="fixed inset-x-0 top-0 z-50 h-16 w-full md:pl-80">
           <CourseNavbar 
             course={course} 
             progressCount={0}
             chaptersAccessibility={chaptersAccessibility}
           />
         </div>
-        <div className="hidden md:flex h-full w-80 flex-col fixed inset-y-0 z-50 left-0">
+        <div className="fixed inset-y-0 left-0 z-50 hidden h-full w-80 flex-col md:flex">
           <CourseSidebar
             course={course}
             userSession={null}
@@ -107,7 +107,7 @@ const CourseLayout = async ({
             customLockMessages={customLockMessages}
           />
         </div>
-        <main className="md:pl-80 h-full pt-[80px] w-full max-w-full">{children}</main>
+        <main className="dl-stamped h-full w-full max-w-full pt-16 md:pl-80">{children}</main>
       </div>
     );
   }
@@ -215,15 +215,15 @@ const CourseLayout = async ({
   }
 
   return (
-    <div className="h-full w-full max-w-full overflow-x-hidden">
-        <div className="h-[77px] md:pl-80 fixed inset-x-0 top-0 z-50 w-full">
+    <div className="dl-app h-full w-full max-w-full overflow-x-hidden">
+        <div className="fixed inset-x-0 top-0 z-50 h-16 w-full md:pl-80">
             <CourseNavbar 
               course={course} 
               progressCount={completedChapters}
               chaptersAccessibility={chaptersAccessibility}
             />
         </div>
-      <div className="hidden md:flex h-full w-80 flex-col fixed inset-y-0 z-50 left-0">
+      <div className="fixed inset-y-0 left-0 z-50 hidden h-full w-80 flex-col md:flex">
         <CourseSidebar
           course={course}
           currentUserRole={userRole}
@@ -231,7 +231,7 @@ const CourseLayout = async ({
           chaptersAccessibility={chaptersAccessibility}
         />
       </div>
-      <main className="md:pl-80 h-full pt-[80px] w-full max-w-full">{children}</main>
+      <main className="dl-stamped h-full w-full max-w-full pt-16 md:pl-80">{children}</main>
     </div>
   );
 };

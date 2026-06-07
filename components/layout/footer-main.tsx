@@ -10,40 +10,37 @@ const Footer = () => {
   const { t } = useLocale();
 
   return (
-    <footer className="bg-muted/5 text-muted pt-16 backdrop-blur-sm font-['Open_Sans'] border-t-2 border-primary/10">
-      <div className="container md:max-w-[95rem] mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24">
-          {/* Logo and Description Section */}
+    <footer className="dl-stamped border-t-2 border-foreground bg-background pt-16 text-foreground">
+      <div className="mx-auto max-w-[1160px] px-6">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-12 mb-16">
           <div className="md:col-span-6 space-y-6">
-            <div className="w-48 transition-transform duration-300 hover:scale-105">
-              <Logo width={192} height={48} className="w-full h-auto" />
-            </div>
-            {/* <p className="text-muted-foreground leading-relaxed w-full">
-              description
-            </p> */}
+            <Logo width={210} height={48} />
+            <p className="max-w-md text-sm font-semibold text-muted-foreground">
+              Bitcoin education with a warm, practical, sovereignty-first learning platform.
+            </p>
           </div>
 
           {/* Sitemap Section */}
           <div className="md:col-span-3">
-            <h2 className="text-foreground text-xl font-semibold mb-6 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-12 after:h-1 after:bg-primary">
+            <h2 className="mb-6 text-2xl">
               {t.nav.home}
             </h2>
             <nav className="space-y-4">
               <Link
                 href="/"
-                className="block text-muted-foreground hover:text-foreground transition-all duration-300 hover:translate-x-2"
+                className="block text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:translate-x-2 hover:text-foreground"
               >
                 {t.nav.home}
               </Link>
               <Link
                 href="/about"
-                className="block text-muted-foreground hover:text-foreground transition-all duration-300 hover:translate-x-2"
+                className="block text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:translate-x-2 hover:text-foreground"
               >
                 {t.nav.about}
               </Link>
               <Link
                 href="/contact"
-                className="block text-muted-foreground hover:text-foreground transition-all duration-300 hover:translate-x-2"
+                className="block text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:translate-x-2 hover:text-foreground"
               >
                 {t.nav.contact}
               </Link>
@@ -52,13 +49,13 @@ const Footer = () => {
 
           {/* Follow Us Section */}
           <div className="md:col-span-3">
-            <h2 className="text-foreground text-xl font-semibold mb-6 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-12 after:h-1 after:bg-primary">
+            <h2 className="mb-6 text-2xl">
               {t.public.footerFollow}
             </h2>
             <nav className="space-y-4">
               <Link
                 href="#"
-                className="group flex items-center text-muted-foreground hover:text-foreground transition-all duration-300"
+                className="group flex items-center text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:text-foreground"
               >
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-2">
                   Instagram
@@ -80,7 +77,7 @@ const Footer = () => {
               </Link>
               <Link
                 href="#"
-                className="group flex items-center text-muted-foreground hover:text-foreground transition-all duration-300"
+                className="group flex items-center text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:text-foreground"
               >
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-2">
                   TikTok
@@ -105,8 +102,8 @@ const Footer = () => {
         </div>
 
         {/* Copyright Section */}
-        <div className="py-4 border-t border-border/30 flex items-center justify-center ">
-          <p className="text-muted-foreground text-xs m-0">
+        <div className="flex items-center justify-center border-t-2 border-foreground py-4">
+          <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
             {t.public.copyright}
           </p>
         </div>

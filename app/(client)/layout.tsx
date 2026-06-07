@@ -16,7 +16,7 @@ export default async function ClientLayout({
   const whatsappLink = `${baseUrl}?phone=${whatsappNumber}?text=${encodedMessage}&type=phone_number&app_absent=0`;
 
   return (
-    <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
+    <div className="dl-app min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
       <Header />
       <main className="flex-1 w-full max-w-full">
         {children}

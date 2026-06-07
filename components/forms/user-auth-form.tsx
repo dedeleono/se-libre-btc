@@ -91,15 +91,13 @@ export default function UserAuthForm() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="flex flex-col items-center space-y-6 text-center p-8 rounded-xl 
-              bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-border/50 
-              dark:border-white/[0.05] shadow-lg dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]"
+            className="stamp-card flex flex-col items-center space-y-6 p-8 text-center"
           >
-            <div className="rounded-full bg-primary/10 dark:bg-primary/20 p-4">
-              <CheckCircle2 className="h-8 w-8 text-primary" />
+            <div className="border-2 border-foreground bg-primary p-4 text-primary-foreground">
+              <CheckCircle2 className="h-8 w-8" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-semibold tracking-tight">
+              <h3 className="text-3xl">
                 {t.auth.checkEmail}
               </h3>
               <p className="text-muted-foreground max-w-sm mx-auto">
@@ -108,8 +106,7 @@ export default function UserAuthForm() {
             </div>
 
             <div
-              className="bg-muted/30 dark:bg-white/5 rounded-lg p-4 w-full max-w-sm 
-              border border-border/50 dark:border-white/[0.05]"
+              className="paper-card w-full max-w-sm p-4"
             >
               <div className="flex items-center space-x-3 text-sm text-muted-foreground">
                 <Mail className="h-5 w-5 text-primary/70" />
@@ -133,9 +130,7 @@ export default function UserAuthForm() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="w-full max-w-md mx-auto p-6 rounded-xl 
-              bg-white/50 dark:bg-black/20 backdrop-blur-sm border border-border/50 
-              dark:border-white/[0.05] shadow-lg dark:shadow-[0_8px_32px_rgba(0,0,0,0.25)]"
+            className="stamp-card mx-auto w-full max-w-md p-6"
           >
             <Form {...form}>
               <form
@@ -147,7 +142,7 @@ export default function UserAuthForm() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel htmlFor="email" className="text-foreground/90">
+                      <FormLabel htmlFor="email" className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
                         {t.auth.email}
                       </FormLabel>
                       <FormControl>
@@ -158,9 +153,7 @@ export default function UserAuthForm() {
                           disabled={isPending}
                           {...field}
                           autoComplete="email"
-                          className="bg-white/50 dark:bg-white/5 border-border/50 
-                            dark:border-white/[0.05] focus:ring-primary/30 
-                            dark:focus:ring-primary/20 transition-all"
+                          className="transition-all"
                         />
                       </FormControl>
                       <FormMessage />
@@ -170,8 +163,7 @@ export default function UserAuthForm() {
 
                 <Button
                   disabled={isPending}
-                  className="w-full bg-primary hover:bg-primary/90 text-white 
-                    dark:bg-primary/80 dark:hover:bg-primary/70 transition-colors"
+                  className="w-full"
                   type="submit"
                 >
                   {t.auth.continueWithEmail}
@@ -185,8 +177,7 @@ export default function UserAuthForm() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span
-                  className="bg-background px-2 text-muted-foreground 
-                  dark:bg-black/20 dark:text-white/60"
+                  className="bg-card px-2 font-bold text-muted-foreground"
                 >
                   {t.auth.orContinueWith}
                 </span>
@@ -196,9 +187,7 @@ export default function UserAuthForm() {
             <div className="w-full flex items-center justify-center">
               <Button
                 variant="outline"
-                className="w-full space-x-2 flex justify-center p-6 text-sm font-medium
-                  bg-white/50 dark:bg-white/5 border-border/50 dark:border-white/[0.05]
-                  hover:bg-white/80 dark:hover:bg-white/10 transition-colors"
+                className="flex w-full justify-center space-x-2 p-6"
                 onClick={handleGoogleSignIn}
                 disabled={isPending}
               >

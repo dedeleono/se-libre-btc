@@ -31,19 +31,18 @@ const SidebarItem = ({
       href={href}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "flex min-h-10 w-full items-center gap-x-3 rounded-md px-3 py-2 text-sm font-medium",
+        "flex min-h-10 w-full items-center gap-x-3 rounded-[2px] px-3 py-2 text-sm font-bold",
         "transition-all duration-200",
-        "text-muted-foreground hover:bg-muted hover:text-foreground",
-        "dark:text-white/70 dark:hover:text-white dark:hover:bg-white/[0.06]",
+        "text-muted-foreground hover:bg-secondary hover:text-foreground",
         isActive &&
-          "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary dark:bg-white/[0.08] dark:text-white",
+          "border-2 border-foreground bg-foreground text-background hover:bg-foreground hover:text-background dark:bg-primary dark:text-primary-foreground",
         href === "#" && "cursor-pointer"
       )}
     >
       <Icon
         className={cn(
           "h-4 w-4 flex-shrink-0",
-          isActive ? "text-primary dark:text-white" : "text-muted-foreground"
+          isActive ? "text-current" : "text-muted-foreground"
         )}
       />
       <span className="dashboard-sidebar-label truncate">{label}</span>

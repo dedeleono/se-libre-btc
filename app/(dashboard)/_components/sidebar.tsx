@@ -8,24 +8,19 @@ export const Sidebar = async () => {
     const session = await auth()
     
     return (
-      <div className="h-full border-r flex flex-col bg-background w-full
-        dark:bg-gradient-to-b dark:from-card/50 dark:to-background/30 
-        dark:border-white/[0.05] dark:backdrop-blur-sm"
-      >
-        <div className="p-[1.15rem] dark:bg-card/30 dark:shadow-[inset_0_-1px_0_rgba(255,255,255,0.05)]">
+      <div className="flex h-full w-full flex-col bg-background">
+        <div className="border-b-2 border-foreground p-5">
           <div className="dashboard-sidebar-logo transition-transform duration-200">
-            <Logo width={130} height={130} />
+            <Logo width={150} height={42} />
           </div>
         </div>
-        <ScrollArea className="flex-1 dark:bg-transparent">
+        <ScrollArea className="flex-1">
           <div className="flex flex-col w-full">
             <SidebarRoutes />
           </div>
         </ScrollArea>
         {session && (
-          <div className="mt-auto border-t dark:border-white/[0.05] dark:bg-card/30 
-            dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-          >
+          <div className="mt-auto border-t-2 border-foreground">
             <SignOut 
               initialUser={{
                 id: session.user?.id,

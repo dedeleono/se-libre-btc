@@ -1,266 +1,158 @@
-import React from "react";
 import Image from "next/image";
-import HeroSection from "@/components/hero-section";
-import InfoSection from "@/components/info-section";
-import NewsLetter from "@/components/newsletter";
-import CoursesSection from "@/components/courses-section";
+import Link from "next/link";
+import { ArrowRight, BookOpen, CircleDollarSign, MessageCircle, ShieldCheck } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import Link from "next/link";
 import { getServerMessages } from "@/lib/i18n-server";
+
+const posters = ["19.png", "20.png", "24.png"];
 
 export default function Home() {
   const t = getServerMessages();
 
   return (
-    <main className="min-h-screen dark:bg-background">
-      <div className="relative h-screen min-h-[600px]">
-        <div className="relative z-10">
-          <HeroSection />
-        </div>
-      </div>
-
-      <section className="relative z-10 -mt-16 px-4 sm:px-6 lg:px-8">
-        <InfoSection />
-      </section>
-
-      <section className="relative py-24 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-white via-emerald-50/30 to-white
-          dark:from-background dark:via-emerald-950/5 dark:to-background"
-        />
-
-        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-          <CoursesSection />
-        </div>
-      </section>
-
-      {/* FAQs Section */}
-      <section className="py-24 bg-gradient-to-b from-slate-50/50 via-emerald-50/30 to-white dark:from-background dark:via-emerald-950/5 dark:to-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-start gap-12 max-w-7xl mx-auto">
-            {/* Left Column: Title & Description */}
-            <div className="md:w-1/2 md:sticky md:top-24">
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm uppercase tracking-wider">
-                {t.public.faqEyebrow}
-              </span>
-              <h2 className="mt-3 text-4xl font-black tracking-tight text-primary dark:text-white/90 font-['Open_Sans']">
-                {t.public.faqTitle}
-              </h2>
-              <p className="mt-4 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
-                {t.public.faqSubtitle}
+    <main className="dl-app min-h-screen overflow-hidden">
+      <section className="relative border-b-2 border-foreground">
+        <div className="absolute inset-0 dl-stamped" />
+        <div className="relative mx-auto grid min-h-[calc(100vh-80px)] max-w-[1160px] items-center gap-12 px-4 py-12 md:grid-cols-[1.05fr_0.95fr] md:px-8">
+          <div className="space-y-8">
+            <div className="page-eyebrow">Dinero Libre Guatemala</div>
+            <div className="space-y-5">
+              <h1 className="page-title max-w-[10ch]">
+                {t.public.heroTitle}
+              </h1>
+              <p className="max-w-xl text-lg font-semibold leading-relaxed text-muted-foreground">
+                {t.public.heroSubtitle}
               </p>
-              <div className="mt-8 p-6 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl">
-                <p className="text-sm text-emerald-800 dark:text-emerald-300">
-                  {t.public.faqMissing}
-                </p>
-                <Link
-                  href="/contact"
-                  className="mt-2 inline-flex items-center text-emerald-600 dark:text-emerald-400 font-semibold hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
-                >
-                  {t.public.contactDirectly} →
-                </Link>
-              </div>
             </div>
+            <div className="flex flex-wrap gap-4">
+              <Button asChild size="lg">
+                <Link href="/courses">
+                  {t.public.start}
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/learning-paths">
+                  {t.public.learningPathsTitle}
+                </Link>
+              </Button>
+            </div>
+          </div>
 
-            {/* Right Column: Accordion */}
-            <div className="md:w-1/2 w-full">
-              <Accordion type="single" collapsible className="space-y-4">
-                <AccordionItem
-                  value="faq1"
-                  className="border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
-                >
-                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <div className="flex items-center gap-4">
-                      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                        <svg
-                          className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                          />
-                        </svg>
-                      </span>
-                      <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        {t.public.faqs[0].question}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 py-4 border-t border-gray-200 dark:border-gray-700/50">
-                    <p className="text-gray-700 dark:text-gray-300 pl-12">
-                      {t.public.faqs[0].answer}
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem
-                  value="faq2"
-                  className="border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
-                >
-                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <div className="flex items-center gap-4">
-                      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                        <svg
-                          className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                          />
-                        </svg>
-                      </span>
-                      <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        {t.public.faqs[1].question}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 py-4 border-t border-gray-200 dark:border-gray-700/50">
-                    <p className="text-gray-700 dark:text-gray-300 pl-12">
-                      {t.public.faqs[1].answer}
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem
-                  value="faq3"
-                  className="border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
-                >
-                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <div className="flex items-center gap-4">
-                      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                        <svg
-                          className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                          />
-                        </svg>
-                      </span>
-                      <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        ¿Cuál es nuestra ubicación?
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 py-4 border-t border-gray-200 dark:border-gray-700/50">
-                    <p className="text-gray-700 dark:text-gray-300 pl-12">
-                      6ta Avenida 8-25 zona 2, Avenida Simeón Cañas, Apto
-                      &quot;A&quot;, Guatemala, Guatemala
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem
-                  value="faq4"
-                  className="border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
-                >
-                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <div className="flex items-center gap-4">
-                      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                        <svg
-                          className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                          />
-                        </svg>
-                      </span>
-                      <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        ¿Cómo entrego mis documentos?
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 py-4 border-t border-gray-200 dark:border-gray-700/50">
-                    <p className="text-gray-700 dark:text-gray-300 pl-12">
-                      Puedes entregarlos en nuestras instalaciones ubicadas en:
-                      <strong className="block mt-1">
-                        6ta Avenida 8-25 zona 2, Avenida Simeón Cañas, Apto
-                        &quot;A&quot;, Guatemala, Guatemala.
-                      </strong>
-                      <br />
-                      <br />
-                      O bien, puedes enviarlos con tu empresa de mensajería de
-                      preferencia a nuestra dirección.
-                      <br />
-                      <br />
-                      (Recuerda que tus documentos deben ser originales y no
-                      copias)
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem
-                  value="faq5"
-                  className="border border-gray-200 dark:border-gray-700/50 rounded-xl overflow-hidden bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
-                >
-                  <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
-                    <div className="flex items-center gap-4">
-                      <span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                        <svg
-                          className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                          />
-                        </svg>
-                      </span>
-                      <span className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        {t.public.faqs[2].question}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 py-4 border-t border-gray-200 dark:border-gray-700/50">
-                    <p className="text-gray-700 dark:text-gray-300 pl-12">
-                      {t.public.faqs[2].answer}
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+          <div className="relative mx-auto w-full max-w-[420px]">
+            <div className="stamp-card bg-[var(--volcan-900)] p-5">
+              <Image
+                src="/images/se_libre/logo.png"
+                alt="Dinero Libre"
+                width={1545}
+                height={2000}
+                priority
+                className="h-auto w-full object-contain"
+              />
+            </div>
+            <div className="absolute -bottom-5 -left-5 hidden border-2 border-foreground bg-primary px-4 py-3 font-[var(--font-display)] text-3xl uppercase leading-none text-primary-foreground shadow-[4px_4px_0_hsl(var(--foreground))] md:block">
+              Sé tu propio banco
             </div>
           </div>
         </div>
       </section>
 
-      <section className="relative bg-white dark:bg-background py-16">
-        <div className="absolute inset-0">
-          <Image
-            src="/students-group.jpg"
-            alt="Students collaborating"
-            fill
-            className="object-cover opacity-10 dark:opacity-5"
-            sizes="100vw"
-          />
+      <section className="mx-auto max-w-[1160px] px-4 py-16 md:px-8">
+        <div className="grid gap-4 md:grid-cols-3">
+          {[
+            { icon: BookOpen, title: t.public.features[0].title, body: t.public.features[0].description },
+            { icon: ShieldCheck, title: t.public.features[1].title, body: t.public.features[1].description },
+            { icon: CircleDollarSign, title: t.public.features[2].title, body: t.public.features[2].description },
+          ].map((item) => (
+            <div key={item.title} className="stamp-card p-6">
+              <item.icon className="mb-6 h-8 w-8 text-[var(--terracota-500)] dark:text-[var(--maiz-500)]" />
+              <h2 className="text-3xl">{item.title}</h2>
+              <p className="mt-4 text-sm font-semibold leading-relaxed text-muted-foreground">
+                {item.body}
+              </p>
+            </div>
+          ))}
         </div>
-        <div className="container mx-auto relative z-10">
-          <NewsLetter />
+      </section>
+
+      <section className="border-y-2 border-foreground bg-[var(--volcan-900)] text-[var(--crema-050)]">
+        <div className="mx-auto grid max-w-[1160px] gap-10 px-4 py-16 md:grid-cols-[0.8fr_1.2fr] md:px-8">
+          <div>
+            <div className="page-eyebrow text-[var(--cafe-300)]">Ruta práctica</div>
+            <h2 className="mt-4 text-6xl text-[var(--crema-050)] md:text-7xl">
+              Bitcoin sin permiso
+            </h2>
+            <p className="mt-6 text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
+              Aprende los fundamentos, practica con recursos reales y avanza con una comunidad enfocada en soberanía financiera.
+            </p>
+            <Button asChild className="mt-8" variant="secondary">
+              <Link href="/courses">{t.public.viewCourse}</Link>
+            </Button>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {posters.map((poster, index) => (
+              <div
+                key={poster}
+                className="overflow-hidden border-2 border-[var(--crema-200)] bg-black shadow-[4px_4px_0_var(--naranja-500)]"
+              >
+                <Image
+                  src={`/images/se_libre/${poster}`}
+                  alt={`Dinero Libre poster ${index + 1}`}
+                  width={1545}
+                  height={2000}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[1160px] px-4 py-16 md:px-8">
+        <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
+          <div className="md:sticky md:top-28 h-fit">
+            <div className="page-eyebrow">{t.public.faqEyebrow}</div>
+            <h2 className="mt-4 text-6xl">{t.public.faqTitle}</h2>
+            <p className="mt-4 font-semibold leading-relaxed text-muted-foreground">
+              {t.public.faqSubtitle}
+            </p>
+            <div className="stamp-card mt-8 p-6">
+              <MessageCircle className="mb-4 h-6 w-6 text-primary" />
+              <p className="text-sm font-bold text-muted-foreground">
+                {t.public.faqMissing}
+              </p>
+              <Link
+                href="/contact"
+                className="mt-2 inline-flex font-bold uppercase tracking-[0.08em] text-[var(--terracota-700)] underline decoration-2 underline-offset-4 dark:text-[var(--maiz-500)]"
+              >
+                {t.public.contactDirectly}
+              </Link>
+            </div>
+          </div>
+
+          <Accordion type="single" collapsible className="space-y-4">
+            {t.public.faqs.map((faq, index) => (
+              <AccordionItem
+                key={faq.question}
+                value={`faq-${index}`}
+                className="stamp-card overflow-hidden px-6"
+              >
+                <AccordionTrigger className="py-5 text-left text-lg font-bold hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="border-t-2 border-foreground py-5 text-base font-semibold text-muted-foreground">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
     </main>

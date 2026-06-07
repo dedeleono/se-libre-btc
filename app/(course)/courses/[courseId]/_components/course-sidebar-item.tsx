@@ -49,23 +49,20 @@ export const CourseSidebarItem = ({
       onClick={onClick}
       type="button"
       className={cn(
-        "flex items-center gap-x-3 my-1 text-slate-500 text-sm font-normal py-4 px-3 w-full",
-        "hover:text-slate-600 hover:bg-slate-300/20",
-        "dark:text-white/70 dark:hover:text-white dark:hover:bg-white/[0.06]",
+        "my-1 flex w-full items-center gap-x-3 rounded-[2px] px-3 py-4 text-left text-sm font-bold text-muted-foreground",
+        "hover:bg-secondary hover:text-foreground",
         "transition-all duration-200",
         isActive && 
-          "text-primary bg-primary/10 hover:bg-primary/20 hover:text-primary border-r-2 border-primary/80" +
-          " dark:bg-white/[0.08] dark:text-secondary dark:hover:bg-white/[0.12] dark:hover:text-secondary" +
-          " dark:border-none",
+          "border-2 border-foreground bg-foreground text-background hover:bg-foreground hover:text-background dark:bg-primary dark:text-primary-foreground",
         !isAccessible && "opacity-60"
       )}
     >
       {!isAccessible && currentUserRole === "STUDENT" ? (
-        <Lock className="h-5 w-5 dark:text-white/70" />
+        <Lock className="h-5 w-5" />
       ) : isCompleted ? (
-        <CheckCircle className="h-5 w-5 text-success dark:text-success/90" />
+        <CheckCircle className="h-5 w-5 text-[var(--quetzal-500)]" />
       ) : (
-        <PlayCircle className="h-5 w-5 dark:text-white/70" />
+        <PlayCircle className="h-5 w-5" />
       )}
       <span>{label}</span>
     </button>

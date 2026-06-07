@@ -40,12 +40,11 @@ export const CourseSidebar = ({
 
   return (
     <div
-      className="h-full border-r flex flex-col overflow-y-auto shadow-sm bg-background 
-      dark:bg-gradient-to-b dark:from-card/50 dark:to-background/30 
-      dark:border-white/[0.05] dark:backdrop-blur-xl"
+      className="flex h-full flex-col overflow-y-auto border-r-2 border-foreground bg-background"
     >
-      <div className="p-6 flex flex-col border-b dark:border-white/[0.05] dark:bg-card/30">
-        <h1 className="font-black sm:text-xl text-lg text-primary font-['Open_Sans'] p-1 sm:p-0">
+      <div className="flex flex-col border-b-2 border-foreground p-6">
+        <div className="page-eyebrow">Lección</div>
+        <h1 className="mt-3 text-3xl">
           {course.title}
         </h1>
       </div>
@@ -55,9 +54,8 @@ export const CourseSidebar = ({
             <AccordionItem value={module.id} key={module.id}>
               <AccordionTrigger
                 className={cn(
-                  "text-base font-medium px-6 transition-all",
-                  "data-[state=open]:text-success data-[state=open]:font-black data-[state=open]:bg-success/10 data-[state=open]:hover:bg-success/20 data-[state=open]:hover:text-success data-[state=open]:border-r-2 data-[state=open]:border-success/80 data-[state=open]:scale-105",
-                  "data-[state=open]:dark:bg-white/[0.08] data-[state=open]:dark:text-success data-[state=open]:dark:hover:bg-white/[0.12] data-[state=open]:dark:hover:text-success"
+                  "px-6 text-sm font-bold uppercase tracking-[0.08em] transition-all",
+                  "data-[state=open]:bg-secondary data-[state=open]:text-foreground"
                 )}
               >
                 {module.title}
@@ -66,7 +64,7 @@ export const CourseSidebar = ({
                 {module.chapters.map((chapter) => (
                   <div
                     key={chapter.id}
-                    className="relative pl-1 border-l-2 border-slate-200 dark:border-white/[0.08] ml-6"
+                    className="relative ml-6 border-l-2 border-foreground/20 pl-1"
                   >
                     <CourseSidebarItem
                       id={chapter.id}

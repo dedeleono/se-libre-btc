@@ -81,10 +81,10 @@ export const SidebarRoutes = () => {
       : [];
 
   return (
-    <div className="flex w-full flex-col gap-4 px-2 py-3">
+    <div className="flex w-full flex-col gap-6 px-3 py-5">
       {routeGroups.map((group) => (
         <div key={group.label} className="space-y-1">
-          <p className="dashboard-sidebar-label px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="dashboard-sidebar-label px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
             {group.label}
           </p>
           {group.routes.map((route) => (

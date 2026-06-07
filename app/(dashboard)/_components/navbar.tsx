@@ -35,8 +35,7 @@ interface NavbarProps {
 export const Navbar = ({ notifications, userId, userRole }: NavbarProps) => {
   return (
     <div
-      className="p-4 border-b h-full flex items-center bg-background shadow-sm w-full
-      dark-gradient dark:border-white/[0.05] dark-glass"
+      className="flex h-full w-full items-center border-b-2 border-foreground bg-background px-4"
     >
       <MobileSidebar />
 

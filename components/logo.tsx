@@ -1,11 +1,5 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import Logo from "../public/logo.png";
-import LogoDark from "../public/logoDark.png";
-
 interface LogoProps {
   width?: number;
   height?: number;
@@ -18,39 +12,54 @@ export default function ThemeAwareLogo({
   width = 150,
   height = 150,
   className,
-  alt = "logo",
-  priority = true,
+  alt = "Dinero Libre",
 }: LogoProps) {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
-  const logoSrc = resolvedTheme === "dark" ? LogoDark : Logo;
-
   return (
     <div
       className={className}
+      aria-label={alt}
+      role="img"
       style={{
-        display: "inline-block",
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 10,
         width: width,
-        height: height,
-        position: "relative",
+        minHeight: Math.min(height, 56),
       }}
     >
-      <Image
-        src={logoSrc}
-        alt={alt}
-        fill
-        style={{ objectFit: "contain", objectPosition: "left center" }}
-        priority={priority}
-      />
+      <span
+        aria-hidden="true"
+        className="grid shrink-0 place-items-center rounded-full border-2 border-current bg-primary text-primary-foreground"
+        style={{
+          width: Math.min(height, 42),
+          height: Math.min(height, 42),
+          fontFamily: "var(--font-display)",
+          fontSize: Math.min(height, 42) * 0.62,
+          lineHeight: 1,
+        }}
+      >
+        ₿
+      </span>
+      <span className="flex flex-col leading-[0.9] text-current">
+        <span
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: Math.min(width / 5.3, 30),
+            letterSpacing: 0,
+          }}
+        >
+          DINERO
+        </span>
+        <span
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: Math.min(width / 5.3, 30),
+            letterSpacing: 0,
+          }}
+        >
+          LIBRE
+        </span>
+      </span>
     </div>
   );
 }

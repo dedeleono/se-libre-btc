@@ -57,14 +57,14 @@ const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => 
   const { t } = useLocale();
 
   return (
-    <div className="flex items-center justify-center h-[calc(100vh-14rem)]">
-      <Card className="p-8 max-w-md mx-auto text-center space-y-6 shadow-lg relative">
+    <div className="flex h-[calc(100vh-14rem)] items-center justify-center">
+      <Card className="relative mx-auto max-w-md space-y-6 p-8 text-center">
         {type === "intro" && (
           <>
-            <div className="mx-auto w-fit p-4 rounded-full bg-emerald-100">
-              <Lock className="h-12 w-12 text-emerald-600" />
+            <div className="mx-auto w-fit border-2 border-foreground bg-primary p-4 text-primary-foreground">
+              <Lock className="h-12 w-12" />
             </div>
-            <h2 className="text-xl font-semibold">{t.course.sampleContentTitle}</h2>
+            <h2 className="text-3xl">{t.course.sampleContentTitle}</h2>
             <p className="text-sm text-muted-foreground">
               {t.course.sampleContentDescription}
             </p>
@@ -73,10 +73,10 @@ const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => 
 
         {type === "time" && (
           <>
-            <div className="mx-auto w-fit p-4 rounded-full bg-yellow-100">
-              <Clock className="h-12 w-12 text-yellow-600" />
+            <div className="mx-auto w-fit border-2 border-foreground bg-[var(--maiz-500)] p-4 text-[var(--volcan-900)]">
+              <Clock className="h-12 w-12" />
             </div>
-            <h2 className="text-xl font-semibold">{t.course.timeRestricted}</h2>
+            <h2 className="text-3xl">{t.course.timeRestricted}</h2>
             <p className="text-sm text-muted-foreground">
               {!startTime 
                 ? t.course.lessonUnavailable
@@ -89,10 +89,10 @@ const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => 
 
         {type === "subscription" && (
           <>
-            <div className="mx-auto w-fit p-4 rounded-full bg-blue-100">
-              <CreditCard className="h-12 w-12 text-blue-600" />
+            <div className="mx-auto w-fit border-2 border-foreground bg-secondary p-4">
+              <CreditCard className="h-12 w-12" />
             </div>
-            <h2 className="text-xl font-semibold">{t.course.lockedContent}</h2>
+            <h2 className="text-3xl">{t.course.lockedContent}</h2>
             <p className="text-sm text-muted-foreground">
               {t.course.enrollToAccess}
             </p>
@@ -221,37 +221,32 @@ export const ContentViewer = ({
   }
 
   return (
-    <div className="relative flex flex-col w-full max-w-5xl mx-auto p-4 gap-y-4">
-      <Card
-        className="p-6 bg-background shadow-sm dark:bg-gradient-to-br dark:from-card/50 dark:to-background/30 
-        dark:border-white/[0.05] dark:backdrop-blur-xl"
-      >
+    <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-y-4 p-4">
+      <Card className="p-6">
         <div className="flex justify-between items-start">
           <div className="space-y-0">
             <div className="flex items-center gap-2">
-              <Label className="text-2xl font-bold capitalize dark:text-white/90 font-['Open_Sans'] pl-5 pt-5">
+              <Label className="pl-5 pt-5 font-[var(--font-display)] text-4xl uppercase leading-none">
                 {title}
               </Label>
               {isPreviewMode && (
                 <Badge
                   variant="secondary"
-                  className="bg-emerald-100 text-emerald-700 border-emerald-200
-                  dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20"
+                  className="bg-secondary text-foreground"
                 >
                   {t.course.preview}
                 </Badge>
               )}
             </div>
             {description && description.trim() && (
-              <div className="text-sm text-muted-foreground dark:text-white/70">
+            <div className="text-sm font-semibold text-muted-foreground">
                 <Preview value={description} />
               </div>
             )}
           </div>
           {isLoading && isAuthenticated && !isPreviewMode && (
             <div
-              className="flex items-center justify-center bg-primary/10 text-primary p-2 rounded-md
-              dark:bg-white/[0.08] dark:text-white/90"
+              className="flex items-center justify-center border-2 border-foreground bg-secondary p-2 text-foreground"
             >
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
               <p className="text-sm">{t.course.updatingProgress}</p>
@@ -260,7 +255,7 @@ export const ContentViewer = ({
         </div>
         {progress > 0 && isAuthenticated && !isPreviewMode && (
           <div className="mt-0 space-y-1">
-            <div className="flex justify-between text-sm text-muted-foreground dark:text-white/70">
+            <div className="flex justify-between text-sm font-bold text-muted-foreground">
               <span>{t.course.courseProgress}</span>
               <span>{progress}%</span>
             </div>
@@ -270,14 +265,14 @@ export const ContentViewer = ({
       </Card>
 
       {isAuthenticated && (
-        <div className="flex gap-x-2 border-b dark:border-white/[0.05]">
+        <div className="flex gap-x-2 border-b-2 border-foreground">
           <button
             onClick={() => handleTabChange("content")}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors",
+              "px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] transition-colors",
               activeTab === "content"
-                ? "border-b-2 border-primary text-primary dark:border-secondary dark:text-secondary"
-                : "text-muted-foreground dark:text-white/70"
+                ? "bg-foreground text-background dark:bg-primary dark:text-primary-foreground"
+                : "text-muted-foreground"
             )}
           >
             {t.course.content}
@@ -287,10 +282,10 @@ export const ContentViewer = ({
               <button
                 onClick={() => handleTabChange("notes")}
                 className={cn(
-                  "px-4 py-2 text-sm font-medium transition-colors",
+                  "px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] transition-colors",
                   activeTab === "notes"
-                    ? "border-b-2 border-primary text-primary dark:border-secondary dark:text-secondary"
-                    : "text-muted-foreground dark:text-white/70"
+                    ? "bg-foreground text-background dark:bg-primary dark:text-primary-foreground"
+                    : "text-muted-foreground"
                 )}
               >
                 {t.nav.notes}
@@ -298,10 +293,10 @@ export const ContentViewer = ({
               <button
                 onClick={() => handleTabChange("discussion")}
                 className={cn(
-                  "px-4 py-2 text-sm font-medium transition-colors",
+                  "px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] transition-colors",
                   activeTab === "discussion"
-                    ? "border-b-2 border-primary text-primary dark:border-secondary dark:text-secondary"
-                    : "text-muted-foreground dark:text-white/70"
+                    ? "bg-foreground text-background dark:bg-primary dark:text-primary-foreground"
+                    : "text-muted-foreground"
                 )}
               >
                 {t.course.discussion}
@@ -313,10 +308,7 @@ export const ContentViewer = ({
 
       {activeTab === "content" || isPreviewMode ? (
         <>
-          <Card
-            className="overflow-hidden bg-background dark:bg-gradient-to-br dark:from-card/50 
-            dark:to-background/30 dark:border-white/[0.05] dark:backdrop-blur-xl"
-          >
+          <Card className="overflow-hidden">
             <div className="relative w-full">
               {videoUrl && (
                 <div className="aspect-video">
@@ -345,7 +337,7 @@ export const ContentViewer = ({
               )}
 
               {pdfUrl && (
-                <div className="relative min-h-[500px] w-full bg-slate-100">
+                <div className="relative min-h-[500px] w-full bg-secondary">
                   <div className="absolute inset-0">
                     <iframe
                       src={`${pdfUrl}#toolbar=0`}
@@ -365,29 +357,26 @@ export const ContentViewer = ({
 
               {!videoUrl && !youtubeUrl && !pdfUrl && !richContent && (
                 <div
-                  className="flex flex-col items-center justify-center h-[400px] bg-slate-50 rounded-md
-                  dark:bg-white/[0.02] dark:backdrop-blur-sm"
+                  className="dl-stamped flex h-[400px] flex-col items-center justify-center bg-secondary"
                 >
                   <div className="flex flex-col items-center space-y-4">
                     <div className="relative">
                       <div
-                        className="h-20 w-20 rounded-full bg-primary/10 dark:bg-white/[0.08] 
-                        flex items-center justify-center"
+                        className="flex h-20 w-20 items-center justify-center border-2 border-foreground bg-card"
                       >
-                        <Loader2 className="h-12 w-12 text-primary dark:text-secondary animate-spin" />
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
                       </div>
                       <div
-                        className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary/10 
-                        dark:bg-white/[0.08] flex items-center justify-center"
+                        className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center border-2 border-foreground bg-primary"
                       >
-                        <FileText className="h-4 w-4 text-primary dark:text-secondary" />
+                        <FileText className="h-4 w-4 text-primary-foreground" />
                       </div>
                     </div>
                     <div className="text-center space-y-2">
-                      <h3 className="font-semibold text-lg dark:text-white/90">
+                      <h3 className="text-lg font-bold">
                         {t.course.loadingContent}
                       </h3>
-                      <p className="text-sm text-muted-foreground dark:text-white/70">
+                      <p className="text-sm font-semibold text-muted-foreground">
                         {t.course.preparingLesson}
                       </p>
                     </div>
@@ -397,12 +386,11 @@ export const ContentViewer = ({
 
               {(videoUrl || youtubeUrl) && isLoading && (
                 <div
-                  className="absolute inset-0 bg-background/80 dark:bg-black/50 backdrop-blur-sm 
-                  flex items-center justify-center z-10"
+                  className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
                 >
                   <div className="flex items-center space-x-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary dark:text-secondary" />
-                    <p className="text-sm font-medium dark:text-white/90">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm font-bold">
                       {t.course.loadingVideo}
                     </p>
                   </div>
@@ -411,12 +399,11 @@ export const ContentViewer = ({
 
               {pdfUrl && isLoading && (
                 <div
-                  className="absolute inset-0 bg-background/80 dark:bg-black/50 backdrop-blur-sm 
-                  flex items-center justify-center z-10"
+                  className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
                 >
                   <div className="flex items-center space-x-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary dark:text-secondary" />
-                    <p className="text-sm font-medium dark:text-white/90">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-sm font-bold">
                       {t.course.loadingDocument}
                     </p>
                   </div>
@@ -441,15 +428,12 @@ export const ContentViewer = ({
             )}
 
           {isAuthenticated && !isPreviewMode && (
-            <Card
-              className="p-6 bg-background shadow-sm dark:bg-gradient-to-br dark:from-card/50 
-              dark:to-background/30 dark:border-white/[0.05] dark:backdrop-blur-xl"
-            >
+            <Card className="p-6">
               <div className="space-y-4">
                 <div>
                   <Label
                     htmlFor="notes"
-                    className="text-sm font-semibold flex items-center gap-x-2 dark:text-white/90"
+                    className="flex items-center gap-x-2 text-sm font-bold uppercase tracking-[0.08em]"
                   >
                     <FileText className="h-4 w-4" />
                     {t.course.digitalNotebook}
@@ -461,7 +445,7 @@ export const ContentViewer = ({
                         setNotes(value);
                       }}
                       height="300px"
-                      className="border border-gray-200 rounded-lg"
+                      className="rounded-[2px] border-2 border-foreground"
                       style={{
                         minHeight: "200px",
                         maxHeight: "400px",
@@ -508,19 +492,19 @@ export const ContentViewer = ({
           )}
 
           {isPreviewMode && (
-            <Card className="p-6 bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800/30">
+            <Card className="p-6">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="space-y-1 text-center sm:text-left">
-                  <h3 className="font-semibold text-emerald-800 dark:text-emerald-400">
+                  <h3 className="text-2xl">
                     {t.course.continuePromptTitle}
                   </h3>
-                  <p className="text-sm text-emerald-700 dark:text-emerald-500">
+                  <p className="text-sm font-semibold text-muted-foreground">
                     {t.course.continuePromptDescription}
                   </p>
                 </div>
                 <Button
                   asChild
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className=""
                 >
                   <Link href="/sign-in">{t.course.startHere}</Link>
                 </Button>
@@ -529,13 +513,10 @@ export const ContentViewer = ({
           )}
         </>
       ) : activeTab === "notes" ? (
-        <Card
-          className="p-6 bg-background shadow-sm dark:bg-gradient-to-br dark:from-card/50 
-          dark:to-background/30 dark:border-white/[0.05] dark:backdrop-blur-xl"
-        >
+        <Card className="p-6">
           <div className="space-y-4">
             <div>
-              <Label className="text-sm font-semibold flex items-center gap-x-2 dark:text-white/90">
+              <Label className="flex items-center gap-x-2 text-sm font-bold uppercase tracking-[0.08em]">
                 <FileText className="h-4 w-4" />
                 {t.course.digitalNotebook}
               </Label>
@@ -551,7 +532,7 @@ export const ContentViewer = ({
                     )}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground dark:text-white/70">
+                  <p className="text-sm font-semibold text-muted-foreground">
                     {t.course.noNotes}
                   </p>
                 )}
@@ -560,13 +541,10 @@ export const ContentViewer = ({
           </div>
         </Card>
       ) : (
-        <Card
-          className="p-6 bg-background shadow-sm dark:bg-gradient-to-br dark:from-card/50 
-          dark:to-background/30 dark:border-white/[0.05] dark:backdrop-blur-xl"
-        >
+        <Card className="p-6">
           <div className="space-y-4">
             <div>
-              <Label className="text-sm font-semibold dark:text-white/90">
+              <Label className="text-sm font-bold uppercase tracking-[0.08em]">
                 {t.course.shareIdeas}
               </Label>
               <div className="mt-4">
