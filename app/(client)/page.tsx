@@ -24,9 +24,7 @@ export default function Home() {
           <div className="space-y-8">
             <div className="page-eyebrow">Dinero Libre Guatemala</div>
             <div className="space-y-5">
-              <h1 className="page-title max-w-[10ch]">
-                {t.public.heroTitle}
-              </h1>
+              <h1 className="page-title max-w-[10ch]">{t.public.heroTitle}</h1>
               <p className="max-w-xl text-lg font-semibold leading-relaxed text-muted-foreground">
                 {t.public.heroSubtitle}
               </p>
@@ -67,9 +65,21 @@ export default function Home() {
       <section className="mx-auto max-w-[1160px] px-4 py-16 md:px-8">
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { icon: BookOpen, title: t.public.features[0].title, body: t.public.features[0].description },
-            { icon: ShieldCheck, title: t.public.features[1].title, body: t.public.features[1].description },
-            { icon: CircleDollarSign, title: t.public.features[2].title, body: t.public.features[2].description },
+            {
+              icon: BookOpen,
+              title: t.public.features[0].title,
+              body: t.public.features[0].description,
+            },
+            {
+              icon: ShieldCheck,
+              title: t.public.features[1].title,
+              body: t.public.features[1].description,
+            },
+            {
+              icon: CircleDollarSign,
+              title: t.public.features[2].title,
+              body: t.public.features[2].description,
+            },
           ].map((item) => (
             <div key={item.title} className="stamp-card p-6">
               <item.icon className="mb-6 h-8 w-8 text-[var(--terracota-500)] dark:text-[var(--maiz-500)]" />
@@ -85,12 +95,16 @@ export default function Home() {
       <section className="border-y-2 border-foreground bg-[var(--volcan-900)] text-[var(--crema-050)]">
         <div className="mx-auto grid max-w-[1160px] gap-10 px-4 py-16 md:grid-cols-[0.8fr_1.2fr] md:px-8">
           <div>
-            <div className="page-eyebrow text-[var(--cafe-300)]">Ruta práctica</div>
+            <div className="page-eyebrow text-[var(--cafe-300)]">
+              Ruta práctica
+            </div>
             <h2 className="mt-4 text-6xl text-[var(--crema-050)] md:text-7xl">
-              Bitcoin sin permiso
+              Dinerlo Libre 1:1
             </h2>
             <p className="mt-6 text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
-              Aprende los fundamentos, practica con recursos reales y avanza con una comunidad enfocada en soberanía financiera.
+              Aprende los fundamentos, práctica con recursos reales y avanza con
+              una comunidad enfocada en la soberanía financiera a través de la
+              tecnología innovadora de Bitcoin.
             </p>
             <Button asChild className="mt-8" variant="secondary">
               <Link href="/courses">{t.public.viewCourse}</Link>

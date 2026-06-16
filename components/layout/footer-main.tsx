@@ -16,15 +16,14 @@ const Footer = () => {
           <div className="md:col-span-6 space-y-6">
             <Logo width={210} height={48} />
             <p className="max-w-md text-sm font-semibold text-muted-foreground">
-              Bitcoin education with a warm, practical, sovereignty-first learning platform.
+              Financial education with a warm, practical, sovereignty-first
+              learning platform.
             </p>
           </div>
 
           {/* Sitemap Section */}
           <div className="md:col-span-3">
-            <h2 className="mb-6 text-2xl">
-              {t.nav.home}
-            </h2>
+            <h2 className="mb-6 text-2xl">{t.nav.home}</h2>
             <nav className="space-y-4">
               <Link
                 href="/"
@@ -49,12 +48,10 @@ const Footer = () => {
 
           {/* Follow Us Section */}
           <div className="md:col-span-3">
-            <h2 className="mb-6 text-2xl">
-              {t.public.footerFollow}
-            </h2>
+            <h2 className="mb-6 text-2xl">{t.public.footerFollow}</h2>
             <nav className="space-y-4">
               <Link
-                href="#"
+                href="https://www.instagram.com/guate.libre"
                 className="group flex items-center text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:text-foreground"
               >
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-2">
@@ -76,7 +73,7 @@ const Footer = () => {
                 </svg>
               </Link>
               <Link
-                href="#"
+                href="https://www.tiktok.com/@guatelibre"
                 className="group flex items-center text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:text-foreground"
               >
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-2">

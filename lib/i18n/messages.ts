@@ -77,8 +77,8 @@ const es = {
     payments: "Pagos",
   },
   public: {
-    heroTitle: "Aprende y domina Bitcoin",
-    heroSubtitle: "Únete a nuestra comunidad y construye soberanía financiera con educación práctica.",
+    heroTitle: "Recupera tu soberanía financiera",
+    heroSubtitle: "Educación práctica que une las bases de la economía libre con innovación tecnológica para proteger tu patrimonio",
     start: "Comenzar",
     viewTutorial: "Ver tutorial",
     tutorialTitle: "Cómo inscribirte utilizando nuestra plataforma",
@@ -96,7 +96,7 @@ const es = {
         description: "Avanza con lecciones, recursos y ejercicios claros.",
       },
     ],
-    learningPathsTitle: "Rutas de aprendizaje Bitcoin",
+    learningPathsTitle: "Rutas de aprendizaje",
     learningPathsSubtitle: "Sigue rutas curadas o explora cursos independientes a tu ritmo.",
     coursesCount: (count: number) => `${count} ${count === 1 ? "curso" : "cursos"}`,
     learnersCount: (count: number) => `${count} ${count === 1 ? "estudiante inscrito" : "estudiantes inscritos"}`,
@@ -117,8 +117,8 @@ const es = {
     contactDirectly: "Contáctanos directamente",
     faqs: [
       {
-        question: "¿Cuáles son los métodos de pago?",
-        answer: "Aceptamos tarjetas de crédito, débito y pagos por transferencia bancaria.",
+        question: "¿Cómo puedo apoyar este proyecto?",
+        answer: "Dinero Libre es totalmente gratuito. Sin embargo, si deseas ayudarnos a seguir creando contenido, puedes realizar una donación voluntaria a través de https://www.guatelibre.org/donar.\n\nTe proporcionamos recibo de donación para más información escribe a info@guatelibre.org o soporte@guatelibre.org",
       },
       {
         question: "¿Puedo acceder a los cursos en cualquier momento?",
@@ -131,12 +131,12 @@ const es = {
     ],
     aboutTitle: "Educación Bitcoin para tomar mejores decisiones",
     aboutSubtitle: "Creamos experiencias de aprendizaje claras, prácticas y accesibles para personas que quieren entender Bitcoin con profundidad.",
-    aboutUsTitle: "Nosotros",
-    aboutUsBody: "Nuestra plataforma ofrece educación Bitcoin de alta calidad a través de experiencias de aprendizaje prácticas, claras e innovadoras.",
+    aboutUsTitle: "Sobre Nosotros",
+    aboutUsBody: "Impulsado por la Asociación Guatemala Libre y Se Libre, Dinero Libre es una plataforma educativa creada para promover los principios de la Escuela Austriaca de Economía y la defensa de la libertad a través de la innovación tecnológica. Entendemos que la verdadera soberanía financiera requiere fundamentos teóricos sólidos y herramientas prácticas modernas.",
     missionTitle: "Misión",
-    missionBody: "Brindar formación integral sobre Bitcoin y soberanía financiera con principios, disciplina y herramientas aplicables.",
+    missionBody: "Nuestra misión es unir la solidez de la Escuela Austriaca de Economía con las herramientas prácticas del presente, para que cada persona ejerza su soberanía y responsabilidad individual, protegiendo el fruto de su trabajo lejos de la dependencia Estatal.",
     visionTitle: "Visión",
-    visionBody: "Ser una plataforma educativa referente para personas que buscan aprender Bitcoin con excelencia, criterio y autonomía.",
+    visionBody: "Convertirnos en el puente que permita a las personas transicionar desde un sistema financiero dependiente hacia uno completamente soberano. Aspiramos a un mundo donde el retorno al dinero libre y la defensa de la propiedad privada garanticen que cada individuo pueda forjar su propio legado",
     featuresTitle: "Características",
     aboutFeatures: [
       {
