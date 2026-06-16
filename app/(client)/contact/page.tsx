@@ -5,14 +5,34 @@ import { getServerMessages } from "@/lib/i18n-server";
 export default function ContactPage() {
   const t = getServerMessages();
 
+  const details = [
+    {
+      icon: MapPin,
+      label: t.public.location,
+      value:
+        '6ta Avenida 8-25 zona 2, Avenida Simeón Cañas, Apto "A", Guatemala, Guatemala.',
+    },
+    {
+      icon: Mail,
+      label: "Email",
+      value: "info@colegiosaberver.com",
+    },
+    {
+      icon: Phone,
+      label: t.public.phone,
+      value: "+1 234 567 890 • Lun - Vie, 8:00 AM - 6:00 PM",
+    },
+  ];
+
   return (
     <div className="space-y-10">
       {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-success font-['Open_Sans']">
+      <div className="space-y-3">
+        <div className="page-eyebrow">{t.public.contactSubtitle}</div>
+        <h1 className="text-4xl uppercase leading-[0.95] text-foreground md:text-5xl">
           {t.public.contactTitle}
         </h1>
-        <p className="text-muted-foreground dark:text-white/70 sm:text-sm text-xs ">
+        <p className="font-semibold text-muted-foreground">
           {t.public.contactResponse}
         </p>
       </div>
@@ -21,49 +41,25 @@ export default function ContactPage() {
       <ContactForm />
 
       {/* Contact Information */}
-      <div className="grid gap-6">
-        <div className="flex items-center gap-4">
-          <div className="shrink-0 rounded-lg bg-sky-100 p-3 dark:bg-sky-500/10">
-            <MapPin className="h-5 w-5 text-sky-900 dark:text-sky-400" />
+      <div className="grid gap-4">
+        {details.map((item) => (
+          <div
+            key={item.label}
+            className="stamp-card flex items-start gap-4 p-4"
+          >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center border-2 border-foreground bg-[var(--naranja-050)] text-[var(--terracota-700)] dark:bg-[var(--volcan-700)] dark:text-[var(--maiz-500)]">
+              <item.icon className="h-5 w-5" />
+            </div>
+            <div>
+              <h3 className="text-xs font-extrabold uppercase tracking-[0.12em] text-foreground">
+                {item.label}
+              </h3>
+              <p className="mt-1 text-sm font-semibold text-muted-foreground">
+                {item.value}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-medium text-sky-900 dark:text-white/90 font-['Open_Sans']">
-              {t.public.location}
-            </h3>
-            <p className="text-sm text-muted-foreground dark:text-white/70">
-              6ta Avenida 8-25 zona 2, Avenida Simeón Cañas, Apto &quot;A&quot;,
-              Guatemala, Guatemala.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="shrink-0 rounded-lg bg-sky-100 p-3 dark:bg-sky-500/10">
-            <Mail className="h-5 w-5 text-sky-900 dark:text-sky-400" />
-          </div>
-          <div>
-            <h3 className="font-medium text-sky-900 dark:text-white/90 font-['Open_Sans']">
-              Email
-            </h3>
-            <p className="text-sm text-muted-foreground dark:text-white/70">
-              info@colegiosaberver.com
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="shrink-0 rounded-lg bg-sky-100 p-3 dark:bg-sky-500/10">
-            <Phone className="h-5 w-5 text-sky-900 dark:text-sky-400" />
-          </div>
-          <div>
-            <h3 className="font-medium text-sky-900 dark:text-white/90 font-['Open_Sans']">
-              {t.public.phone}
-            </h3>
-            <p className="text-sm text-muted-foreground dark:text-white/70">
-              +1 234 567 890 • Lun - Vie, 8:00 AM - 6:00 PM
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

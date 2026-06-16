@@ -1,138 +1,182 @@
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { BookOpen, LineChart, GraduationCap } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpen,
+  Compass,
+  GraduationCap,
+  LineChart,
+  Target,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { getServerMessages } from "@/lib/i18n-server";
 
 export default function AboutPage() {
   const t = getServerMessages();
+
   const features = [
-    {
-      title: t.public.aboutFeatures[0].title,
-      description: t.public.aboutFeatures[0].description,
-      icon: <BookOpen className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
-    },
-    {
-      title: t.public.aboutFeatures[1].title,
-      description: t.public.aboutFeatures[1].description,
-      icon: <LineChart className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
-    },
-    {
-      title: t.public.aboutFeatures[2].title,
-      description: t.public.aboutFeatures[2].description,
-      icon: <GraduationCap className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />,
-    },
+    { icon: BookOpen, ...t.public.aboutFeatures[0] },
+    { icon: LineChart, ...t.public.aboutFeatures[1] },
+    { icon: GraduationCap, ...t.public.aboutFeatures[2] },
   ];
 
   return (
-    <div
-      className="bg-gradient-to-br from-emerald-50 via-white to-emerald-50 
-      dark:from-background/40 dark:via-background/30 dark:to-background/20 dark:backdrop-blur-xl"
-    >
-      <div
-        className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] 
-        dark:opacity-20"
-      />
+    <main className="dl-app overflow-hidden">
+      {/* HERO */}
+      <section className="relative border-b-2 border-foreground">
+        <div className="absolute inset-0 dl-stamped" />
+        <div className="relative mx-auto grid max-w-[1160px] items-center gap-12 px-4 py-16 md:grid-cols-[1.1fr_0.9fr] md:px-8 md:py-24">
+          <div className="space-y-8">
+            <div className="page-eyebrow">#DineroLibre · Guatemala</div>
+            <h1 className="page-title max-w-[12ch]">
+              {t.public.aboutUsTitle}
+              <span className="dl-libre-tag ml-3 align-top text-[0.4em] text-[var(--terracota-700)] dark:text-[var(--maiz-500)]">
+                / Libre
+              </span>
+            </h1>
+            <p className="max-w-xl text-lg font-semibold leading-relaxed text-muted-foreground">
+              {t.public.aboutSubtitle}
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Button asChild size="lg">
+                <Link href="/courses">
+                  {t.public.start}
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/contact">{t.nav.contact}</Link>
+              </Button>
+            </div>
+          </div>
 
-      <div className="relative container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <div className="relative w-full h-[300px] mb-8 rounded-xl overflow-hidden">
-            <Image
-              src="/saber.jpg"
-              alt="School building"
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent dark:from-black/80" />
-            <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-              <h1 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 font-['Open_Sans']">
-                Se Libre BTC
-              </h1>
-              <p className="text-lg max-w-2xl mx-auto text-white/90">
-                {t.public.aboutSubtitle}
-              </p>
+          <div className="relative mx-auto w-full max-w-[380px]">
+            <div className="stamp-card flex items-center justify-center bg-[var(--crema-050)] p-10">
+              <Image
+                src="/images/se_libre/25.png"
+                alt="Sello Dinero Libre"
+                width={760}
+                height={980}
+                priority
+                className="h-auto w-full max-w-[240px] object-contain"
+              />
+            </div>
+            <div className="absolute -bottom-5 -left-5 hidden border-2 border-foreground bg-primary px-4 py-3 font-[var(--font-display)] text-2xl uppercase leading-none text-primary-foreground shadow-[4px_4px_0_hsl(var(--foreground))] md:block">
+              Dinero sano
             </div>
           </div>
         </div>
+      </section>
 
-        <Card
-          className="mb-12 bg-white/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 
-          dark:bg-black/40 dark:border-white/[0.05]"
-        >
-          <CardHeader>
-            <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-400 font-['Open_Sans'] font-bold">
-              {t.public.aboutUsTitle}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 leading-relaxed dark:text-white/70">
-              {t.public.aboutUsBody}
-            </p>
-          </CardContent>
-        </Card>
-
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <Card
-            className="bg-white/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 
-            dark:bg-black/40 dark:border-white/[0.05]"
-          >
-            <CardHeader>
-              <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-400 font-['Open_Sans'] font-bold">
-                {t.public.missionTitle}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 leading-relaxed dark:text-white/70">
-                {t.public.missionBody}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card
-            className="bg-white/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 
-            dark:bg-black/40 dark:border-white/[0.05]"
-          >
-            <CardHeader>
-              <CardTitle className="text-2xl text-emerald-800 dark:text-emerald-400 font-['Open_Sans'] font-bold">
-                {t.public.visionTitle}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 leading-relaxed dark:text-white/70">
-                {t.public.visionBody}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Separator className="my-16 dark:bg-white/[0.05]" />
-
-        <section className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-black text-primary dark:text-secondary mb-8 font-['Open_Sans']">
-            {t.public.featuresTitle}
-          </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="p-6 rounded-lg bg-white/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 
-                  dark:bg-black/40 dark:border dark:border-white/[0.05]"
-              >
-                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {feature.icon}
-                </div>
-                <h3 className="font-semibold text-primary mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-white/70">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
+      {/* WHO WE ARE — editorial statement */}
+      <section className="mx-auto max-w-[1160px] px-4 py-16 md:px-8 md:py-20">
+        <div className="grid gap-8 md:grid-cols-[0.4fr_1fr] md:gap-16">
+          <div className="md:sticky md:top-28 h-fit">
+            <div className="page-eyebrow">#DineroLibre</div>
+            <h2 className="mt-4 text-4xl md:text-5xl">{t.public.aboutUsTitle}</h2>
           </div>
-        </section>
+          <p className="text-2xl font-semibold leading-snug text-foreground md:text-[28px]">
+            {t.public.aboutUsBody}
+          </p>
+        </div>
+      </section>
+
+      {/* SLOGAN BAND */}
+      <div className="overflow-hidden border-y-2 border-foreground bg-primary text-primary-foreground">
+        <div className="flex items-center gap-6 px-4 py-3 font-[var(--font-display)] text-2xl uppercase tracking-[0.04em] md:text-3xl">
+          <span>Aprende</span>
+          <span aria-hidden className="opacity-60">
+            ✦
+          </span>
+          <span>Practica</span>
+          <span aria-hidden className="opacity-60">
+            ✦
+          </span>
+          <span>Comparte</span>
+          <span aria-hidden className="opacity-60">
+            ✦
+          </span>
+          <span>Resiste</span>
+          <span aria-hidden className="opacity-60">
+            ✦
+          </span>
+          <span className="hidden sm:inline">Sé tu propio banco</span>
+        </div>
       </div>
-    </div>
+
+      {/* MISSION & VISION — dark band */}
+      <section className="border-b-2 border-foreground bg-[var(--volcan-900)] text-[var(--crema-050)]">
+        <div className="mx-auto grid max-w-[1160px] gap-12 px-4 py-20 md:grid-cols-2 md:px-8">
+          <div>
+            <div className="flex h-12 w-12 items-center justify-center border-2 border-[var(--crema-200)] bg-[var(--volcan-700)] text-[var(--naranja-500)] shadow-[4px_4px_0_var(--naranja-500)]">
+              <Target className="h-6 w-6" />
+            </div>
+            <h2 className="mt-8 text-5xl text-[var(--crema-050)] md:text-6xl">
+              {t.public.missionTitle}
+            </h2>
+            <p className="mt-6 text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
+              {t.public.missionBody}
+            </p>
+          </div>
+          <div className="md:border-l-2 md:border-[var(--volcan-500)] md:pl-12">
+            <div className="flex h-12 w-12 items-center justify-center border-2 border-[var(--crema-200)] bg-[var(--volcan-700)] text-[var(--maiz-500)] shadow-[4px_4px_0_var(--naranja-500)]">
+              <Compass className="h-6 w-6" />
+            </div>
+            <h2 className="mt-8 text-5xl text-[var(--crema-050)] md:text-6xl">
+              {t.public.visionTitle}
+            </h2>
+            <p className="mt-6 text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
+              {t.public.visionBody}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="mx-auto max-w-[1160px] px-4 py-20 md:px-8">
+        <div className="max-w-2xl">
+          <div className="page-eyebrow">#DineroLibre</div>
+          <h2 className="mt-4 text-5xl md:text-6xl">{t.public.featuresTitle}</h2>
+        </div>
+        <div className="mt-12 grid gap-4 md:grid-cols-3">
+          {features.map((feature) => (
+            <div key={feature.title} className="stamp-card p-6">
+              <div className="flex h-12 w-12 items-center justify-center border-2 border-foreground bg-[var(--naranja-050)] text-[var(--terracota-700)] dark:bg-[var(--volcan-700)] dark:text-[var(--maiz-500)]">
+                <feature.icon className="h-6 w-6" />
+              </div>
+              <h3 className="mt-6 text-2xl">{feature.title}</h3>
+              <p className="mt-3 text-sm font-semibold leading-relaxed text-muted-foreground">
+                {feature.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CLOSING CTA */}
+      <section className="relative border-t-2 border-foreground">
+        <div className="absolute inset-0 dl-stamped" />
+        <div className="relative mx-auto max-w-[1160px] px-4 py-20 text-center md:px-8">
+          <h2 className="mx-auto max-w-[16ch] text-5xl md:text-6xl">
+            Sé tu propio banco
+            <span className="dl-libre-tag ml-2 text-[0.4em] align-top text-[var(--terracota-700)] dark:text-[var(--maiz-500)]">
+              / Libre
+            </span>
+          </h2>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Button asChild size="lg">
+              <Link href="/courses">
+                {t.public.start}
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="/contact">{t.nav.contact}</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

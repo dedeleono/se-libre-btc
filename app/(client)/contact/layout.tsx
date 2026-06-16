@@ -1,39 +1,48 @@
 import Image from "next/image";
+import { getServerMessages } from "@/lib/i18n-server";
 
 export default function ContactLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = getServerMessages();
+
   return (
-    <div
-      className="h-full bg-gradient-to-b from-white to-slate-50/50 
-      dark:from-background/40 dark:to-background/20 dark:backdrop-blur-xl"
-    >
-      <div className="grid lg:grid-cols-2 min-h-[calc(100vh-4rem)]">
-        {/* Content Side */}
+    <div className="dl-app min-h-[calc(100vh-5rem)]">
+      <div className="grid lg:grid-cols-2">
+        {/* Form Side */}
         <div className="relative flex items-center justify-center p-6 lg:p-12">
-          <div className="w-full max-w-[600px]">{children}</div>
+          <div className="absolute inset-0 dl-stamped" />
+          <div className="relative w-full max-w-[600px] py-10">{children}</div>
         </div>
 
-        {/* Image Side */}
-        <div className="hidden lg:block relative">
-          <Image
-            src="/all.jpg"
-            alt="Contact Us"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-sky-900/50 to-sky-900/80 dark:from-background/60 dark:to-background/80" />
-          <div className="absolute inset-0 flex flex-col justify-end p-12">
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white font-['Open_Sans']">
-                ¿Necesitas ayuda?
+        {/* Brand Poster Side */}
+        <div className="relative hidden overflow-hidden border-l-2 border-foreground bg-[var(--volcan-900)] text-[var(--crema-050)] lg:block">
+          <div className="absolute inset-0 dl-stamped" />
+          <div className="relative flex h-full flex-col justify-between p-12">
+            <Image
+              src="/images/se_libre/21.png"
+              alt="Dinero Libre"
+              width={520}
+              height={680}
+              className="h-auto w-[150px] object-contain"
+            />
+
+            <div>
+              <div className="page-eyebrow text-[var(--cafe-300)]">
+                #DineroLibre
+              </div>
+              <h2 className="mt-5 max-w-[14ch] text-5xl text-[var(--crema-050)]">
+                {t.public.contactSubtitle}
               </h2>
-              <p className="text-sm text-sky-100/90">
-                Nuestro equipo está aquí para asistirte en lo que necesites.
+              <p className="mt-6 max-w-sm text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
+                {t.public.contactResponse}
               </p>
+            </div>
+
+            <div className="self-start border-2 border-[var(--crema-200)] bg-primary px-4 py-2 font-[var(--font-display)] text-xl uppercase leading-none text-primary-foreground shadow-[4px_4px_0_var(--naranja-500)]">
+              Sé tu propio banco
             </div>
           </div>
         </div>

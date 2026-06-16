@@ -15,10 +15,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
 import { useLocale } from "@/lib/i18n";
 
 type ContactFormValue = {
@@ -56,69 +52,24 @@ export default function ContactForm() {
     }
   };
 
+  const labelClass =
+    "text-xs font-extrabold uppercase tracking-[0.12em] text-foreground";
+
   return (
-    <Card className="border-0 shadow-lg bg-white dark:bg-black/40 dark:border-white/[0.05]">
-      <CardContent className="pt-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-sky-900 dark:text-white/90">
-                      {t.forms.name}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder={t.forms.namePlaceholder}
-                        disabled={isPending}
-                        className="dark:bg-white/[0.06] dark:border-white/[0.05] dark:placeholder:text-white/50 dark:text-white/90"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-sky-900 dark:text-white/90">
-                      {t.forms.email}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder={t.auth.emailPlaceholder}
-                        disabled={isPending}
-                        className="dark:bg-white/[0.06] dark:border-white/[0.05] dark:placeholder:text-white/50 dark:text-white/90"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
+    <div className="stamp-card p-6 md:p-8">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <div className="grid gap-5 sm:grid-cols-2">
             <FormField
               control={form.control}
-              name="message"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-sky-900 dark:text-white/90">
-                    {t.forms.message}
-                  </FormLabel>
+                  <FormLabel className={labelClass}>{t.forms.name}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder={t.forms.messagePlaceholder}
+                    <Input
+                      placeholder={t.forms.namePlaceholder}
                       disabled={isPending}
-                      className="min-h-[120px] resize-none dark:bg-white/[0.06] dark:border-white/[0.05] dark:placeholder:text-white/50 dark:text-white/90"
                       {...field}
                     />
                   </FormControl>
@@ -127,21 +78,55 @@ export default function ContactForm() {
               )}
             />
 
-            <Button
-              disabled={isPending}
-              type="submit"
-              className="w-full bg-sky-900 hover:bg-sky-800 dark:bg-sky-900/90 dark:hover:bg-sky-800/90"
-            >
-              {isPending ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-              ) : (
-                <Send className="h-4 w-4 mr-2" />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className={labelClass}>{t.forms.email}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder={t.auth.emailPlaceholder}
+                      disabled={isPending}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-              {isPending ? t.forms.sending : t.forms.sendMessage}
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="message"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className={labelClass}>{t.forms.message}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder={t.forms.messagePlaceholder}
+                    disabled={isPending}
+                    className="min-h-[120px] resize-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button disabled={isPending} type="submit" className="w-full">
+            {isPending ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+            {isPending ? t.forms.sending : t.forms.sendMessage}
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }
