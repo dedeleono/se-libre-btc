@@ -1,15 +1,17 @@
+import { Button } from "@react-email/components";
 import {
-  Body,
-  Container,
-  Head,
+  EmailLayout,
   Heading,
-  Html,
-  Link,
-  Preview,
   Text,
-  Button,
-  Tailwind,
-} from "@react-email/components";
+  eyebrow,
+  h1,
+  paragraph,
+  muted,
+  libreTag,
+  primaryButton,
+  buttonContainer,
+  calloutBox,
+} from "./brand";
 
 interface InvitationEmailProps {
   inviteUrl: string;
@@ -23,34 +25,51 @@ export default function InvitationEmail({
   userEmail,
 }: InvitationEmailProps) {
   return (
-    <Html>
-      <Head />
-      <Preview>Has sido invitado a unirte a Se Libre</Preview>
-      <Tailwind>
-        <Body className="bg-white font-sans">
-          <Container className="mx-auto py-8 px-4">
-            <Heading className="text-2xl font-bold text-center mb-4 text-[#034180]">
-              Bienvenido a Se Libre
-            </Heading>
-            <Text className="text-gray-600 mb-4">
-              Has sido invitado a unirte a Se Libre. Haz clic en el botón
-              a continuación para configurar tu cuenta.
-            </Text>
-            <Text className="text-gray-600 mb-4">
-              También puedes iniciar sesión con Google usando este correo: {userEmail}
-            </Text>
-            <Button
-              className="bg-[#034180] text-white px-6 py-3 rounded-md font-medium hover:bg-[#023366]"
-              href={inviteUrl}
-            >
-              Aceptar Invitación
-            </Button>
-            <Text className="text-gray-500 text-sm mt-4">
-              Este enlace de invitación expirará en 24 horas.
-            </Text>
-          </Container>
-        </Body>
-      </Tailwind>
-    </Html>
+    <EmailLayout
+      preview="Has sido invitado a unirte a Dinero Libre"
+      footnote="Este enlace de invitación expirará en 24 horas."
+    >
+      <Text style={eyebrow}>Invitación · #DineroLibre</Text>
+      <Heading style={h1}>
+        Bienvenido
+        <span style={libreTag}> / Libre</span>
+      </Heading>
+      <Text style={paragraph}>
+        Has sido invitado a unirte a Dinero Libre. Haz clic en el botón de abajo
+        para configurar tu cuenta y empezar a aprender.
+      </Text>
+
+      <table cellPadding={0} cellSpacing={0} role="presentation">
+        <tbody>
+          <tr>
+            <td style={buttonContainer}>
+              <Button style={primaryButton} href={inviteUrl}>
+                Aceptar invitación
+              </Button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table
+        cellPadding={0}
+        cellSpacing={0}
+        role="presentation"
+        style={{ width: "100%", marginTop: "24px" }}
+      >
+        <tbody>
+          <tr>
+            <td style={calloutBox}>
+              <Text style={{ ...muted, marginBottom: "4px" }}>
+                También puedes iniciar sesión con Google usando este correo:
+              </Text>
+              <Text style={{ ...paragraph, margin: 0, fontWeight: 700 }}>
+                {userEmail}
+              </Text>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </EmailLayout>
   );
 }

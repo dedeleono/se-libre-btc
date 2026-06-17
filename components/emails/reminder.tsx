@@ -1,64 +1,83 @@
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Button, Link } from "@react-email/components";
 import * as React from "react";
+import {
+  EmailLayout,
+  Heading,
+  Text,
+  Section,
+  eyebrow,
+  h1,
+  paragraph,
+  muted,
+  link,
+  primaryButton,
+  buttonContainer,
+  calloutBox,
+  BASE_URL,
+} from "./brand";
 
 interface GithubAccessTokenEmailProps {
   username?: string;
 }
 
-const baseUrl = "https://saber-ver-v2.vercel.app";
+export const GithubAccessTokenEmail = ({
+  username = "Estudiante",
+}: GithubAccessTokenEmailProps) => (
+  <EmailLayout
+    preview="Recordatorio: tienes una tarea pendiente en la plataforma"
+    footnote="Recibes este correo porque eres parte de la comunidad Dinero Libre."
+  >
+    <Text style={eyebrow}>Recordatorio · #DineroLibre</Text>
+    <Heading style={h1}>Tienes pendientes</Heading>
+    <Text style={paragraph}>
+      Hola <strong>{username}</strong>, hay actividades en tu plataforma que
+      requieren tu atención.
+    </Text>
 
-export const GithubAccessTokenEmail = ({ username }: GithubAccessTokenEmailProps) => (
-  <Html>
-    <Head />
-    <Preview>Recordatorio: Tienes una tarea pendiente en la plataforma</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Img
-          alt="saber-ver"
-          src="https://saber-ver-v2.vercel.app/logo.png"
-          width="160"
-          height="55"
-          className="mx-auto"
-        />
+    <table
+      cellPadding={0}
+      cellSpacing={0}
+      role="presentation"
+      style={{ width: "100%" }}
+    >
+      <tbody>
+        <tr>
+          <td style={calloutBox}>
+            <Text style={{ ...paragraph, margin: 0 }}>
+              Tienes tareas pendientes por revisar.{" "}
+              <Link style={link} href={`${BASE_URL}/student`}>
+                Ver detalles
+              </Link>
+            </Text>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-        <Text style={title}>
-          <strong>@{username}</strong>, tienes actividades pendientes por
-          revisar.
-        </Text>
+    <table cellPadding={0} cellSpacing={0} role="presentation">
+      <tbody>
+        <tr>
+          <td style={buttonContainer}>
+            <Button style={primaryButton} href={`${BASE_URL}/student`}>
+              Ver mis tareas
+            </Button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-        <Section style={section}>
-          <Text style={text}>
-            Hola <strong>{username}</strong>!
-          </Text>
-          <Text style={text}>
-            Hay tareas pendientes en tu plataforma (<Link>ver detalles</Link>)
-            que requieren tu atención.
-          </Text>
-
-          <Button style={button}>Ver mis tareas</Button>
-        </Section>
-        <Text style={links}>
-          <Link style={link}>Centro de ayuda</Link> ・{" "}
-          <Link style={link}>Contactar soporte</Link>
-        </Text>
-
-        <Text style={footer}>
-          Se Libre ・Tu camino hacia la autonomía
-        </Text>
-      </Container>
-    </Body>
-  </Html>
+    <Section style={{ marginTop: "24px" }}>
+      <Text style={muted}>
+        <Link style={link} href={`${BASE_URL}/contact`}>
+          Centro de ayuda
+        </Link>{" "}
+        ·{" "}
+        <Link style={link} href={`${BASE_URL}/contact`}>
+          Contactar soporte
+        </Link>
+      </Text>
+    </Section>
+  </EmailLayout>
 );
 
 GithubAccessTokenEmail.PreviewProps = {
@@ -66,58 +85,3 @@ GithubAccessTokenEmail.PreviewProps = {
 } as GithubAccessTokenEmailProps;
 
 export default GithubAccessTokenEmail;
-
-const main = {
-  backgroundColor: "#ffffff",
-  color: "#24292e",
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"',
-};
-
-const container = {
-  maxWidth: "480px",
-  margin: "0 auto",
-  padding: "20px 0 48px",
-};
-
-const title = {
-  fontSize: "24px",
-  lineHeight: 1.25,
-};
-
-const section = {
-  padding: "24px",
-  border: "solid 1px #dedede",
-  borderRadius: "5px",
-  textAlign: "center" as const,
-};
-
-const text = {
-  margin: "0 0 10px 0",
-  textAlign: "left" as const,
-};
-
-const button = {
-  fontSize: "14px",
-  backgroundColor: "#034180",
-  color: "#fff",
-  lineHeight: 1.5,
-  borderRadius: "0.5em",
-  padding: "12px 24px",
-};
-
-const links = {
-  textAlign: "center" as const,
-};
-
-const link = {
-  color: "#034180",
-  fontSize: "12px",
-};
-
-const footer = {
-  color: "#6a737d",
-  fontSize: "12px",
-  textAlign: "center" as const,
-  marginTop: "60px",
-};

@@ -134,7 +134,7 @@ export default function AboutPage() {
       </section>
 
       {/* FEATURES */}
-      <section className="mx-auto max-w-[1160px] px-4 py-20 md:px-8">
+      {/* <section className="mx-auto max-w-[1160px] px-4 py-20 md:px-8">
         <div className="max-w-2xl">
           <div className="page-eyebrow">#DineroLibre</div>
           <h2 className="mt-4 text-5xl md:text-6xl">{t.public.featuresTitle}</h2>
@@ -152,7 +152,7 @@ export default function AboutPage() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* CLOSING CTA */}
       <section className="relative border-t-2 border-foreground">

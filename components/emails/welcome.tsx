@@ -1,58 +1,58 @@
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Hr,
-  Html,
-  Img,
-  Preview,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Button } from "@react-email/components";
 import * as React from "react";
+import {
+  EmailLayout,
+  Heading,
+  Text,
+  eyebrow,
+  h1,
+  paragraph,
+  libreTag,
+  primaryButton,
+  buttonContainer,
+  BASE_URL,
+} from "./brand";
 
 interface KoalaWelcomeEmailProps {
   userFirstname: string;
 }
 
-const baseUrl = "https://saber-ver-v2.vercel.app";
-
 export const KoalaWelcomeEmail = ({ userFirstname }: KoalaWelcomeEmailProps) => (
-  <Html>
-    <Head />
-    <Preview>Bienvenido a la plataforma educativa de Se Libre</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Img
-          alt="saber-ver"
-          src="https://saber-ver-v2.vercel.app/logo.png"
-          width="160"
-          height="55"
-          className="mx-auto"
-        />
-        <Text style={paragraph}>Hola {userFirstname},</Text>
-        <Text style={paragraph}>
-          Bienvenido a Se Libre, tu plataforma educativa para un
-          aprendizaje personalizado y efectivo.
-        </Text>
-        <Section style={btnContainer}>
-          <Button style={button} href="https://www.saber-ver.com/plataforma">
-            Comenzar
-          </Button>
-        </Section>
-        <Text style={paragraph}>
-          Saludos cordiales,
-          <br />
-          El equipo de Se Libre
-        </Text>
-        <Hr style={hr} />
-        <Text style={footer}>
-          Se Libre — Tu camino hacia la autonomía
-        </Text>
-      </Container>
-    </Body>
-  </Html>
+  <EmailLayout
+    preview="Bienvenido a la plataforma educativa de Dinero Libre"
+    footnote="Recibes este correo porque te uniste a la comunidad Dinero Libre."
+  >
+    <Text style={eyebrow}>Bienvenida · #DineroLibre</Text>
+    <Heading style={h1}>
+      Hola, {userFirstname}
+      <span style={libreTag}> / Libre</span>
+    </Heading>
+    <Text style={paragraph}>
+      Bienvenido a Dinero Libre, tu plataforma para aprender cómo funciona el
+      dinero, protegerte de la inflación y ejercer tu soberanía financiera.
+    </Text>
+    <Text style={paragraph}>
+      Aprende. Practica. Comparte. Empieza cuando quieras, a tu propio ritmo.
+    </Text>
+
+    <table cellPadding={0} cellSpacing={0} role="presentation">
+      <tbody>
+        <tr>
+          <td style={buttonContainer}>
+            <Button style={primaryButton} href={`${BASE_URL}/courses`}>
+              Comenzar
+            </Button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <Text style={{ ...paragraph, marginTop: "24px", marginBottom: 0 }}>
+      Con vos,
+      <br />
+      El equipo de Dinero Libre
+    </Text>
+  </EmailLayout>
 );
 
 KoalaWelcomeEmail.PreviewProps = {
@@ -60,48 +60,3 @@ KoalaWelcomeEmail.PreviewProps = {
 } as KoalaWelcomeEmailProps;
 
 export default KoalaWelcomeEmail;
-
-const main = {
-  backgroundColor: "#ffffff",
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
-};
-
-const container = {
-  margin: "0 auto",
-  padding: "20px 0 48px",
-};
-
-const logo = {
-  margin: "0 auto",
-};
-
-const paragraph = {
-  fontSize: "16px",
-  lineHeight: "26px",
-};
-
-const btnContainer = {
-  textAlign: "center" as const,
-};
-
-const button = {
-  backgroundColor: "#034180",
-  borderRadius: "3px",
-  color: "#fff",
-  fontSize: "16px",
-  textDecoration: "none",
-  textAlign: "center" as const,
-  display: "block",
-  padding: "12px",
-};
-
-const hr = {
-  borderColor: "#cccccc",
-  margin: "20px 0",
-};
-
-const footer = {
-  color: "#8898aa",
-  fontSize: "12px",
-};
