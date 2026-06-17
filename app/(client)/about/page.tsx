@@ -21,6 +21,8 @@ export default function AboutPage() {
     { icon: GraduationCap, ...t.public.aboutFeatures[2] },
   ];
 
+  const slogans = ["Aprende", "Practica", "Comparte", "Resiste", "Sé tu propio banco"];
+
   return (
     <main className="dl-app overflow-hidden">
       {/* HERO */}
@@ -84,24 +86,23 @@ export default function AboutPage() {
 
       {/* SLOGAN BAND */}
       <div className="overflow-hidden border-y-2 border-foreground bg-primary text-primary-foreground">
-        <div className="flex items-center gap-6 px-4 py-3 font-[var(--font-display)] text-2xl uppercase tracking-[0.04em] md:text-3xl">
-          <span>Aprende</span>
-          <span aria-hidden className="opacity-60">
-            ✦
-          </span>
-          <span>Practica</span>
-          <span aria-hidden className="opacity-60">
-            ✦
-          </span>
-          <span>Comparte</span>
-          <span aria-hidden className="opacity-60">
-            ✦
-          </span>
-          <span>Resiste</span>
-          <span aria-hidden className="opacity-60">
-            ✦
-          </span>
-          <span className="hidden sm:inline">Sé tu propio banco</span>
+        <div className="marquee py-3 font-[var(--font-display)] text-2xl uppercase tracking-[0.04em] md:text-3xl">
+          {[0, 1, 2, 3].map((group) => (
+            <div
+              key={group}
+              aria-hidden={group > 0}
+              className="flex shrink-0 items-center gap-6 pr-6"
+            >
+              {slogans.map((word) => (
+                <span key={word} className="flex items-center gap-6">
+                  <span>{word}</span>
+                  <span aria-hidden className="opacity-60">
+                    ✦
+                  </span>
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 
