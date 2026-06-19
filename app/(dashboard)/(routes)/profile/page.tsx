@@ -59,7 +59,18 @@ export default async function ProfilePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <ProfileForm initialData={profileData} />
+                <ProfileForm
+                  initialData={{
+                    name: profileData.name,
+                    phone: profileData.phone,
+                    image: profileData.image,
+                    email: profileData.email,
+                    role: profileData.role,
+                    ageRange: profileData.ageRange,
+                    country: profileData.country,
+                    region: profileData.region,
+                  }}
+                />
               </CardContent>
             </Card>
           </AnimatedSection>
