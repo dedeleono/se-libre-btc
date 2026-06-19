@@ -12,7 +12,7 @@ export const getEmailTemplate = async (template: TemplateType, data: any = {}) =
   switch (template) {
     case 'welcome':
       emailComponent = WelcomeEmail({ userFirstname: data.firstName || 'Estudiante' });
-      subject = '¡Bienvenido a Se Libre!';
+      subject = '¡Bienvenido a Dinero Libre!';
       break;
     case 'reminder':
       emailComponent = ReminderEmail({ username: data.firstName || 'Estudiante' });

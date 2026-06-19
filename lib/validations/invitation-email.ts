@@ -1,49 +1,18 @@
-import { createTransport } from 'nodemailer';
-import { render } from '@react-email/render';
-
-import InvitationEmail from '@/components/emails/invitation-email'
+import { render } from "@react-email/render";
+import { sendEmail } from "@/lib/email";
+import InvitationEmail from "@/components/emails/invitation-email";
 
 export async function sendInvitationEmail(email: string, url: string) {
-    const { host } = new URL(url);
+  const { host } = new URL(url);
 
-    // const transport = createTransport({
-    //     host: "smtp.gmail.com",
-    //     port: 587,
-    //     secure: false,
-    //     auth: {
-    //         user: process.env.EMAIL_USER,
-    //         pass: process.env.SECRET_KEY_THRU_APP_EMAIL
-    //     }
-    // });
+  const html = await render(
+    InvitationEmail({ userEmail: email, inviteUrl: url, host, url })
+  );
 
-    const transport = createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        tls: {
-            rejectUnauthorized: true,
-            minVersion: 'TLSv1.2'
-        },
-        auth: {
-            user: process.env.EMAIL_SERVER_USER,
-            pass: process.env.EMAIL_SERVER_PASSWORD
-        }
-    });
-
-    const props = {
-        userEmail: email,
-        inviteUrl: url,
-        host,
-        url
-    };
-
-    const html = await render(InvitationEmail(props));
-
-    await transport.sendMail({
-        to: email,
-        from: process.env.EMAIL_FROM,
-        subject: `Bienvenido a Se Libre`,
-        text: `Termina de registrarte en Se Libre\n${url}\n\n`,
-        html,
-    });
+  return sendEmail({
+    to: email,
+    subject: "Bienvenido a Dinero Libre",
+    text: `Termina de registrarte en Dinero Libre\n${url}\n\n`,
+    html,
+  });
 }
