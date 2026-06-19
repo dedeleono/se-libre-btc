@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface LogoProps {
   width?: number;
   height?: number;
@@ -13,7 +15,9 @@ export default function ThemeAwareLogo({
   height = 150,
   className,
   alt = "Dinero Libre",
+  priority = false,
 }: LogoProps) {
+  const badge = Math.min(height, 42);
   return (
     <div
       className={className}
@@ -29,16 +33,27 @@ export default function ThemeAwareLogo({
     >
       <span
         aria-hidden="true"
-        className="grid shrink-0 place-items-center rounded-full border-2 border-current bg-primary text-primary-foreground"
-        style={{
-          width: Math.min(height, 42),
-          height: Math.min(height, 42),
-          fontFamily: "var(--font-display)",
-          fontSize: Math.min(height, 42) * 0.62,
-          lineHeight: 1,
-        }}
+        className="relative block shrink-0"
+        style={{ width: badge, height: badge }}
       >
-        ₿
+        {/* Light theme: dark stamp */}
+        <Image
+          src="/images/se_libre/25.png"
+          alt=""
+          fill
+          sizes="42px"
+          priority={priority}
+          className="block object-contain dark:hidden"
+        />
+        {/* Dark theme: light stamp */}
+        <Image
+          src="/images/se_libre/24.png"
+          alt=""
+          fill
+          sizes="42px"
+          priority={priority}
+          className="hidden object-contain dark:block"
+        />
       </span>
       <span className="flex flex-col leading-[0.9] text-current">
         <span

@@ -1,28 +1,11 @@
 import ContactForm from "@/components/forms/contact-form";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Download, MessageCircle, Users } from "lucide-react";
+import { KEET_COMMUNITY_URL, KEET_DOWNLOAD_URL } from "@/lib/keet";
 import { getServerMessages } from "@/lib/i18n-server";
 
 export default function ContactPage() {
   const t = getServerMessages();
-
-  const details = [
-    {
-      icon: MapPin,
-      label: t.public.location,
-      value:
-        '6ta Avenida 8-25 zona 2, Avenida Simeón Cañas, Apto "A", Guatemala, Guatemala.',
-    },
-    {
-      icon: Mail,
-      label: "Email",
-      value: "info@colegiosaberver.com",
-    },
-    {
-      icon: Phone,
-      label: t.public.phone,
-      value: "+1 234 567 890 • Lun - Vie, 8:00 AM - 6:00 PM",
-    },
-  ];
 
   return (
     <div className="space-y-10">
@@ -40,26 +23,47 @@ export default function ContactPage() {
       {/* Contact Form */}
       <ContactForm />
 
-      {/* Contact Information */}
-      <div className="grid gap-4">
-        {details.map((item) => (
-          <div
-            key={item.label}
-            className="stamp-card flex items-start gap-4 p-4"
-          >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center border-2 border-foreground bg-[var(--naranja-050)] text-[var(--terracota-700)] dark:bg-[var(--volcan-700)] dark:text-[var(--maiz-500)]">
-              <item.icon className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-xs font-extrabold uppercase tracking-[0.12em] text-foreground">
-                {item.label}
-              </h3>
-              <p className="mt-1 text-sm font-semibold text-muted-foreground">
-                {item.value}
-              </p>
-            </div>
-          </div>
-        ))}
+      {/* Keet Community */}
+      <div className="stamp-card space-y-6 p-6 md:p-8">
+        <div className="flex h-12 w-12 items-center justify-center border-2 border-foreground bg-[var(--naranja-050)] text-[var(--terracota-700)] dark:bg-[var(--volcan-700)] dark:text-[var(--maiz-500)]">
+          <MessageCircle className="h-6 w-6" />
+        </div>
+
+        <div className="space-y-3">
+          <h2 className="text-2xl uppercase leading-[0.95] text-foreground md:text-3xl">
+            Join our community on Keet
+          </h2>
+          <p className="max-w-prose text-sm font-semibold leading-relaxed text-muted-foreground">
+            Download Keet and join the Dinero Libre community.
+          </p>
+          <p className="max-w-prose text-sm font-semibold leading-relaxed text-muted-foreground">
+            Keet is a messaging, video calling, and file transfer app that is
+            100% decentralized and end-to-end encrypted.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button asChild className="w-full sm:w-auto">
+            <a
+              href={KEET_DOWNLOAD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Download className="h-4 w-4" />
+              Download Keet
+            </a>
+          </Button>
+          <Button asChild variant="outline" className="w-full sm:w-auto">
+            <a
+              href={KEET_COMMUNITY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Users className="h-4 w-4" />
+              Join the Dinero Libre community
+            </a>
+          </Button>
+        </div>
       </div>
     </div>
   );
