@@ -11,12 +11,15 @@ export async function PATCH(req: Request) {
         }
 
         const body = await req.json();
-        const { name, imageUrl, onboardingCompleted } = body;
+        const { name, imageUrl, onboardingCompleted, ageRange, country, region } = body;
 
         const updateData: any = {};
         if (name !== undefined) updateData.name = name;
         if (imageUrl !== undefined) updateData.image = imageUrl;
         if (onboardingCompleted !== undefined) updateData.onboardingCompleted = onboardingCompleted;
+        if (ageRange !== undefined) updateData.ageRange = ageRange;
+        if (country !== undefined) updateData.country = country;
+        if (region !== undefined) updateData.region = region;
 
         const user = await prisma.user.update({
             where: {

@@ -37,3 +37,6 @@ yarn-error.log*
 next-env.d.ts
 *.lock
 !yarn.lock
+
+# Superpowers SDD scratch
+.superpowers/

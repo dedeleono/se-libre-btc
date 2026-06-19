@@ -25,6 +25,9 @@ import { S3FileUpload } from "@/components/file-upload";
 import { cn } from "@/lib/utils";
 import { UserRole } from "@prisma/client";
 import { useLocale } from "@/lib/i18n";
+import { AgeRangeSelect } from "@/components/forms/age-range-select";
+import Combobox from "@/components/ui/combobox";
+import { COUNTRIES, getRegionsForCountry, countryHasRegions } from "@/lib/constants/countries";
 
 interface ProfileFormProps {
   initialData: {
@@ -33,6 +36,9 @@ interface ProfileFormProps {
     image?: string | null;
     email?: string;
     role?: UserRole;
+    ageRange?: string | null;
+    country?: string | null;
+    region?: string | null;
   };
 }
 
@@ -47,6 +53,9 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
       message: t.validation.nameRequired,
     }),
     phone: z.string().optional(),
+    ageRange: z.string().optional(),
+    country: z.string().optional(),
+    region: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,6 +63,9 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
     defaultValues: {
       name: initialData.name || "",
       phone: initialData.phone || "",
+      ageRange: initialData.ageRange || "",
+      country: initialData.country || "",
+      region: initialData.region || "",
     },
   });
 
@@ -157,8 +169,8 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                   <span>{t.profile.phone}</span>
                 </FormLabel>
                 <FormControl>
-                  <Input 
-                    {...field} 
+                  <Input
+                    {...field}
                     className={cn(
                       "transition-all duration-300 focus:scale-[1.002]",
                       "bg-background"
@@ -170,6 +182,65 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="ageRange"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t.profile.ageRange}</FormLabel>
+                <FormControl>
+                  <AgeRangeSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder={t.profile.ageRangePlaceholder}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t.profile.country}</FormLabel>
+                <FormControl>
+                  <Combobox
+                    options={COUNTRIES.map((c) => ({ label: c.name, value: c.name }))}
+                    value={field.value}
+                    onChange={(v) => {
+                      form.setValue("country", v as string);
+                      form.setValue("region", "");
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {countryHasRegions(form.watch("country") ?? "") && (
+            <FormField
+              control={form.control}
+              name="region"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.profile.region}</FormLabel>
+                  <FormControl>
+                    <Combobox
+                      options={getRegionsForCountry(form.watch("country") ?? "").map((r) => ({
+                        label: r,
+                        value: r,
+                      }))}
+                      value={field.value}
+                      onChange={(v) => form.setValue("region", v as string)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
 
         {/* Submit Button */}
