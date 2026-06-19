@@ -11,6 +11,7 @@
 import type { JSX } from "react";
 import { useEffect, useCallback } from "react";
 
+import { $generateHtmlFromNodes } from "@lexical/html";
 import { $createLinkNode } from "@lexical/link";
 import { $createListItemNode, $createListNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -129,24 +130,17 @@ export function LexicalEditorWrapper({ onChange, value }: { onChange: (value: st
       // We'll use a timeout to avoid too many rapid updates
       const timeoutId = setTimeout(() => {
         editorState.read(() => {
-          // Find the editor element in the DOM - do this inside the callback to ensure it's current
-          const editorElement = document.querySelector('.editor-container .editor');
-          
-          // Get editor content as HTML
-          if (editorElement instanceof HTMLElement) {
-            const htmlString = editorElement.innerHTML || '';
-            // Call the onChange callback with the HTML string
-            onChange(htmlString);
-          } else {
-            // Fallback to serialized JSON if we can't find the editor element
-            const jsonState = JSON.stringify(editorState.toJSON());
-            onChange(jsonState);
-          }
+          // Serialize the editor's content to clean HTML using Lexical's official
+          // exporter. Scraping `.editor` innerHTML would capture the ContentEditable
+          // wrapper (contenteditable/data-lexical-editor attributes) instead of the
+          // actual content, so we must not read from the DOM here.
+          const htmlString = $generateHtmlFromNodes(editor, null);
+          onChange(htmlString);
         });
       }, 250); // 250ms debounce
-      
+
       return () => clearTimeout(timeoutId);
-    }, [onChange]);
+    }, [editor, onChange]);
     
     // Register the update listener once when the component mounts
     useEffect(() => {

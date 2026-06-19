@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { EnrollmentButton } from "@/components/enrollment-button";
+import { Preview } from "@/components/preview";
 import { prisma } from "@/lib/db";
 import { getServerMessages } from "@/lib/i18n-server";
 
@@ -175,7 +176,7 @@ export default async function CoursePreviewPage({
             <Card className="p-6">
               <h2 className="mb-3 text-2xl font-semibold">{t.course.aboutThisCourse}</h2>
               <div className="prose max-w-none text-muted-foreground">
-                <p>{course.description}</p>
+                <Preview value={course.description} />
               </div>
             </Card>
           )}
