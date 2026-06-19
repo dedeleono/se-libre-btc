@@ -179,6 +179,7 @@ const es = {
   validation: {
     email: "Ingresa un correo válido",
     nameRequired: "El nombre es obligatorio",
+    fieldRequired: "Este campo es obligatorio",
     messageRequired: "El mensaje es obligatorio",
     titleRequired: "El título es obligatorio",
     descriptionRequired: "La descripción es obligatoria",
@@ -1027,6 +1028,7 @@ const en: Messages = {
   validation: {
     email: "Enter a valid email address",
     nameRequired: "Name is required",
+    fieldRequired: "This field is required",
     messageRequired: "Message is required",
     titleRequired: "Title is required",
     descriptionRequired: "Description is required",

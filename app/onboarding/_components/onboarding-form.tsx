@@ -31,6 +31,9 @@ import { cn } from "@/lib/utils";
 import { UserRole } from "@prisma/client";
 import { UserAvatar } from "@/components/user-avatar";
 import { useLocale } from "@/lib/i18n";
+import { AgeRangeSelect } from "@/components/forms/age-range-select";
+import Combobox from "@/components/ui/combobox";
+import { COUNTRIES, getRegionsForCountry, countryHasRegions } from "@/lib/constants/countries";
 
 interface OnboardingFormProps {
   organizationId: string;
@@ -108,10 +111,18 @@ export default function OnboardingForm({
     'profile-picture': 'idle'
   });
   const router = useRouter();
-  const formSchema = z.object({
-    name: z.string().min(1, t.validation.nameRequired),
-    imageUrl: z.string().optional(),
-  });
+  const formSchema = z
+    .object({
+      name: z.string().min(1, t.validation.nameRequired),
+      ageRange: z.string().min(1, t.validation.fieldRequired),
+      country: z.string().min(1, t.validation.fieldRequired),
+      region: z.string().optional(),
+      imageUrl: z.string().optional(),
+    })
+    .refine((data) => !countryHasRegions(data.country) || !!data.region, {
+      message: t.validation.fieldRequired,
+      path: ["region"],
+    });
   const steps: OnboardingStep[] = [
     {
       id: "personal-info",
@@ -131,6 +142,9 @@ export default function OnboardingForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: pendingInvitation?.name || "",
+      ageRange: "",
+      country: "",
+      region: "",
       imageUrl: "",
     },
   });
@@ -168,6 +182,9 @@ export default function OnboardingForm({
       setIsLoading(true);
       const response = await axios.patch("/api/users/me", {
         name: values.name,
+        ageRange: values.ageRange,
+        country: values.country,
+        region: values.region,
         imageUrl: imageUrl,
         onboardingCompleted: true,
       });
@@ -259,10 +276,80 @@ export default function OnboardingForm({
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="ageRange"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.profile.ageRange}</FormLabel>
+                      <FormControl>
+                        <AgeRangeSelect
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder={t.profile.ageRangePlaceholder}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t.profile.country}</FormLabel>
+                      <FormControl>
+                        <Combobox
+                          options={COUNTRIES.map((c) => ({ label: c.name, value: c.name }))}
+                          value={field.value}
+                          onChange={(v) => {
+                            form.setValue("country", v as string, { shouldValidate: true });
+                            form.setValue("region", "", { shouldValidate: true });
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {countryHasRegions(form.watch("country")) && (
+                  <FormField
+                    control={form.control}
+                    name="region"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t.profile.region}</FormLabel>
+                        <FormControl>
+                          <Combobox
+                            options={getRegionsForCountry(form.watch("country")).map((r) => ({
+                              label: r,
+                              value: r,
+                            }))}
+                            value={field.value}
+                            onChange={(v) =>
+                              form.setValue("region", v as string, { shouldValidate: true })
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <Button
                   type="button"
                   className="w-full"
-                  onClick={() => handleStepSubmit('personal-info', { name: form.getValues('name') })}
+                  onClick={async () => {
+                    const valid = await form.trigger(["name", "ageRange", "country", "region"]);
+                    if (!valid) return;
+                    handleStepSubmit('personal-info', {
+                      name: form.getValues('name'),
+                      ageRange: form.getValues('ageRange'),
+                      country: form.getValues('country'),
+                      region: form.getValues('region'),
+                    });
+                  }}
                 >
                   {t.common.continue}
                 </Button>
