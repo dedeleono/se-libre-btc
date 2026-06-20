@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Send } from "lucide-react";
+import { toast } from "sonner";
 import { useLocale } from "@/lib/i18n";
 
 type ContactFormValue = {
@@ -43,12 +44,22 @@ export default function ContactForm() {
   const isPending = form.formState.isSubmitting;
 
   const onSubmit = async (data: ContactFormValue) => {
-    // @todo add endpoint to submit contact form
     try {
-      // Add your contact send logic here
-      console.log(data);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send contact message");
+      }
+
+      toast.success(t.forms.messageSent);
+      form.reset();
     } catch (error) {
       console.error(error);
+      toast.error(t.forms.messageError);
     }
   };
 
