@@ -35,17 +35,22 @@ export async function POST(req: Request) {
     suffix += 1;
   }
 
+  const capacity =
+    body.capacity === "" || body.capacity == null || Number.isNaN(Number(body.capacity))
+      ? null
+      : Number(body.capacity);
+
   const cohort = await prisma.cohort.create({
     data: {
       title: body.title,
       slug,
       description: body.description,
       status: body.status || "DRAFT",
-      capacity: body.capacity,
+      capacity,
       startDate: body.startDate ? new Date(body.startDate) : undefined,
       endDate: body.endDate ? new Date(body.endDate) : undefined,
-      courseId: body.courseId,
-      learningPathId: body.learningPathId,
+      courseId: body.courseId || null,
+      learningPathId: body.learningPathId || null,
     },
   });
 
