@@ -23,14 +23,18 @@ impossible.
 - Make the "not your keys, not your coins" lesson tangible: you cannot receive funds
   until you prove you backed up your seed.
 - Keep it safe (testnet, no persistence), instant (no network waits), and offline-capable.
-- Drop into the end of **one** lesson with **no database changes**.
+- **Reusable across any lesson/course:** an admin can toggle the simulator on for *any*
+  chapter from the chapter editor, so it can be embedded in future courses without code
+  changes. The widget itself is generic (no lesson-specific copy).
 
 ## 3. Non-goals (YAGNI)
 
 - No real network / testnet faucet / node integration (the network is simulated).
-- No server-side persistence of the simulated wallet or progress (approach A).
-- No new `ChapterType` / Prisma migration (gated by existing `Chapter.slug`).
-- Not a reusable authorable chapter type yet — that is a documented future upgrade path.
+- No server-side persistence of the simulated wallet or its session progress (approach A —
+  the only thing persisted is the per-chapter on/off toggle).
+- No new `ChapterType`: the simulator is an *add-on* that renders at the end of normal
+  lesson content (it coexists with video/PDF/rich text), not a standalone player. The
+  single schema change is one boolean column on `Chapter`.
 
 ## 4. Decisions made during brainstorming
 
@@ -50,7 +54,7 @@ Three layers with clear boundaries:
 |---|---|---|---|
 | Crypto boundary | `lib/wallet-sim/crypto.ts` | Real BIP39/BIP84; thin adapter over the chosen lib | No |
 | Pure simulation core | `lib/wallet-sim/{reducer,types,simulation,format}.ts` | Faked network: balance, txs, confirmations, fees, validation, formatting | No |
-| React UI | `app/(course)/courses/[courseId]/chapters/[chapterId]/_components/wallet-simulator/` | Dumb panels + the `useWalletSimulator` hook that owns side effects | Yes |
+| React UI | `components/wallet-simulator/` (reusable widget) | Dumb panels + the `useWalletSimulator` hook that owns side effects | Yes |
 
 The UI depends only on the crypto **interface** and on semantic `actions.*` from the
 hook — never on a bitcoin library directly. Swapping the underlying library touches one
@@ -125,29 +129,56 @@ export async function mnemonicToAccount(mnemonic: string): Promise<DerivedAccoun
 }
 ```
 
-## 8. Integration path (no DB changes)
+## 8. Integration path (per-lesson toggle)
 
-Mount conditionally inside `ContentViewer`, gated by the existing **`Chapter.slug`** field
-(unused for routing today → free, content-editable hook, no migration). Chosen slug:
-`wallet-simulator`.
+The simulator is opt-in **per chapter**, controlled by an admin toggle, so it can be reused
+in any lesson/course without code changes.
 
-Two hook-ins:
+### 8.1 Schema (one boolean column)
 
-1. **`page.tsx`** (~L210-224, the `default` case of `renderChapterContent()`): pass
-   `chapterSlug={chapter.slug}` into `<ContentViewer>` (`slug` is already on the fetched
-   row; just thread it through; add to the `select`/`include` if not present).
+Add to the `Chapter` model:
 
-2. **`content-viewer.tsx`**: add `chapterSlug?: string | null` to `ContentViewerProps`,
+```prisma
+hasWalletSimulator Boolean @default(false)
+```
+
+Follow the existing boolean-flag convention on `Chapter` (`isPublished`, `isFree`,
+`isIntro`). **Migration:** `prisma migrate dev` is broken in this repo — write the
+migration SQL by hand and apply with `prisma migrate deploy` (see project memory
+"Prisma migration workflow"). The migration is additive with a default, so it is safe and
+backward-compatible.
+
+### 8.2 Admin toggle
+
+In the chapter editor (admin course-builder), add a `Switch`-based form control
+"Simulador de billetera" that PATCHes the chapter's `hasWalletSimulator`. Match the
+existing edit-form pattern used by the other chapter boolean toggles (same form component,
+PATCH route, optimistic update + toast). The implementation plan must locate the exact
+chapter-edit form + PATCH route and mirror them.
+
+### 8.3 Student render — two hook-ins
+
+1. **`page.tsx`** (`default` case of `renderChapterContent()`, ~L208-224): the
+   authenticated `findUnique` already returns the whole chapter row, so
+   `chapter.hasWalletSimulator` is available — pass `hasWalletSimulator={chapter.hasWalletSimulator}`
+   into `<ContentViewer>` (add to `select` if a narrower selection is introduced).
+
+2. **`content-viewer.tsx`**: add `hasWalletSimulator?: boolean` to `ContentViewerProps`,
    destructure it, and after the rich-content card render:
    ```tsx
-   {chapterSlug === "wallet-simulator" && isAuthenticated && !isPreviewMode && (
+   {hasWalletSimulator && isAuthenticated && !isPreviewMode && (
      <WalletSimulator onLessonComplete={() => completionRef.current?.complete()} />
    )}
    ```
 
-**Rejected alternatives:** new `ChapterType.SIMULATOR` (needs Prisma enum + migration;
-`migrate dev` is broken here — overkill for one lesson); Lexical custom node (richContent
-is read-only `<Preview>`, far more surface area).
+The `<WalletSimulator>` is generic — it takes no lesson-specific props beyond the optional
+`onLessonComplete`, so the same component serves every chapter that has the flag on.
+
+**Rejected alternatives:** new `ChapterType.SIMULATOR` (needs a Prisma *enum* change + a
+separate player, and would *replace* lesson content rather than augment it — a toggle lets
+the simulator coexist with the chapter's video/text); Lexical custom node (richContent is
+read-only `<Preview>`, far more surface area); slug-based gating (not author-friendly —
+admins shouldn't have to set a magic slug).
 
 ## 9. i18n
 
@@ -187,6 +218,10 @@ Progress, Badge, RadioGroup, AlertDialog, Tooltip, Separator) + `lucide-react`.
 
 ### File layout (proposed)
 
+Because the widget is now reusable across lessons, the React UI lives at the **top level**
+(`components/wallet-simulator/`) rather than co-located under one chapter's `_components/`.
+Pure, testable logic stays in `lib/wallet-sim/`.
+
 ```
 lib/wallet-sim/
   crypto.ts          # real BIP39/BIP84 adapter (the boundary)
@@ -194,8 +229,8 @@ lib/wallet-sim/
   reducer.ts         # pure state machine (no React) — unit-tested
   simulation.ts      # fake-network rules (incoming script, send validation, fee table)
   format.ts          # sats/BTC + address formatting helpers
-app/(course)/courses/[courseId]/chapters/[chapterId]/_components/wallet-simulator/
-  index.tsx          # "use client" WalletSimulator
+components/wallet-simulator/
+  index.tsx          # "use client" WalletSimulator (the reusable widget)
   use-wallet-simulator.ts  # hook: owns reducer + side effects (async crypto, tick interval, completion)
   panels/*.tsx
   presentational/*.tsx
@@ -340,11 +375,15 @@ confirm/reset/unmount. If `prefers-reduced-motion`, jump pending→confirmed in 
 - **Component smoke:** render `WalletSimulator`, walk one happy path
   (generate → backup → receive → send → done), assert the receive gate is blocked until
   backup verified.
+- **Integration toggle:** `ContentViewer` renders the simulator when
+  `hasWalletSimulator` is true (and authenticated, non-preview) and omits it otherwise;
+  the admin toggle PATCHes and persists `hasWalletSimulator`.
 
 ## 17. Future upgrade path (not now)
 
-If this becomes a reusable, authorable chapter type: add `SIMULATOR` to `ChapterType`
-(hand-written migration + `migrate deploy`), add a `case` in `renderChapterContent()`, and
-mount the *same* component there — the component itself doesn't change. If per-user
-progress persistence is wanted, that is approach B (Prisma-backed) layered on top without
-UI rework.
+- **More embedded widgets:** if other interactive widgets are added later, the single
+  `hasWalletSimulator` boolean can generalize into a nullable `embeddedWidget` enum/string
+  on `Chapter` (e.g. `WALLET_SIMULATOR`, ...). YAGNI for now — one boolean is simplest.
+- **Per-user progress persistence:** approach B (Prisma-backed) can be layered on top
+  without UI rework if completion analytics for the simulator are ever wanted.
+- The reusable `WalletSimulator` component does not change in either case.
