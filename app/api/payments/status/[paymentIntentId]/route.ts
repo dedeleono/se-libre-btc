@@ -2,12 +2,10 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { prisma } from "@/lib/db";
 
-export async function GET(
-    req: Request,
-    { params }: { params: { paymentIntentId: string } }
-) {
+export async function GET(req: Request, props: { params: Promise<{ paymentIntentId: string }> }) {
+    const params = await props.params;
     try {
-        const storedIntentId = cookies().get('currentPaymentIntent')?.value;
+        const storedIntentId = (await cookies()).get('currentPaymentIntent')?.value;
         
         if (!storedIntentId || storedIntentId !== params.paymentIntentId) {
             return NextResponse.json(
@@ -30,7 +28,7 @@ export async function GET(
         const metadata = payment.metadata as { last4?: string; expiry?: string } | null;
 
         // Clear the cookie after successful verification
-        cookies().delete('currentPaymentIntent');
+        (await cookies()).delete('currentPaymentIntent');
 
         return NextResponse.json({
             status: payment.status === "COMPLETED" ? 'succeeded' : 'pending',

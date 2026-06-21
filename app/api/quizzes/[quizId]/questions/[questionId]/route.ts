@@ -7,8 +7,9 @@ import { quizQuestionPayloadSchema } from "@/lib/validations/quiz";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { quizId: string; questionId: string } }
+  props: { params: Promise<{ quizId: string; questionId: string }> }
 ) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });
@@ -79,8 +80,9 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { quizId: string; questionId: string } }
+  props: { params: Promise<{ quizId: string; questionId: string }> }
 ) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });

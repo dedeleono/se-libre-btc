@@ -8,22 +8,27 @@ import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 import { headers } from "next/headers";
 import { PreviewAccessCheck } from "./_components/preview-access-check";
 
-const CourseLayout = async ({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: { courseId: string };
-}) => {
+const CourseLayout = async (
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ courseId: string }>;
+  }
+) => {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const session = await auth();
   const userId = session?.user?.id || null;
   const userRole = session?.user?.role || null;
 
-  // Check for chapter ID in the URL
-  const pathParts = headers().get("x-invoke-path")?.split("/") || [];
+  // Check for chapter ID in the URL (x-pathname is set by middleware.ts).
+  const pathParts = (await headers()).get("x-pathname")?.split("/") || [];
   const isChapterRoute = pathParts.includes("chapters");
   const chapterId = isChapterRoute ? pathParts[pathParts.indexOf("chapters") + 1] : null;
-  
+
   // For chapter routes, let the chapter page handle preview access
   if (!session?.user && isChapterRoute) {
     const course = await prisma.course.findUnique({

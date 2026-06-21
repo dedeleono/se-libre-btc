@@ -9,11 +9,12 @@ import { ChapterWithProgress } from "@/types/chapter";
 import { QuizPlayer } from "./_components/quiz-player";
 import { getServerMessages } from "@/lib/i18n-server";
 
-const ChapterPage = async ({
-  params,
-}: {
-  params: { courseId: string; chapterId: string };
-}) => {
+const ChapterPage = async (
+  props: {
+    params: Promise<{ courseId: string; chapterId: string }>;
+  }
+) => {
+  const params = await props.params;
   const t = getServerMessages();
   const session = await auth();
 

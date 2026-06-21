@@ -7,10 +7,8 @@ const createModuleSchema = z.object({
     title: z.string().trim().min(1),
 })
 
-export async function POST(
-    req: Request,
-    { params } : { params: {courseId: string} }
-){
+export async function POST(req: Request, props: { params: Promise<{courseId: string}> }) {
+    const params = await props.params;
     try{
 
         const session = await auth()

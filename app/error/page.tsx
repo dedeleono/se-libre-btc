@@ -2,11 +2,12 @@ import { Button } from "@/components/ui/button";
 import { getServerMessages } from "@/lib/i18n-server";
 import Link from "next/link";
 
-export default function ErrorPage({
-    searchParams,
-}: {
-    searchParams: { message: string };
-}) {
+export default async function ErrorPage(
+    props: {
+        searchParams: Promise<{ message: string }>;
+    }
+) {
+    const searchParams = await props.searchParams;
     const t = getServerMessages();
 
     return (

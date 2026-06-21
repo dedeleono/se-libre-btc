@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, type UnsafeUnwrappedCookies } from "next/headers";
 
 import {
   defaultLocale,
@@ -9,7 +9,7 @@ import {
 } from "@/lib/i18n/messages";
 
 export function getServerLocale(): Locale {
-  const cookieLocale = cookies().get(localeCookieName)?.value;
+  const cookieLocale = (cookies() as unknown as UnsafeUnwrappedCookies).get(localeCookieName)?.value;
   return isLocale(cookieLocale) ? cookieLocale : defaultLocale;
 }
 

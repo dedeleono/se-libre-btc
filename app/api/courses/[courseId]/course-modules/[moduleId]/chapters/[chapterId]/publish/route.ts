@@ -5,8 +5,9 @@ import { prisma } from "@/lib/db";
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { courseId: string; moduleId: string; chapterId: string } }
+    props: { params: Promise<{ courseId: string; moduleId: string; chapterId: string }> }
 ) {
+    const params = await props.params;
     try {
         const session = await auth();
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });

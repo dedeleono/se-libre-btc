@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db"
 
 export async function PUT(
     req: Request,
-    { params }: { params: { courseId: string } }
+    _context: { params: Promise<{ courseId: string }> }
 ) {
     try {
 

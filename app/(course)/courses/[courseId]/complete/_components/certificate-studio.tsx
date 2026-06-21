@@ -30,7 +30,7 @@ export function CertificateStudio({
   const [design, setDesign] = useState<Design>(initialDesign);
   const [version, setVersion] = useState(initialVersion); // cache-bust for the <img>
   const [isPending, startTransition] = useTransition();
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const imgSrc = `/api/certificates/${certId}/image?v=${version}`;
 

@@ -11,8 +11,9 @@ const updateModuleSchema = z.object({
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { courseId: string, moduleId: string } }
+    props: { params: Promise<{ courseId: string, moduleId: string }> }
 ) {
+    const params = await props.params;
     try {
 
         const session = await auth()
@@ -51,8 +52,9 @@ export async function PATCH(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { courseId: string; moduleId: string } }
+    props: { params: Promise<{ courseId: string; moduleId: string }> }
 ) {
+    const params = await props.params;
     try {
         const session = await auth();
         if (!session?.user) {

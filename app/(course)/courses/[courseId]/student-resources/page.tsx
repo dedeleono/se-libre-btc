@@ -4,15 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, Video, File, Image as ImageIcon, Book, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
 import { useLocale } from "@/lib/i18n";
 
 interface ResourcePageProps {
-  params: {
+  params: Promise<{
     courseId: string;
-  };
+  }>;
 }
 
 interface Resource {
@@ -80,7 +80,8 @@ const getFileIcon = (type: string) => {
   return IconComponent;
 };
 
-export default function ResourcesPage({ params }: ResourcePageProps) {
+export default function ResourcesPage(props: ResourcePageProps) {
+  const params = use(props.params);
   const { t } = useLocale();
   const resourceTypes = t.course.resourceTypes;
   const [course, setCourse] = useState<CourseWithResources | null>(null);

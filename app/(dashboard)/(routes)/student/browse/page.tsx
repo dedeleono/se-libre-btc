@@ -12,10 +12,11 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 interface BrowsePageProps {
-  searchParams: { title: string; categoryId: string };
+  searchParams: Promise<{ title: string; categoryId: string }>;
 }
 
-const BrowsePage = async ({ searchParams }: BrowsePageProps) => {
+const BrowsePage = async (props: BrowsePageProps) => {
+  const searchParams = await props.searchParams;
   const session = await auth();
   const userId = session?.user?.id;
 

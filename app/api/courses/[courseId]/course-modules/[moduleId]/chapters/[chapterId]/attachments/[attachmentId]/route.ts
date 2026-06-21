@@ -5,8 +5,9 @@ import { deleteFile } from '@/lib/s3';
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { courseId: string, chapterId:string, attachmentId: string } }
+    props: { params: Promise<{ courseId: string, chapterId:string, attachmentId: string }> }
 ) {
+    const params = await props.params;
     try {
 
         const session = await auth()

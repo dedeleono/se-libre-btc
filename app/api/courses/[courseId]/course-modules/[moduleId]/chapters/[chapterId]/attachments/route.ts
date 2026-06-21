@@ -4,8 +4,9 @@ import { auth } from "@/lib/auth"
 
 export async function POST(
     req: Request,
-    { params }: { params: { courseId: string, chapterId: string } }
+    props: { params: Promise<{ courseId: string, chapterId: string }> }
 ) {
+    const params = await props.params;
     try {
 
         const session = await auth()

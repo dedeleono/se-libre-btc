@@ -10,7 +10,8 @@ import { Separator } from "@/components/ui/separator";
 
 export const dynamic = "force-dynamic";
 
-export default async function CourseCompletePage({ params }: { params: { courseId: string } }) {
+export default async function CourseCompletePage(props: { params: Promise<{ courseId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user?.id) redirect("/sign-in");
 

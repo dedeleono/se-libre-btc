@@ -9,10 +9,8 @@ const createChapterSchema = z.object({
     type: z.nativeEnum(ChapterType).default(ChapterType.LESSON),
 })
 
-export async function POST(
-    req: Request,
-    { params }: { params: { moduleId: string } }
-) {
+export async function POST(req: Request, props: { params: Promise<{ moduleId: string }> }) {
+    const params = await props.params;
     try {
         const session = await auth()
 

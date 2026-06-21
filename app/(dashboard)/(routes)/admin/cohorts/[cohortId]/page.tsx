@@ -7,11 +7,12 @@ import { CohortForm } from "../_components/cohort-form";
 const dateValue = (date?: Date | null) => date?.toISOString().slice(0, 10) || "";
 const dateTimeValue = (date?: Date | null) => date?.toISOString().slice(0, 16) || "";
 
-export default async function CohortDetailPage({
-  params,
-}: {
-  params: { cohortId: string };
-}) {
+export default async function CohortDetailPage(
+  props: {
+    params: Promise<{ cohortId: string }>;
+  }
+) {
+  const params = await props.params;
   const [cohort, courses, learningPaths] = await Promise.all([
     prisma.cohort.findUnique({
       where: { id: params.cohortId },

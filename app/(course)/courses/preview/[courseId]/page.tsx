@@ -12,11 +12,12 @@ import { Preview } from "@/components/preview";
 import { prisma } from "@/lib/db";
 import { getServerMessages } from "@/lib/i18n-server";
 
-export default async function CoursePreviewPage({
-  params,
-}: {
-  params: { courseId: string };
-}) {
+export default async function CoursePreviewPage(
+  props: {
+    params: Promise<{ courseId: string }>;
+  }
+) {
+  const params = await props.params;
   const t = getServerMessages();
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },

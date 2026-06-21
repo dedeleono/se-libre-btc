@@ -149,7 +149,7 @@ function toAppSession(session: unknown): AppSession | null {
 // call auth() within the same render, but this only resolves the session once.
 const getRawSession = cache(async () =>
   betterAuthServer.api.getSession({
-    headers: headers(),
+    headers: await headers(),
   })
 );
 

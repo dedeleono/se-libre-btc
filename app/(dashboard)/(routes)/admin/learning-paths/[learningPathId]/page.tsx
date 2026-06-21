@@ -4,11 +4,12 @@ import { prisma } from "@/lib/db";
 
 import { LearningPathForm } from "../_components/learning-path-form";
 
-export default async function LearningPathDetailPage({
-  params,
-}: {
-  params: { learningPathId: string };
-}) {
+export default async function LearningPathDetailPage(
+  props: {
+    params: Promise<{ learningPathId: string }>;
+  }
+) {
+  const params = await props.params;
   const [learningPath, courses] = await Promise.all([
     prisma.learningPath.findUnique({
       where: { id: params.learningPathId },

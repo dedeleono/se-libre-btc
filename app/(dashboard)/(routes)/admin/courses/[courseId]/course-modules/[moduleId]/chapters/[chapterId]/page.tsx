@@ -18,11 +18,12 @@ import { QuizBuilder } from "./_components/quiz-builder";
 import { getServerMessages } from "@/lib/i18n-server";
 
 
-export default async function ChapterIdPage({
-  params,
-}: {
-  params: { courseId: string; moduleId: string; chapterId: string };
-}) {
+export default async function ChapterIdPage(
+  props: {
+    params: Promise<{ courseId: string; moduleId: string; chapterId: string }>;
+  }
+) {
+  const params = await props.params;
   const t = getServerMessages();
   const moduleChapter = await prisma.chapter.findFirst({
     where: {
@@ -47,23 +48,23 @@ export default async function ChapterIdPage({
       `/admin/courses/${params.courseId}/course-modules/${params.moduleId}`
     );
 
-    const getRequiredFields = (type: ChapterType) => {
-      switch (type) {
-        case "QUIZ":
-          return [
-            moduleChapter.title,
-            moduleChapter.quiz,
-            moduleChapter.quiz?.questions.length,
-          ];
-        default: // LESSON
-          return [
-            moduleChapter.title,
-            moduleChapter.description,
-            moduleChapter.videoUrl || moduleChapter.youtubeUrl || moduleChapter.pdfUrl || moduleChapter.richContent,
-          ];
-      }
-    };
-    const requiredFields = getRequiredFields(moduleChapter.type);
+  const getRequiredFields = (type: ChapterType) => {
+    switch (type) {
+      case "QUIZ":
+        return [
+          moduleChapter.title,
+          moduleChapter.quiz,
+          moduleChapter.quiz?.questions.length,
+        ];
+      default: // LESSON
+        return [
+          moduleChapter.title,
+          moduleChapter.description,
+          moduleChapter.videoUrl || moduleChapter.youtubeUrl || moduleChapter.pdfUrl || moduleChapter.richContent,
+        ];
+    }
+  };
+  const requiredFields = getRequiredFields(moduleChapter.type);
   // const requiredFields = [
   //   moduleChapter.title,
   //   moduleChapter.description,

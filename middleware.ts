@@ -40,7 +40,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  return NextResponse.next();
+  // Publish the current pathname as a request header so server components
+  // (e.g. the course layout's chapter-route detection) can read it. Replaces
+  // the removed internal `x-invoke-path` header.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", nextUrl.pathname);
+
+  return NextResponse.next({ request: { headers: requestHeaders } });
 }
 
 export const config = {

@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 // Fallback entry: dashboard / course cards now link directly to the first
 // chapter, so this route is only hit on direct /courses/[id] navigation. Keep
 // the query minimal — just the chapter ids needed to compute the redirect.
-const CoursePage = async ({ params }: { params: { courseId: string } }) => {
+const CoursePage = async (props: { params: Promise<{ courseId: string }> }) => {
+  const params = await props.params;
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
     select: {

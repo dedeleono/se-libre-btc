@@ -4,10 +4,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { withFallbackSlug } from "@/lib/slug";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { learningPathId: string } }
-) {
+export async function PATCH(req: Request, props: { params: Promise<{ learningPathId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });
@@ -47,10 +45,8 @@ export async function PATCH(
   return NextResponse.json(learningPath);
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { learningPathId: string } }
-) {
+export async function DELETE(req: Request, props: { params: Promise<{ learningPathId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });

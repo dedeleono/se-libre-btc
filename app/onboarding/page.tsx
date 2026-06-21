@@ -6,11 +6,12 @@ import { Navbar } from "./_components/navbar";
 import { prisma } from "@/lib/db";
 import { UserRole } from "@prisma/client";
 
-export default async function OnboardingPage({
-  searchParams,
-}: {
-  searchParams: { invitationId?: string };
-}) {
+export default async function OnboardingPage(
+  props: {
+    searchParams: Promise<{ invitationId?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await auth();
 
   if (!session) {
