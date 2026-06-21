@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmModal } from "@/components/modals/confirm-modal";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useLocale } from "@/lib/i18n";
@@ -113,6 +114,21 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
     }
   };
 
+  const deleteCohort = async () => {
+    if (!initialData?.id) return;
+
+    try {
+      setIsSaving(true);
+      await axios.delete(`/api/cohorts/${initialData.id}`);
+      toast.success(t.admin.cohortDeleted);
+      router.push("/admin/cohorts");
+      router.refresh();
+    } catch {
+      toast.error(t.admin.cohortDeleteError);
+      setIsSaving(false);
+    }
+  };
+
   const createLiveSession = async () => {
     if (!initialData?.id || !newSession.title || !newSession.startsAt) return;
 
@@ -168,10 +184,20 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
 
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
-      <Link href="/admin/cohorts" className="flex items-center text-sm transition hover:opacity-75">
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        {t.admin.backToCohorts}
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link href="/admin/cohorts" className="flex items-center text-sm transition hover:opacity-75">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          {t.admin.backToCohorts}
+        </Link>
+        {!isNew && (
+          <ConfirmModal onConfirm={deleteCohort}>
+            <Button variant="destructive" size="sm" disabled={isSaving}>
+              <Trash className="mr-2 h-4 w-4" />
+              {t.admin.deleteCohort}
+            </Button>
+          </ConfirmModal>
+        )}
+      </div>
 
       <Card>
         <CardHeader>
