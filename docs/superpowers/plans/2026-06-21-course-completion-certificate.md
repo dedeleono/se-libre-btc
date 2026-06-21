@@ -433,22 +433,32 @@ async function assertCourseComplete(userId: string, courseId: string) {
   if (progress < 100) throw new Error("COURSE_NOT_COMPLETE");
 }
 
-export async function ensureCertificate(courseId: string) {
+export type CertificateSummary = {
+  id: string;
+  serial: string;
+  recipientName: string;
+  design: "STANDARD" | "PUNK";
+  updatedAt: Date;
+};
+
+function toSummary(c: CertificateSummary): CertificateSummary {
+  return {
+    id: c.id,
+    serial: c.serial,
+    recipientName: c.recipientName,
+    design: c.design,
+    updatedAt: c.updatedAt,
+  };
+}
+
+export async function ensureCertificate(courseId: string): Promise<CertificateSummary> {
   const userId = await requireUser();
   await assertCourseComplete(userId, courseId);
 
   const existing = await prisma.certificate.findUnique({
     where: { userId_courseId: { userId, courseId } },
   });
-  if (existing) {
-    return {
-      id: existing.id,
-      serial: existing.serial,
-      recipientName: existing.recipientName,
-      design: existing.design,
-      updatedAt: existing.updatedAt,
-    };
-  }
+  if (existing) return toSummary(existing);
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
 
@@ -463,27 +473,13 @@ export async function ensureCertificate(courseId: string) {
           recipientName: prefillRecipientName(user),
         },
       });
-      return {
-        id: created.id,
-        serial: created.serial,
-        recipientName: created.recipientName,
-        design: created.design,
-        updatedAt: created.updatedAt,
-      };
+      return toSummary(created);
     } catch (err: unknown) {
       // Unique violation on (userId,courseId) → someone created it concurrently.
-      const created = await prisma.certificate.findUnique({
+      const concurrent = await prisma.certificate.findUnique({
         where: { userId_courseId: { userId, courseId } },
       });
-      if (created) {
-        return {
-          id: created.id,
-          serial: created.serial,
-          recipientName: created.recipientName,
-          design: created.design,
-          updatedAt: created.updatedAt,
-        };
-      }
+      if (concurrent) return toSummary(concurrent);
       if (attempt === 4) throw err;
     }
   }
