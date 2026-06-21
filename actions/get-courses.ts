@@ -41,7 +41,9 @@ export const getCourses = async ({ userId, categoryId, title }: GetCourses): Pro
                             select: { id: true },
                         },
                     },
-                    orderBy: { createdAt: 'desc' },
+                    // Order by position so chapters[0] resolves to the canonical
+                    // first chapter (matches the course redirect + dashboard).
+                    orderBy: { position: 'asc' },
                 },
             }
         });

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserRole } from "@prisma/client";
@@ -144,10 +145,16 @@ function toAppSession(session: unknown): AppSession | null {
   };
 }
 
-export async function getSession(options?: { allowInactive?: boolean }) {
-  const rawSession = await betterAuthServer.api.getSession({
+// Request-scoped dedupe: layout + page (and any nested server components) each
+// call auth() within the same render, but this only resolves the session once.
+const getRawSession = cache(async () =>
+  betterAuthServer.api.getSession({
     headers: headers(),
-  });
+  })
+);
+
+export async function getSession(options?: { allowInactive?: boolean }) {
+  const rawSession = await getRawSession();
 
   const session = toAppSession(rawSession);
   if (!session) return null;

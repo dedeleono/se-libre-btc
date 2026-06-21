@@ -26,6 +26,7 @@ export const CoursesList = ({ items }: CoursesListProps) => {
             isEnrolled={Boolean(item.isEnrolled)}
             progress={item.progress ?? null}
             category={item.category?.name ?? null}
+            firstChapterId={item.chapters?.[0]?.id ?? null}
           />
         ))}
       </div>

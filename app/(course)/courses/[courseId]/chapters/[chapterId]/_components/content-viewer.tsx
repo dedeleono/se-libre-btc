@@ -17,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { CompletionButton, CompletionButtonRef } from "./completion-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { Editor } from "@/components/editor";
 import { DiscussionSection } from "./discussion-section";
 import { User } from "@prisma/client";
 import { useLocale } from "@/lib/i18n";
@@ -26,6 +25,17 @@ const WalletSimulator = dynamic(() => import("@/components/wallet-simulator"), {
   ssr: false,
   loading: () => <div className="p-6 text-sm text-muted-foreground">Cargando simulador…</div>,
 });
+
+// The Lexical-based Editor (~15 @lexical/* packages) is only used for the
+// authenticated notes feature. Load it on demand so it stays out of the
+// chapter's first-load JS bundle.
+const Editor = dynamic(
+  () => import("@/components/editor").then((m) => m.Editor),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-40 w-full" />,
+  }
+);
 
 interface ContentViewerProps {
   videoUrl?: string | null;

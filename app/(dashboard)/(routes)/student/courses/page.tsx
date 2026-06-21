@@ -24,7 +24,16 @@ export default async function StudentCoursesPage() {
     include: {
       course: {
         include: {
-          modules: { include: { chapters: { where: { isPublished: true } } } },
+          modules: {
+            orderBy: { position: "asc" },
+            include: {
+              chapters: {
+                where: { isPublished: true },
+                orderBy: { position: "asc" },
+                select: { id: true },
+              },
+            },
+          },
         },
       },
     },
@@ -43,6 +52,12 @@ export default async function StudentCoursesPage() {
           {enrollments.map((enrollment) => {
             const course = enrollment.course;
             const totalChapters = course.modules.reduce((total, module) => total + module.chapters.length, 0);
+            // First published chapter in (module.position, chapter.position)
+            // order — link straight to it to skip the /courses/[id] redirect hop.
+            const firstChapterId = course.modules.flatMap((module) => module.chapters)[0]?.id;
+            const continueHref = firstChapterId
+              ? `/courses/${course.id}/chapters/${firstChapterId}`
+              : `/courses/${course.id}`;
 
             return (
               <Card key={course.id}>
@@ -53,7 +68,7 @@ export default async function StudentCoursesPage() {
                 <CardContent className="space-y-4">
                   <div className="text-sm text-muted-foreground">{t.student.publishedChaptersCount(totalChapters)}</div>
                   <Button asChild className="w-full">
-                    <Link href={`/courses/${course.id}`}>{t.common.continue}</Link>
+                    <Link href={continueHref}>{t.common.continue}</Link>
                   </Button>
                   {enrollment.completedAt && (
                     <Button asChild variant="outline" className="w-full">

@@ -16,6 +16,7 @@ interface CourseCardProps {
   isEnrolled: boolean;
   progress: number | null;
   category: string | null;
+  firstChapterId?: string | null;
 }
 
 export const CourseCard = ({
@@ -26,12 +27,21 @@ export const CourseCard = ({
   isEnrolled,
   progress,
   category,
+  firstChapterId,
 }: CourseCardProps) => {
   const { t } = useLocale();
 
+  // Enrolled users link straight to the first chapter, skipping the
+  // /courses/[id] redirect hop (an extra server round-trip). Fall back to the
+  // redirect route if we don't have a chapter id.
+  const enrolledHref = firstChapterId
+    ? `/courses/${id}/chapters/${firstChapterId}`
+    : `/courses/${id}`;
+  const cardHref = isEnrolled ? enrolledHref : `/courses/preview/${id}`;
+
   return (
       <div className="stamp-card group flex h-full w-full flex-col overflow-hidden p-3 transition">
-        <Link href={isEnrolled ? `/courses/${id}` : `/courses/preview/${id}`}>
+        <Link href={cardHref}>
         <div className="relative w-full aspect-video overflow-hidden border-2 border-foreground">
           {imageUrl ? (
             <Image src={imageUrl} alt={title} fill className="object-cover" />
@@ -43,7 +53,7 @@ export const CourseCard = ({
         </div>
         </Link>
         <div className="flex flex-col pt-2">
-          <Link href={isEnrolled ? `/courses/${id}` : `/courses/preview/${id}`}>
+          <Link href={cardHref}>
             <div className="line-clamp-2 font-[var(--font-display)] text-2xl uppercase leading-none transition group-hover:text-[var(--terracota-500)]">
                 {title}
             </div>
@@ -70,7 +80,7 @@ export const CourseCard = ({
             <div className="mt-auto pt-3">
               {isEnrolled ? (
                 <Button asChild className="w-full" size="sm">
-                  <Link href={`/courses/${id}`}>{t.common.continue}</Link>
+                  <Link href={enrolledHref}>{t.common.continue}</Link>
                 </Button>
               ) : (
                 <EnrollmentButton
