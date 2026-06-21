@@ -10,6 +10,7 @@ const updateChapterSchema = z.object({
     description: z.string().nullable().optional(),
     type: z.nativeEnum(ChapterType).optional(),
     isIntro: z.boolean().optional(),
+    hasWalletSimulator: z.boolean().optional(),
     startTime: z.string().datetime().nullable().optional(),
     endTime: z.string().datetime().nullable().optional(),
     imageUrl: z.string().nullable().optional(),
@@ -114,7 +115,7 @@ export async function PATCH(
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
         if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
 
-        const { isIntro, ...values } = updateChapterSchema.parse(await req.json())
+        const { isIntro, hasWalletSimulator, ...values } = updateChapterSchema.parse(await req.json())
 
         const existingChapter = await prisma.chapter.findUnique({
             where: {
@@ -197,6 +198,7 @@ export async function PATCH(
             },
             data: {
                 isIntro,
+                hasWalletSimulator,
                 ...values,
                 startTime: values.startTime ? new Date(values.startTime) : values.startTime,
                 endTime: values.endTime ? new Date(values.endTime) : values.endTime,
