@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { Lock, Clock, CreditCard, Loader2, FileText, ChevronRight, Loader } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,11 @@ import { Editor } from "@/components/editor";
 import { DiscussionSection } from "./discussion-section";
 import { User } from "@prisma/client";
 import { useLocale } from "@/lib/i18n";
+
+const WalletSimulator = dynamic(() => import("@/components/wallet-simulator"), {
+  ssr: false,
+  loading: () => <div className="p-6 text-sm text-muted-foreground">Cargando simulador…</div>,
+});
 
 interface ContentViewerProps {
   videoUrl?: string | null;
@@ -44,6 +50,7 @@ interface ContentViewerProps {
   }>;
   isAuthenticated?: boolean;
   currentUser?: User;
+  hasWalletSimulator?: boolean;
 }
 
 interface LockScreenProps {
@@ -125,6 +132,7 @@ export const ContentViewer = ({
   attachments,
   isAuthenticated = true,
   currentUser,
+  hasWalletSimulator = false,
 }: ContentViewerProps) => {
   const { t } = useLocale();
   
@@ -419,6 +427,10 @@ export const ContentViewer = ({
               )}
             </div>
           </Card>
+
+          {hasWalletSimulator && isAuthenticated && !isPreviewMode && (
+            <WalletSimulator onLessonComplete={completeOnEnd ? () => completionRef.current?.complete() : undefined} />
+          )}
 
           {isAuthenticated &&
             !isPreviewMode &&

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -62,6 +63,9 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-email/components": "^0.0.31",
     "@react-email/render": "^2.0.8",
+    "@scure/bip32": "^2.2.0",
+    "@scure/bip39": "^2.2.0",
+    "@scure/btc-signer": "^2.2.0",
     "@solana/spl-token": "^0.4.13",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.1",
@@ -96,6 +100,7 @@
     "nodemailer": "^6.9.16",
     "postgres": "^3.4.4",
     "prettier": "^3.6.2",
+    "qrcode.react": "^4.2.0",
     "query-string": "^9.1.1",
     "react": "^18",
     "react-day-picker": "^9.9.0",
@@ -135,6 +140,7 @@
     "prisma": "^5.19.1",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.0"
   }
 }
