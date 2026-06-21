@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { ChapterTitleForm } from "./_components/chapter-title-form";
 import { ChapterDescriptionForm } from "./_components/chapter-description-form";
 import { ChapterIntroForm } from "./_components/chapter-intro-form";
+import { ChapterWalletSimulatorForm } from "./_components/chapter-wallet-simulator-form";
 import { ChapterVideoForm } from "./_components/chapter-video-form";
 import { Separator } from "@/components/ui/separator";
 import { AttachmentForm } from "./_components/chapter-attachment-form";
@@ -102,6 +103,12 @@ export default async function ChapterIdPage({
                   <h2 className="text-xl">{t.admin.accessSettings}</h2>
                 </div>
                 <ChapterIntroForm
+                  initialData={moduleChapter}
+                  courseId={params.courseId}
+                  moduleId={params.moduleId}
+                  chapterId={params.chapterId}
+                />
+                <ChapterWalletSimulatorForm
                   initialData={moduleChapter}
                   courseId={params.courseId}
                   moduleId={params.moduleId}
