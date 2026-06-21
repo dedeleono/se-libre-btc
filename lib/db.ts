@@ -37,7 +37,7 @@ function getDatabaseUrl() {
 const databaseUrl = getDatabaseUrl()
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  log: ['query', 'error', 'warn'],
+  log: process.env.PRISMA_DEBUG === 'true' ? ['query', 'error', 'warn'] : ['error', 'warn'],
   ...(databaseUrl ? { datasources: { db: { url: databaseUrl } } } : {}),
 })
 
