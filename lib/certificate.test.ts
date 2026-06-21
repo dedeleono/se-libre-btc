@@ -29,4 +29,8 @@ describe("prefillRecipientName", () => {
   it("trims and collapses whitespace", () => {
     expect(prefillRecipientName({ firstName: "  Ana ", lastName: " ", name: null, email: "a@x.com" })).toBe("Ana");
   });
+
+  it("falls back to 'Estudiante' when nothing usable is present", () => {
+    expect(prefillRecipientName({ firstName: null, lastName: null, name: null, email: "@x.com" })).toBe("Estudiante");
+  });
 });

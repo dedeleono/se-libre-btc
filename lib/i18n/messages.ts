@@ -738,7 +738,6 @@ const es = {
     maverickTitle: "Comunícate con los expertos de Bitcoin",
     maverickPartner: "Maverick Capital Investment",
     maverickWebsiteCta: "Visitar Maverick Capital Investment",
-    maverickPhoneLabel: "Teléfono",
     maverickDisclaimer: "Socio externo. Dinero Libre no gestiona compras de Bitcoin.",
   },
   certificate: {
@@ -1712,7 +1711,6 @@ const en: Messages = {
     maverickTitle: "Comunícate con los expertos de Bitcoin",
     maverickPartner: "Maverick Capital Investment",
     maverickWebsiteCta: "Visit Maverick Capital Investment",
-    maverickPhoneLabel: "Phone",
     maverickDisclaimer: "External partner. Dinero Libre does not handle Bitcoin purchases.",
   },
   certificate: {

@@ -23,5 +23,6 @@ export function prefillRecipientName(user: CertificateRecipient): string {
   if (full) return full;
   const name = clean(user.name);
   if (name) return name;
-  return user.email.split("@")[0];
+  const local = clean(user.email.split("@")[0]);
+  return local || "Estudiante";
 }
