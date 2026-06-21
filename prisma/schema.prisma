@@ -250,7 +250,8 @@ model Chapter {
   title       String
   slug        String?
   type        ChapterType @default(LESSON)
-  isIntro     Boolean     @default(false)
+  isIntro            Boolean     @default(false)
+  hasWalletSimulator Boolean     @default(false)
   description String?     @db.Text
   startTime   DateTime?
   endTime     DateTime?
