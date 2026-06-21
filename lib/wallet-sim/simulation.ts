@@ -64,11 +64,14 @@ export function buildIncomingTx(now: number): SimTx {
 }
 
 export function buildOutgoingTx(draft: SendDraft, now: number): SimTx {
+  if (draft.amountSats === null) {
+    throw new Error("buildOutgoingTx requires a validated draft with a non-null amount");
+  }
   const fee = feeFor(draft.feeLevel);
   return {
     id: nextId(),
     direction: "out",
-    amountSats: draft.amountSats ?? 0,
+    amountSats: draft.amountSats,
     feeRate: draft.feeLevel,
     feeSats: fee.feeSats,
     status: "pending",
