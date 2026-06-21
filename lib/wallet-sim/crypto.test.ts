@@ -1,8 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { generateMnemonic, validateMnemonic, mnemonicToAccount, isValidAddress } from "./crypto";
 
-// Known BIP39 test vector
+// Known BIP39 test vector (abandon×11 + about, no passphrase)
 const VECTOR = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+
+// Pinned deterministic values at m/84'/1'/0'/0/0 on TEST_NETWORK.
+// These were computed once from the real implementation and hard-coded so any
+// future change in path, network, or coin-type will cause a regression failure.
+const PINNED_ADDRESS = "tb1q6rz28mcfaxtmd6v789l9rrlrusdprr9pqcpvkl";
+const PINNED_WIF = "cTGhosGriPpuGA586jemcuH9pE9spwUmneMBmYYzrQEbY92DJrbo";
 
 describe("crypto boundary (testnet BIP84)", () => {
   it("generates a valid 12-word mnemonic", () => {
@@ -15,17 +21,14 @@ describe("crypto boundary (testnet BIP84)", () => {
     expect(validateMnemonic("not a real seed phrase at all nope nope nope")).toBe(false);
   });
 
-  it("derives a testnet tb1 native segwit address + WIF for a known vector", async () => {
+  it("derives exact testnet tb1 address + WIF for the BIP39 known vector", async () => {
     const acct = await mnemonicToAccount(VECTOR);
-    expect(acct.address.startsWith("tb1")).toBe(true);
-    expect(acct.address.length).toBeGreaterThan(20);
-    expect(typeof acct.privateKeyWif).toBe("string");
-    expect(acct.privateKeyWif.length).toBeGreaterThan(20);
+    expect(acct.address).toBe(PINNED_ADDRESS);
+    expect(acct.privateKeyWif).toBe(PINNED_WIF);
   });
 
-  it("validates testnet bech32 addresses and rejects mainnet/garbage", async () => {
-    const acct = await mnemonicToAccount(VECTOR);
-    expect(isValidAddress(acct.address)).toBe(true);
+  it("validates testnet bech32 addresses and rejects mainnet/garbage", () => {
+    expect(isValidAddress(PINNED_ADDRESS)).toBe(true);
     expect(isValidAddress("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4")).toBe(false); // mainnet
     expect(isValidAddress("not-an-address")).toBe(false);
     expect(isValidAddress("")).toBe(false);

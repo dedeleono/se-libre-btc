@@ -6,7 +6,6 @@ import {
 import { wordlist } from "@scure/bip39/wordlists/english.js";
 import { HDKey } from "@scure/bip32";
 import * as btc from "@scure/btc-signer";
-import { pubECDSA } from "@scure/btc-signer/utils.js";
 
 const PATH = "m/84'/1'/0'/0/0"; // coin type 1 = testnet
 
@@ -27,8 +26,7 @@ export async function mnemonicToAccount(mnemonic: string): Promise<DerivedAccoun
   const seed = await mnemonicToSeed(mnemonic.trim(), "");
   const child = HDKey.fromMasterSeed(seed).derive(PATH);
   if (!child.privateKey) throw new Error("derivation produced no private key");
-  const pubkey = pubECDSA(child.privateKey);
-  const address = btc.p2wpkh(pubkey, btc.TEST_NETWORK).address!;
+  const address = btc.p2wpkh(child.publicKey!, btc.TEST_NETWORK).address!;
   const wif = btc.WIF(btc.TEST_NETWORK).encode(child.privateKey);
   return { address, privateKeyWif: wif };
 }
