@@ -3,11 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { Lock, Clock, CreditCard, Loader2, FileText, ChevronRight, Loader } from "lucide-react";
-
-const WalletSimulator = dynamic(() => import("@/components/wallet-simulator"), {
-  ssr: false,
-  loading: () => <div className="p-6 text-sm text-muted-foreground">Cargando simulador…</div>,
-});
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -26,6 +21,11 @@ import { Editor } from "@/components/editor";
 import { DiscussionSection } from "./discussion-section";
 import { User } from "@prisma/client";
 import { useLocale } from "@/lib/i18n";
+
+const WalletSimulator = dynamic(() => import("@/components/wallet-simulator"), {
+  ssr: false,
+  loading: () => <div className="p-6 text-sm text-muted-foreground">Cargando simulador…</div>,
+});
 
 interface ContentViewerProps {
   videoUrl?: string | null;
@@ -429,7 +429,7 @@ export const ContentViewer = ({
           </Card>
 
           {hasWalletSimulator && isAuthenticated && !isPreviewMode && (
-            <WalletSimulator onLessonComplete={() => completionRef.current?.complete()} />
+            <WalletSimulator onLessonComplete={completeOnEnd ? () => completionRef.current?.complete() : undefined} />
           )}
 
           {isAuthenticated &&

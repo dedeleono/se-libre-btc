@@ -108,7 +108,7 @@ export function walletReducer(state: SimulatorState, action: Action): SimulatorS
       };
 
     case "GENERATE_ERROR":
-      return { ...state, ui: { isGenerating: false, error: action.message } };
+      return { ...state, ui: { ...state.ui, isGenerating: false, error: action.message } };
 
     case "NEXT_PHASE": {
       if (!canAdvance(state)) return state;
