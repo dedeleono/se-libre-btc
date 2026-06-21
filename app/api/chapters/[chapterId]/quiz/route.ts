@@ -12,10 +12,8 @@ const quizSettingsSchema = z.object({
   showCorrectAnswers: z.boolean().default(true),
 });
 
-export async function POST(
-  req: Request,
-  { params }: { params: { chapterId: string } }
-) {
+export async function POST(req: Request, props: { params: Promise<{ chapterId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });

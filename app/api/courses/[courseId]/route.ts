@@ -18,10 +18,8 @@ const updateCourseSchema = z.object({
     price: z.union([z.string(), z.number()]).nullable().optional(),
 })
 
-export async function DELETE(
-    req: Request,
-    { params }: { params: { courseId: string } }
-) {
+export async function DELETE(req: Request, props: { params: Promise<{ courseId: string }> }) {
+    const params = await props.params;
     try {
         const session = await auth()
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
@@ -79,10 +77,8 @@ export async function DELETE(
     }
 }
 
-export async function PATCH(
-    req: Request,
-    {params}: {params: {courseId: string}}
-) {
+export async function PATCH(req: Request, props: {params: Promise<{courseId: string}>}) {
+    const params = await props.params;
     try {
         
         const session = await auth()

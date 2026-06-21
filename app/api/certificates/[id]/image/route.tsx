@@ -10,7 +10,8 @@ export const runtime = "nodejs";
 const WIDTH = 1600;
 const HEIGHT = 1131;
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, props0: { params: Promise<{ id: string }> }) {
+  const params = await props0.params;
   const cert = await prisma.certificate.findUnique({
     where: { id: params.id },
     include: { course: { select: { title: true } } },

@@ -3,10 +3,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-export async function POST(
-  req: Request,
-  { params }: { params: { quizId: string } }
-) {
+export async function POST(req: Request, props: { params: Promise<{ quizId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user?.id) {
     return new NextResponse("Unauthorized", { status: 401 });

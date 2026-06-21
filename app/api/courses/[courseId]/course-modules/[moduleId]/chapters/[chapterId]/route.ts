@@ -22,8 +22,9 @@ const updateChapterSchema = z.object({
 
 export async function GET(
     req: Request,
-    { params }: { params: { courseId: string; moduleId: string; chapterId: string } }
+    props: { params: Promise<{ courseId: string; moduleId: string; chapterId: string }> }
 ) {
+    const params = await props.params;
     try {
         const session = await auth();
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
@@ -61,8 +62,9 @@ export async function GET(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { courseId: string, moduleId: string, chapterId: string } }
+    props: { params: Promise<{ courseId: string, moduleId: string, chapterId: string }> }
 ) {
+    const params = await props.params;
     try {
         const session = await auth();
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 });
@@ -108,8 +110,9 @@ export async function DELETE(
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { courseId: string, moduleId: string, chapterId: string } }
+    props: { params: Promise<{ courseId: string, moduleId: string, chapterId: string }> }
 ) {
+    const params = await props.params;
     try {
         const session = await auth()
         if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })

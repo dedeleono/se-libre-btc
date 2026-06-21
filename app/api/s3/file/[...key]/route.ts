@@ -4,10 +4,8 @@ import { getFileObject, getStorageErrorMessage } from "@/lib/s3";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { key: string[] } }
-) {
+export async function GET(_req: Request, props: { params: Promise<{ key: string[] }> }) {
+  const params = await props.params;
   try {
     const key = params.key.map(decodeURIComponent).join("/");
 

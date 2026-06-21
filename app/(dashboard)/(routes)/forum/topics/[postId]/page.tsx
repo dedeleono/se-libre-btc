@@ -13,12 +13,13 @@ import { MeetingButton } from "./_components/meeting-button";
 import { getServerMessages } from "@/lib/i18n-server";
 
 interface PostPageProps {
-  params: {
+  params: Promise<{
     postId: string;
-  };
+  }>;
 }
 
-export default async function PostPage({ params }: PostPageProps) {
+export default async function PostPage(props: PostPageProps) {
+  const params = await props.params;
   const session = await auth();
   const t = getServerMessages();
   if (!session?.user) {

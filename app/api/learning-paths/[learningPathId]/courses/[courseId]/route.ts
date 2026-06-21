@@ -5,8 +5,9 @@ import { prisma } from "@/lib/db";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { learningPathId: string; courseId: string } }
+  props: { params: Promise<{ learningPathId: string; courseId: string }> }
 ) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });

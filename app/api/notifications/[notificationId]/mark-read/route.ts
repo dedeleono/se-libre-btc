@@ -2,10 +2,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { notificationId: string } }
-) {
+export async function PATCH(req: Request, props: { params: Promise<{ notificationId: string }> }) {
+  const params = await props.params;
   try {
     const session = await auth();
 

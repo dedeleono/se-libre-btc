@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { paymentIntentId } = await req.json();
     
     // Set the cookie with the payment intent ID
-    cookies().set('currentPaymentIntent', paymentIntentId, {
+    (await cookies()).set('currentPaymentIntent', paymentIntentId, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

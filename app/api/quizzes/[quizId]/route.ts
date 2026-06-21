@@ -12,10 +12,8 @@ const quizSettingsSchema = z.object({
   showCorrectAnswers: z.boolean().optional(),
 });
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { quizId: string } }
-) {
+export async function PATCH(req: Request, props: { params: Promise<{ quizId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });
@@ -41,10 +39,8 @@ export async function PATCH(
   return NextResponse.json(quiz);
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { quizId: string } }
-) {
+export async function DELETE(req: Request, props: { params: Promise<{ quizId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });

@@ -3,10 +3,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { liveSessionId: string } }
-) {
+export async function PATCH(req: Request, props: { params: Promise<{ liveSessionId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });
@@ -29,10 +27,8 @@ export async function PATCH(
   return NextResponse.json(liveSession);
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { liveSessionId: string } }
-) {
+export async function DELETE(req: Request, props: { params: Promise<{ liveSessionId: string }> }) {
+  const params = await props.params;
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") {
     return new NextResponse("Unauthorized", { status: 401 });

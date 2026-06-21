@@ -6,7 +6,7 @@ import { cookies } from 'next/headers'
 import { prisma } from '@/lib/db'
 
 export async function getAuthToken() {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     return cookieStore.get('dashboard-auth')?.value
 }
 

@@ -4,26 +4,31 @@ import { redirect } from "next/navigation";
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
 import { ChapterWithProgress } from "@/types/chapter";
-import { isChapterAccessible } from "@/lib/chapter-access";
+import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 import { headers } from "next/headers";
 import { PreviewAccessCheck } from "./_components/preview-access-check";
 
-const CourseLayout = async ({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: { courseId: string };
-}) => {
+const CourseLayout = async (
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ courseId: string }>;
+  }
+) => {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const session = await auth();
   const userId = session?.user?.id || null;
   const userRole = session?.user?.role || null;
 
-  // Check for chapter ID in the URL
-  const pathParts = headers().get("x-invoke-path")?.split("/") || [];
+  // Check for chapter ID in the URL (x-pathname is set by middleware.ts).
+  const pathParts = (await headers()).get("x-pathname")?.split("/") || [];
   const isChapterRoute = pathParts.includes("chapters");
   const chapterId = isChapterRoute ? pathParts[pathParts.indexOf("chapters") + 1] : null;
-  
+
   // For chapter routes, let the chapter page handle preview access
   if (!session?.user && isChapterRoute) {
     const course = await prisma.course.findUnique({
@@ -177,41 +182,44 @@ const CourseLayout = async ({
     }))
   );
 
-  // Optimization: For quick accessibility checks without DB queries
+  // Optimization: resolve accessibility without per-chapter DB queries.
   const chaptersAccessibility: Record<string, boolean> = {};
-  
-  // Handle simple cases without DB queries
-  for (const {chapter, chapterId} of chaptersToCheck) {
+
+  // Enrollment is per-course, not per-chapter — resolve it ONCE instead of
+  // calling isChapterAccessible() (a DB round-trip) inside the loop for every
+  // locked chapter. Only authenticated non-admin users reach this check.
+  const hasEnrollmentAccess =
+    userId && userRole && userRole !== "ADMIN"
+      ? await hasCourseEnrollmentAccess(userId, course.id)
+      : false;
+
+  for (const { chapter, chapterId } of chaptersToCheck) {
     // Intro chapters are always accessible
     if (chapter.isIntro) {
       chaptersAccessibility[chapterId] = true;
       continue;
     }
-    
+
     // Admins always have access
     if (userRole === "ADMIN") {
       chaptersAccessibility[chapterId] = true;
       continue;
     }
-    
+
     // Non-authenticated users can't access non-intro chapters
     if (!userId || !userRole) {
       chaptersAccessibility[chapterId] = false;
       continue;
     }
-    
+
     // For completed chapters, check if they're in the student progress
     if (chapter.studentProgress && chapter.studentProgress[0]?.isCompleted) {
       chaptersAccessibility[chapterId] = true;
       continue;
     }
-    
-    // For other cases, we need the full check
-    chaptersAccessibility[chapterId] = await isChapterAccessible(
-      chapter,
-      userId,
-      userRole
-    );
+
+    // Everything else depends solely on course enrollment (resolved once above)
+    chaptersAccessibility[chapterId] = hasEnrollmentAccess;
   }
 
   return (

@@ -13,7 +13,8 @@ import { CourseActions } from "./_components/course-actions";
 import { getServerMessages } from "@/lib/i18n-server";
 // import { auth } from "@/lib/auth";
 
-const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
+const CourseIdPage = async (props: { params: Promise<{ courseId: string }> }) => {
+  const params = await props.params;
   const t = getServerMessages();
 
   // const session = await auth()
@@ -60,16 +61,16 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   }
 
   // Cross-reference courseCategory with categories
-   const courseCategories = course.courseCategory
+  const courseCategories = course.courseCategory
 
-   const initialCategoryData = {
-     categoryIds: courseCategories.map((cat) => cat.categoryId),
-   };
+  const initialCategoryData = {
+    categoryIds: courseCategories.map((cat) => cat.categoryId),
+  };
 
-   const options = categories.map((category) => ({
-     label: category.name,
-     value: category.id,
-   }));
+  const options = categories.map((category) => ({
+    label: category.name,
+    value: category.id,
+  }));
 
   const requiredFields = [
     course.title,

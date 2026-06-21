@@ -7,7 +7,8 @@ import { EnrollmentButton } from "@/components/enrollment-button";
 import { prisma } from "@/lib/db";
 import { getServerMessages } from "@/lib/i18n-server";
 
-export default async function LearningPathDetailPage({ params }: { params: { slug: string } }) {
+export default async function LearningPathDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const t = getServerMessages();
   const learningPath = await prisma.learningPath.findUnique({
     where: { slug: params.slug },

@@ -9,11 +9,12 @@ import { ChaptersForm } from "./_components/chapters-form";
 import { ModuleActions } from "./_components/modules-actions";
 import { getServerMessages } from "@/lib/i18n-server";
 
-const CourseModuleIdPage = async ({
-  params,
-}: {
-  params: { courseId: string, moduleId: string };
-}) => {
+const CourseModuleIdPage = async (
+  props: {
+    params: Promise<{ courseId: string, moduleId: string }>;
+  }
+) => {
+  const params = await props.params;
   const t = getServerMessages();
 
   const courseModule = await prisma.courseModule.findFirst({
