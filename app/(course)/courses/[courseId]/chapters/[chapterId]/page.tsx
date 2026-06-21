@@ -220,6 +220,7 @@ const ChapterPage = async ({
                description={chapter.description as string}
                attachments={chapter.attachments}
                chapterId={chapter.id}
+               hasWalletSimulator={chapter.hasWalletSimulator}
              />
            );
        }
