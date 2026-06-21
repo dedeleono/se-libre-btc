@@ -52,7 +52,7 @@ export function SendPanel({ state, actions, locale }: { state: SimulatorState; a
             {errors.amount && <p className="text-sm text-destructive">{t.walletSim.send.errors[errors.amount]}</p>}
           </div>
           <FeeSelector value={draft.feeLevel} onChange={(l) => actions.updateDraft({ feeLevel: l })} locale={locale} />
-          <Button onClick={actions.submitSend} disabled={hasErrors}>
+          <Button onClick={actions.submitSend} disabled={hasErrors || !draft.toAddress?.trim() || draft.amountSats == null}>
             {t.walletSim.send.broadcast}
           </Button>
         </div>

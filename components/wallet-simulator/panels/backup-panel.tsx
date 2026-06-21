@@ -12,7 +12,7 @@ import type { SimulatorState } from "@/lib/wallet-sim/types";
 import type { WalletSimActions } from "../use-wallet-simulator";
 import { SeedPhraseGrid } from "../presentational/seed-phrase-grid";
 
-export function BackupPanel({ state, actions }: { state: SimulatorState; actions: WalletSimActions; locale: string }) {
+export function BackupPanel({ state, actions }: { state: SimulatorState; actions: WalletSimActions }) {
   const { t } = useLocale();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const words = state.wallet?.mnemonic.split(" ") ?? [];
@@ -30,13 +30,13 @@ export function BackupPanel({ state, actions }: { state: SimulatorState; actions
       </Button>
       <SeedPhraseGrid words={words} revealed={state.backup.revealed} />
 
-      <label className="flex items-center gap-2 text-sm">
+      <Label className="flex items-center gap-2 text-sm">
         <Checkbox
           checked={state.backup.acknowledgedWritten}
           onCheckedChange={(v) => actions.ackWritten(Boolean(v))}
         />
         {t.walletSim.backup.acknowledge}
-      </label>
+      </Label>
 
       {state.backup.acknowledgedWritten && (
         <div className="space-y-3">

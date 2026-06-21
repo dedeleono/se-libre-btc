@@ -8,7 +8,7 @@ import type { WalletSimActions } from "../use-wallet-simulator";
 import { SeedPhraseGrid } from "../presentational/seed-phrase-grid";
 import { AddressDisplay } from "../presentational/address-display";
 
-export function CreatePanel({ state, actions }: { state: SimulatorState; actions: WalletSimActions; locale: string }) {
+export function CreatePanel({ state, actions }: { state: SimulatorState; actions: WalletSimActions }) {
   const { t } = useLocale();
   const words = state.wallet?.mnemonic.split(" ") ?? [];
   return (
