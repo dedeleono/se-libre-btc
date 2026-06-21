@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { generateMnemonic, mnemonicToAccount } from "@/lib/wallet-sim/crypto";
 import {
   buildBackupChallenge,
@@ -117,9 +117,21 @@ export function useWalletSimulator(opts?: {
     [],
   );
 
+  // Hold the latest onLessonComplete in a ref so `complete` can stay stable
+  // ([] deps) even when the caller passes a new inline object each render.
+  const onCompleteRef = useRef(opts?.onLessonComplete);
+  useEffect(() => {
+    onCompleteRef.current = opts?.onLessonComplete;
+  });
+
   const complete = useCallback(() => {
-    opts?.onLessonComplete?.();
-  }, [opts]);
+    const result = onCompleteRef.current?.();
+    if (result instanceof Promise) {
+      result.catch(() => {
+        // ignore — callers are responsible for their own error handling
+      });
+    }
+  }, []);
 
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
 
@@ -145,20 +157,34 @@ export function useWalletSimulator(opts?: {
   }, [hasPending]);
 
   // ---- Stable actions object ----
-  // Each callback is already memoised individually; assemble into one stable
-  // object reference (changes only when any constituent changes).
-  const actions: WalletSimActions = {
-    generate,
-    next,
-    toggleReveal,
-    ackWritten,
-    submitBackup,
-    simulateIncoming,
-    updateDraft,
-    submitSend,
-    complete,
-    reset,
-  };
+  // Wrapped in useMemo so the object identity is stable across renders;
+  // it only changes when one of the constituent callbacks changes.
+  const actions = useMemo<WalletSimActions>(
+    () => ({
+      generate,
+      next,
+      toggleReveal,
+      ackWritten,
+      submitBackup,
+      simulateIncoming,
+      updateDraft,
+      submitSend,
+      complete,
+      reset,
+    }),
+    [
+      generate,
+      next,
+      toggleReveal,
+      ackWritten,
+      submitBackup,
+      simulateIncoming,
+      updateDraft,
+      submitSend,
+      complete,
+      reset,
+    ],
+  );
 
   return { state, actions };
 }
