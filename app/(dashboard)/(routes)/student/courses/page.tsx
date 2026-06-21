@@ -40,7 +40,8 @@ export default async function StudentCoursesPage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {enrollments.map(({ course }) => {
+          {enrollments.map((enrollment) => {
+            const course = enrollment.course;
             const totalChapters = course.modules.reduce((total, module) => total + module.chapters.length, 0);
 
             return (
@@ -54,6 +55,11 @@ export default async function StudentCoursesPage() {
                   <Button asChild className="w-full">
                     <Link href={`/courses/${course.id}`}>{t.common.continue}</Link>
                   </Button>
+                  {enrollment.completedAt && (
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href={`/courses/${course.id}/complete`}>{t.completion.certificateSectionTitle}</Link>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             );

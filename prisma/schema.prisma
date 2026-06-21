@@ -40,6 +40,7 @@ model User {
   quizAttempts            QuizAttempt[]
   courseContributions     CourseContributor[]
   chapterProgress         ChapterProgress[]
+  certificates            Certificate[]
 
   forumPosts         ForumPost[]
   forumReplies       ForumReply[]
@@ -160,6 +161,7 @@ model Course {
   studentNotes       StudentNote[]
   notifications      Notification[]
   pendingInvitations PendingInvitation[]
+  certificates       Certificate[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -167,6 +169,26 @@ model Course {
   @@index([isPublished])
   @@index([difficulty])
   @@index([deliveryMode])
+}
+
+model Certificate {
+  id            String            @id @default(cuid())
+  serial        String            @unique
+  userId        String
+  courseId      String
+  recipientName String
+  design        CertificateDesign @default(STANDARD)
+  issuedAt      DateTime          @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@index([courseId])
 }
 
 model CourseContributor {
@@ -829,4 +851,9 @@ enum NotificationType {
   QUIZ_COMPLETED
   LIVE_SESSION_REMINDER
   ANNOUNCEMENT
+}
+
+enum CertificateDesign {
+  STANDARD
+  PUNK
 }

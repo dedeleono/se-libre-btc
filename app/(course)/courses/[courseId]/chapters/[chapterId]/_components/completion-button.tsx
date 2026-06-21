@@ -38,6 +38,8 @@ export const CompletionButton = forwardRef<CompletionButtonRef, CompletionButton
         
         if (nextChapterId) {
           router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+        } else {
+          router.push(`/courses/${courseId}/complete`);
         }
       } catch (error) {
         toast.error(t.course.progressError);
@@ -53,8 +55,11 @@ export const CompletionButton = forwardRef<CompletionButtonRef, CompletionButton
     if (isCompleted) {
       return (
         <Button
-          onClick={() => nextChapterId && router.push(`/courses/${courseId}/chapters/${nextChapterId}`)}
-          disabled={!nextChapterId}
+          onClick={() =>
+            nextChapterId
+              ? router.push(`/courses/${courseId}/chapters/${nextChapterId}`)
+              : router.push(`/courses/${courseId}/complete`)
+          }
           className="flex items-center gap-x-2"
         >
           {!nextChapterId ? (
