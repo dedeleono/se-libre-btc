@@ -1,5 +1,6 @@
 "use server";
 
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { getProgress } from "@/actions/get-progress";
@@ -61,12 +62,17 @@ export async function ensureCertificate(courseId: string): Promise<CertificateSu
         },
       });
       return toSummary(created);
-    } catch (err: unknown) {
-      // Unique violation on (userId,courseId) → someone created it concurrently.
+    } catch (err) {
+      // Only a unique-constraint violation is recoverable here.
+      if (!(err instanceof Prisma.PrismaClientKnownRequestError) || err.code !== "P2002") {
+        throw err;
+      }
+      // Concurrent create on the same (userId, courseId) → return the existing row.
       const concurrent = await prisma.certificate.findUnique({
         where: { userId_courseId: { userId, courseId } },
       });
       if (concurrent) return toSummary(concurrent);
+      // No row for this user/course → it was a serial collision; retry with a fresh serial.
       if (attempt === 4) throw err;
     }
   }
