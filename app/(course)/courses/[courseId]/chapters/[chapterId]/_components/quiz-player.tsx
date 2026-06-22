@@ -55,6 +55,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
     scorePercent: number;
     showCorrectAnswers: boolean;
     questions: ResultQuestion[];
+    courseCompleted?: boolean;
   } | null>(null);
 
   const toggleOption = (questionId: string, optionId: string, single = false) => {
@@ -82,7 +83,13 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
       });
       setResult(response.data);
       toast.success(t.course.quizSubmitted);
-      router.refresh();
+      // Finishing a quiz can complete the whole course. Prompt the student to
+      // their certificate / Maverick page instead of stranding them here.
+      if (response.data?.courseCompleted) {
+        router.push(`/courses/${courseId}/complete`);
+      } else {
+        router.refresh();
+      }
     } catch (error: any) {
       toast.error(error?.response?.data || t.course.quizSubmitError);
     } finally {
@@ -199,6 +206,12 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
         {result && nextChapterId && (
           <Button onClick={() => router.push(`/courses/${courseId}/chapters/${nextChapterId}`)}>
             {t.course.nextChapter}
+            <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        )}
+        {result?.courseCompleted && (
+          <Button onClick={() => router.push(`/courses/${courseId}/complete`)}>
+            {t.course.finishCourse}
             <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
         )}

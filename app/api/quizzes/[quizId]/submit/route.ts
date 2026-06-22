@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { getProgress } from "@/actions/get-progress";
 
 const normalize = (value: string, caseSensitive = false) => {
   const trimmed = value.trim();
@@ -45,7 +46,7 @@ export async function POST(req: Request, props: { params: Promise<{ quizId: stri
   const quiz = await prisma.quiz.findUnique({
     where: { id: params.quizId },
     include: {
-      chapter: true,
+      chapter: { include: { module: true } },
       questions: {
         include: { options: true },
         orderBy: { position: "asc" },
@@ -146,9 +147,25 @@ export async function POST(req: Request, props: { params: Promise<{ quizId: stri
     return createdAttempt;
   });
 
+  // Roll up course-level completion exactly like the lesson path
+  // (chapters/[chapterId]/progress/route.ts). Completing a quiz chapter can be
+  // the final step of a course, so stamp the enrollment and tell the client to
+  // route the student to the certificate / Maverick page.
+  const courseId = quiz.chapter.module.courseId;
+  const percent = await getProgress(userId, courseId);
+  const courseCompleted = percent >= 100;
+  if (courseCompleted) {
+    await prisma.courseEnrollment.updateMany({
+      where: { userId, courseId, completedAt: null },
+      data: { completedAt: new Date() },
+    });
+  }
+
   return NextResponse.json({
     attempt,
     scorePercent,
+    courseId,
+    courseCompleted,
     showCorrectAnswers: quiz.showCorrectAnswers,
     questions: quiz.showCorrectAnswers ? quiz.questions : [],
   });
