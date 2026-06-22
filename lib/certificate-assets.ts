@@ -24,6 +24,14 @@ export async function loadLogoDataUrl(dark: boolean): Promise<string> {
   return `data:image/png;base64,${buf.toString("base64")}`;
 }
 
+// Full-bleed certificate artwork rasterized from the source PDFs in
+// public/certs. These are the exact designs; the OG route composites the
+// dynamic fields on top.
+export async function loadCertBackgroundDataUrl(punk: boolean): Promise<string> {
+  const buf = await readFile(join(process.cwd(), "assets/certs", punk ? "punk-bg.png" : "standard-bg.png"));
+  return `data:image/png;base64,${buf.toString("base64")}`;
+}
+
 export function getBaseUrl(req: Request): string {
   const envUrl = process.env.NEXT_PUBLIC_APP_URL;
   if (envUrl) return envUrl.replace(/\/$/, "");

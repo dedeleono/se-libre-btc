@@ -36,8 +36,7 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/api/certificates/[id]/image": [
       "./assets/fonts/**",
-      "./public/logo.png",
-      "./public/logoDark.png",
+      "./assets/certs/**",
     ],
   },
   // Stable in Next 15 (was experimental.serverComponentsExternalPackages).
