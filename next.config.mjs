@@ -27,6 +27,19 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   output: 'standalone',
+  // The certificate OG image route reads font + logo files from disk at runtime
+  // via readFile(process.cwd()/...). With output:'standalone' (and on Vercel's
+  // serverless functions) these non-imported files are NOT bundled unless we
+  // trace them explicitly. assets/fonts/** in particular is dropped, which makes
+  // ImageResponse throw ENOENT -> 500 text/plain (downloads as image.txt, broken
+  // preview). Trace the files this route depends on into its output bundle.
+  outputFileTracingIncludes: {
+    "/api/certificates/[id]/image": [
+      "./assets/fonts/**",
+      "./public/logo.png",
+      "./public/logoDark.png",
+    ],
+  },
   // Stable in Next 15 (was experimental.serverComponentsExternalPackages).
   serverExternalPackages: ["@better-auth/kysely-adapter"],
   env: {
