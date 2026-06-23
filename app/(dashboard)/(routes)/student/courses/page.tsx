@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { getCertificateEligibility } from "@/lib/certificate-eligibility";
 import { getServerMessages } from "@/lib/i18n-server";
 
 export const dynamic = "force-dynamic";
@@ -41,18 +40,6 @@ export default async function StudentCoursesPage() {
     orderBy: { lastAccessedAt: "desc" },
   });
 
-  const eligibleCertificateCourseIds = new Set(
-    (
-      await Promise.all(
-        enrollments.map(async (enrollment) => {
-          if (!enrollment.completedAt) return null;
-          const eligibility = await getCertificateEligibility(session.user.id, enrollment.courseId);
-          return eligibility.eligible ? enrollment.courseId : null;
-        })
-      )
-    ).filter((courseId): courseId is string => Boolean(courseId))
-  );
-
   return (
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-6 p-4 pt-6 md:p-8">
@@ -83,7 +70,7 @@ export default async function StudentCoursesPage() {
                   <Button asChild className="w-full">
                     <Link href={continueHref}>{t.common.continue}</Link>
                   </Button>
-                  {eligibleCertificateCourseIds.has(course.id) && (
+                  {enrollment.completedAt && (
                     <Button asChild variant="outline" className="w-full">
                       <Link href={`/courses/${course.id}/complete`}>{t.completion.certificateSectionTitle}</Link>
                     </Button>

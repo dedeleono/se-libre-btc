@@ -3,8 +3,8 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { getProgress } from "@/actions/get-progress";
 import { generateSerial, prefillRecipientName } from "@/lib/certificate";
-import { getCertificateEligibility } from "@/lib/certificate-eligibility";
 
 async function requireUser() {
   const session = await auth();
@@ -12,9 +12,13 @@ async function requireUser() {
   return session.user.id;
 }
 
-async function assertCertificateEligible(userId: string, courseId: string) {
-  const eligibility = await getCertificateEligibility(userId, courseId);
-  if (!eligibility.eligible) throw new Error(eligibility.reason);
+async function assertCourseComplete(userId: string, courseId: string) {
+  const enrollment = await prisma.courseEnrollment.findUnique({
+    where: { userId_courseId: { userId, courseId } },
+  });
+  if (enrollment?.completedAt) return;
+  const progress = await getProgress(userId, courseId);
+  if (progress < 100) throw new Error("COURSE_NOT_COMPLETE");
 }
 
 export type CertificateSummary = {
@@ -37,7 +41,7 @@ function toSummary(c: CertificateSummary): CertificateSummary {
 
 export async function ensureCertificate(courseId: string): Promise<CertificateSummary> {
   const userId = await requireUser();
-  await assertCertificateEligible(userId, courseId);
+  await assertCourseComplete(userId, courseId);
 
   const existing = await prisma.certificate.findUnique({
     where: { userId_courseId: { userId, courseId } },
@@ -83,7 +87,6 @@ export async function updateCertificate(input: {
   const userId = await requireUser();
   const cert = await prisma.certificate.findUnique({ where: { id: input.id } });
   if (!cert || cert.userId !== userId) throw new Error("NOT_FOUND");
-  await assertCertificateEligible(userId, cert.courseId);
 
   const data: { recipientName?: string; design?: "STANDARD" | "PUNK" } = {};
   if (input.recipientName !== undefined) {
