@@ -731,6 +731,12 @@ const es = {
     heroSubtitle: (course: string) => `Completaste el curso ${course}`,
     certificateSectionTitle: "Tu certificado",
     certificateSectionSubtitle: "Personaliza tu nombre y descarga tu certificado de finalización.",
+    certificateLockedTitle: "Certificado bloqueado",
+    certificateLockedScoreDescription: (score: number | null) =>
+      score === null
+        ? "Para obtener tu certificado, aprueba el quiz final con 100% (100 puntos)."
+        : `Tu mejor nota en el quiz final es ${score}%. Necesitas 100% (100 puntos) para obtener tu certificado.`,
+    retryFinalQuiz: "Reintentar quiz final",
     nameLabel: "Nombre en el certificado",
     namePlaceholder: "Tu nombre completo",
     designLabel: "Diseño",
@@ -1709,6 +1715,12 @@ const en: Messages = {
     heroSubtitle: (course: string) => `You completed the ${course} course`,
     certificateSectionTitle: "Your certificate",
     certificateSectionSubtitle: "Personalize your name and download your certificate of completion.",
+    certificateLockedTitle: "Certificate locked",
+    certificateLockedScoreDescription: (score: number | null) =>
+      score === null
+        ? "To get your certificate, pass the final quiz with 100% (100 points)."
+        : `Your best final quiz score is ${score}%. You need 100% (100 points) to get your certificate.`,
+    retryFinalQuiz: "Retry final quiz",
     nameLabel: "Name on certificate",
     namePlaceholder: "Your full name",
     designLabel: "Design",
