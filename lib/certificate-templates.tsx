@@ -54,14 +54,16 @@ export function StandardCertificate(p: CertTemplateProps) {
         <div style={{ fontFamily: "Playfair Display", fontWeight: 700, fontSize: nameSize(p.recipientName, 96), color: "#14110D" }}>{p.recipientName}</div>
       </div>
 
-      {/* Issue date + folio — bottom-left, inside the inner frame (frame bottom ~92%) */}
-      <div style={{ position: "absolute", left: 170, top: 1452, display: "flex", flexDirection: "column", lineHeight: 1.35, fontFamily: "Quicksand", fontSize: 30, color: "#5B4636" }}>
+      {/* Issue date + folio — bottom-left, above the corner bracket */}
+      <div style={{ position: "absolute", left: 168, top: 1392, display: "flex", flexDirection: "column", lineHeight: 1.3, fontFamily: "Quicksand", fontSize: 26, color: "#5B4636" }}>
         <span>{t.issuedOn}: {fmtDate(p.issuedAt, p.locale)}</span>
         <span>{t.serialLabel}: {p.serial}</span>
       </div>
 
-      {/* Verification QR — bottom-right, inside the inner frame */}
-      <img src={p.qrDataUrl} width={200} height={200} alt="" style={{ position: "absolute", right: 182, top: 1356 }} />
+      {/* Verification QR — bottom-right, framed, above the corner bracket */}
+      <div style={{ position: "absolute", right: 168, top: 1278, display: "flex", background: "#FFFFFF", padding: 8, border: "2px solid #14110D" }}>
+        <img src={p.qrDataUrl} width={184} height={184} alt="" />
+      </div>
     </div>
   );
 }
@@ -83,15 +85,16 @@ export function PunkCertificate(p: CertTemplateProps) {
         <div style={{ fontFamily: "Anton", fontSize: nameSize(p.recipientName, 88), color: "#F7931A", textTransform: "uppercase", letterSpacing: 4 }}>{p.recipientName}</div>
       </div>
 
-      {/* Issue date + folio — bottom-left, above the marquee strip (marquee top ~92%) */}
-      <div style={{ position: "absolute", left: 132, top: 1478, display: "flex", flexDirection: "column", lineHeight: 1.35, fontFamily: "Quicksand", fontSize: 26, color: "#D2C2A2" }}>
+      {/* Issue date + folio — bottom-left, in the narrow band between the inner
+          frame rule (~1490) and the marquee strip (~1560) */}
+      <div style={{ position: "absolute", left: 152, top: 1496, display: "flex", flexDirection: "column", lineHeight: 1.3, fontFamily: "Quicksand", fontSize: 20, color: "#E8DCC6" }}>
         <span>{t.issuedOn}: {fmtDate(p.issuedAt, p.locale)}</span>
         <span>{t.serialLabel}: {p.serial}</span>
       </div>
 
-      {/* Verification QR — bottom-right, above the marquee strip, on a light chip */}
-      <div style={{ position: "absolute", right: 110, top: 1286, display: "flex", background: "#FBF6EE", padding: 10 }}>
-        <img src={p.qrDataUrl} width={188} height={188} alt="" />
+      {/* Verification QR — bottom-right, framed chip, above the corner bracket */}
+      <div style={{ position: "absolute", right: 200, top: 1216, display: "flex", background: "#FBF6EE", padding: 12, border: "3px solid #F7931A" }}>
+        <img src={p.qrDataUrl} width={168} height={168} alt="" />
       </div>
     </div>
   );
