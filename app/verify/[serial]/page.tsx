@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import { getServerMessages } from "@/lib/i18n-server";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { getCertificateEligibility } from "@/lib/certificate-eligibility";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,9 @@ export default async function VerifyCertificatePage(props: { params: Promise<{ s
     include: { course: { select: { title: true } } },
   });
 
-  if (!cert) {
+  const eligibility = cert ? await getCertificateEligibility(cert.userId, cert.courseId) : null;
+
+  if (!cert || !eligibility?.eligible) {
     return (
       <div className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center gap-4 p-6 text-center">
         <XCircle className="h-14 w-14 text-destructive" />

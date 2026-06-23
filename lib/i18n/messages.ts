@@ -731,6 +731,12 @@ const es = {
     heroSubtitle: (course: string) => `Completaste el curso ${course}`,
     certificateSectionTitle: "Tu certificado",
     certificateSectionSubtitle: "Personaliza tu nombre y descarga tu certificado de finalización.",
+    certificateLockedTitle: "Certificado bloqueado",
+    certificateLockedScoreDescription: (score: number | null) =>
+      score === null
+        ? "Para desbloquear tu certificado, completa el quiz final con 100% (100 puntos)."
+        : `Tu mejor nota en el quiz final es ${score}%. Para desbloquear tu certificado necesitas 100% (100 puntos).`,
+    certificateLockedNoFinalQuizDescription: "Este curso aún no tiene un quiz final publicado para emitir certificados.",
     nameLabel: "Nombre en el certificado",
     namePlaceholder: "Tu nombre completo",
     designLabel: "Diseño",
@@ -739,6 +745,7 @@ const es = {
     download: "Descargar certificado",
     preview: "Vista previa del certificado",
     verifyHint: (url: string) => `Verifica este certificado en ${url}`,
+    retryFinalQuiz: "Reintentar quiz final",
     maverickKicker: "¿Listo para tu primer Bitcoin?",
     maverickTitle: "Comunícate con los expertos de Bitcoin",
     maverickPartner: "Maverick Capital Investment",
@@ -1709,6 +1716,12 @@ const en: Messages = {
     heroSubtitle: (course: string) => `You completed the ${course} course`,
     certificateSectionTitle: "Your certificate",
     certificateSectionSubtitle: "Personalize your name and download your certificate of completion.",
+    certificateLockedTitle: "Certificate locked",
+    certificateLockedScoreDescription: (score: number | null) =>
+      score === null
+        ? "To unlock your certificate, complete the final quiz with 100% (100 points)."
+        : `Your best final quiz score is ${score}%. To unlock your certificate you need 100% (100 points).`,
+    certificateLockedNoFinalQuizDescription: "This course does not have a published final quiz for issuing certificates yet.",
     nameLabel: "Name on certificate",
     namePlaceholder: "Your full name",
     designLabel: "Design",
@@ -1717,6 +1730,7 @@ const en: Messages = {
     download: "Download certificate",
     preview: "Certificate preview",
     verifyHint: (url: string) => `Verify this certificate at ${url}`,
+    retryFinalQuiz: "Retry final quiz",
     maverickKicker: "Ready for your first Bitcoin?",
     maverickTitle: "Comunícate con los expertos de Bitcoin",
     maverickPartner: "Maverick Capital Investment",

@@ -4,6 +4,7 @@ import { generateQrDataUrl } from "@/lib/qr";
 import { loadCertificateFonts, loadCertBackgroundDataUrl, getBaseUrl } from "@/lib/certificate-assets";
 import { StandardCertificate, PunkCertificate, CERT_WIDTH, CERT_HEIGHT } from "@/lib/certificate-templates";
 import { getServerLocale } from "@/lib/i18n-server";
+import { getCertificateEligibility } from "@/lib/certificate-eligibility";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,9 @@ export async function GET(req: Request, props0: { params: Promise<{ id: string }
     include: { course: { select: { title: true } } },
   });
   if (!cert) return new Response("Not found", { status: 404 });
+
+  const eligibility = await getCertificateEligibility(cert.userId, cert.courseId);
+  if (!eligibility.eligible) return new Response("Not found", { status: 404 });
 
   try {
     const locale = getServerLocale();
