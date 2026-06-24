@@ -115,6 +115,9 @@ const es = {
     faqSubtitle: "Resolvemos tus dudas más comunes para ayudarte a conocer mejor nuestros servicios.",
     faqMissing: "¿No encuentras lo que buscas?",
     contactDirectly: "Contáctanos directamente",
+    sponsorsEyebrow: "Hecho posible gracias a",
+    sponsorCourseRole: "Curso",
+    sponsorPlatformRole: "Plataforma",
     faqs: [
       {
         question: "¿Cómo puedo apoyar este proyecto?",
@@ -160,7 +163,7 @@ const es = {
     newsletterTitle: "Mantente al día",
     newsletterSubtitle: "Recibe novedades y recursos de aprendizaje.",
     footerFollow: "Síguenos",
-    copyright: "© 2025 Se Libre. Todos los derechos reservados.",
+    copyright: "© 2026 Se Libre. Todos los derechos reservados.",
     searchGuide: "Buscar guía...",
   },
   auth: {
@@ -1108,6 +1111,9 @@ const en: Messages = {
     faqSubtitle: "We answer the most common questions to help you understand our services.",
     faqMissing: "Can’t find what you need?",
     contactDirectly: "Contact us directly",
+    sponsorsEyebrow: "Made possible thanks to",
+    sponsorCourseRole: "Course",
+    sponsorPlatformRole: "Platform",
     faqs: [
       {
         question: "What payment methods are available?",
@@ -1153,7 +1159,7 @@ const en: Messages = {
     newsletterTitle: "Stay up to date",
     newsletterSubtitle: "Receive news and learning resources.",
     footerFollow: "Follow us",
-    copyright: "© 2025 Se Libre. All rights reserved.",
+    copyright: "© 2026 Se Libre. All rights reserved.",
     searchGuide: "Search guides...",
   },
   auth: {
