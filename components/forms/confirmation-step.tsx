@@ -40,14 +40,14 @@ export default function ConfirmationStep({
           type="button"
           variant="ghost"
           onClick={onBack}
-          className="text-gray-600"
+          className="text-muted-foreground"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t.payments.goBack}
         </Button>
         <Button
           onClick={resetSteps}
-          className="bg-green-500 text-white"
+          className="bg-success text-success-foreground"
         >
           {t.forms.completeOrder}
         </Button>

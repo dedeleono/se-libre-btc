@@ -80,7 +80,7 @@ const HeaderMenu = () => {
                   {t.nav.menu}
                 </SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col gap-4 mt-4">
+              <div className="mt-4 flex flex-col gap-4 px-4 pb-4">
                 {navItems.map((item) => (
                   <Link
                     key={item.href}

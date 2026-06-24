@@ -23,7 +23,7 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800"
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-[hsl(var(--primary)/0.1)] dark:bg-foreground"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -36,9 +36,9 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
                 transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                 className="mb-4 flex justify-center"
               >
-                <Loader2 className="w-12 h-12 text-blue-500" />
+                <Loader2 className="w-12 h-12 text-primary" />
               </motion.div>
-              <motion.h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
+              <motion.h2 className="text-2xl font-semibold text-foreground dark:text-foreground mb-2">
                 Preparando tu sesión...
               </motion.h2>
             </motion.div>

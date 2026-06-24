@@ -69,7 +69,7 @@ export const ModuleDescriptionForm = ({
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4">
+    <div className="mt-6 bg-muted rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         {t.admin.description}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
@@ -86,7 +86,7 @@ export const ModuleDescriptionForm = ({
         <div
           className={cn(
             "text-sm mt-2",
-            !initialData.description && "text-slate-500 italic"
+            !initialData.description && "text-muted-foreground italic"
           )}
         >
           {!initialData.description && t.admin.noDescription}

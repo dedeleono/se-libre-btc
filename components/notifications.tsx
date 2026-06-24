@@ -326,19 +326,19 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       switch (type) {
         case "PAYMENT_RECEIVED":
         case "PAYMENT_PENDING":
-          return <DollarIcon className="w-4 h-4 text-green-500" />;
+          return <DollarIcon className="w-4 h-4 text-success" />;
         case "COURSE_ENROLLED":
         case "LEARNING_PATH_ENROLLED":
         case "COHORT_ENROLLED":
         case "COURSE_COMPLETED":
         case "QUIZ_COMPLETED":
         case "LIVE_SESSION_REMINDER":
-          return <FileIcon className="w-4 h-4 text-blue-500" />;
+          return <FileIcon className="w-4 h-4 text-[var(--terracota-500)]" />;
         case "USER_SIGNUP":
-          return <UserIcon className="w-4 h-4 text-purple-500" />;
+          return <UserIcon className="w-4 h-4 text-[var(--terracota-500)]" />;
         case "FORUM_POST":
         case "FORUM_REPLY":
-          return <MessageIcon className="w-4 h-4 text-orange-500" />;
+          return <MessageIcon className="w-4 h-4 text-primary" />;
         default:
           return <BellIcon className="w-4 h-4" />;
       }

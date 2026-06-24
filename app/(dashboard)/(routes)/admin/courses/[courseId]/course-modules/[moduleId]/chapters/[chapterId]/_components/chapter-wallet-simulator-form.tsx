@@ -63,7 +63,7 @@ export const ChapterWalletSimulatorForm = ({
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4">
+    <div className="mt-6 bg-muted rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         {t.admin.walletSimulator}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
@@ -77,7 +77,7 @@ export const ChapterWalletSimulatorForm = ({
         </Button>
       </div>
       {!isEditing && (
-        <p className={cn("text-sm mt-2", !initialData.hasWalletSimulator && "text-slate-500 italic")}>
+        <p className={cn("text-sm mt-2", !initialData.hasWalletSimulator && "text-muted-foreground italic")}>
           {initialData.hasWalletSimulator ? t.admin.walletSimulatorOn : t.admin.walletSimulatorOff}
         </p>
       )}

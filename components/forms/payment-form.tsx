@@ -77,28 +77,28 @@ export default function PaymentForm({
           className="space-y-8"
         >
           <div className="space-y-2 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white/90">
+            <h2 className="text-2xl font-bold text-foreground dark:text-white/90">
               {t.payments.summary}
             </h2>
-            <p className="text-sm text-gray-500 dark:text-white/70">
+            <p className="text-sm text-muted-foreground dark:text-white/70">
               {t.payments.reviewDetails}
             </p>
           </div>
 
-          <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/40 p-6 space-y-6 shadow-sm">
-            <div className="flex justify-between items-center pb-4 border-b border-gray-100">
-              <span className="text-sm font-medium text-gray-600 dark:text-white/70">{t.payments.selectedProduct}</span>
+          <div className="rounded-xl border border-border dark:border-white/10 bg-white dark:bg-black/40 p-6 space-y-6 shadow-sm">
+            <div className="flex justify-between items-center pb-4 border-b border-border">
+              <span className="text-sm font-medium text-muted-foreground dark:text-white/70">{t.payments.selectedProduct}</span>
               <span className="font-semibold text-accent dark:text-secondary">{productName}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-gray-600 dark:text-white/70">{t.auth.email}</span>
-              <span className="font-semibold text-gray-900 dark:text-white/90">{customerEmail}</span>
+              <span className="text-sm font-medium text-muted-foreground dark:text-white/70">{t.auth.email}</span>
+              <span className="font-semibold text-foreground dark:text-white/90">{customerEmail}</span>
             </div>
-            <div className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900/20 dark:to-sky-900/10 rounded-xl p-6 border border-sky-100 dark:border-sky-500/20 mt-6">
+            <div className="bg-gradient-to-br from-[hsl(var(--primary)/0.1)] to-white dark:from-[hsl(var(--primary)/0.2)] dark:to-[hsl(var(--primary)/0.1)] rounded-xl p-6 border border-[hsl(var(--primary)/0.1)] dark:border-[var(--naranja-500)]/20 mt-6">
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-gray-700 dark:text-white/70">{t.payments.access}</span>
-                  <span className="text-xs text-gray-500 dark:text-white/50">{t.payments.oneTimePayment}</span>
+                  <span className="text-sm font-medium text-foreground dark:text-white/70">{t.payments.access}</span>
+                  <span className="text-xs text-muted-foreground dark:text-white/50">{t.payments.oneTimePayment}</span>
                 </div>
                 <span className="text-xl font-bold text-success dark:text-secondary">Q {amount.toFixed(2)}</span>
               </div>
@@ -109,8 +109,8 @@ export default function PaymentForm({
             <Button
               onClick={handlePayment}
               disabled={isProcessing}
-              className="w-full h-14 text-base font-semibold bg-sky-900 hover:bg-sky-800 
-                dark:bg-sky-700/90 dark:hover:bg-sky-800/90 transition-all duration-200 rounded-xl shadow-md hover:shadow-lg"
+              className="w-full h-14 text-base font-semibold bg-primary hover:bg-[hsl(var(--primary)/0.9)]
+                dark:bg-primary dark:hover:bg-[hsl(var(--primary)/0.9)] transition-all duration-200 rounded-xl shadow-md hover:shadow-lg"
               size="lg"
             >
               {isProcessing ? (
@@ -126,9 +126,9 @@ export default function PaymentForm({
               )}
             </Button>
 
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-white/70 p-3">
-              <ShieldCheck className="h-5 w-5 text-green-500" />
-              <span className="text-xs">{t.payments.securePayment} <a href="https://recurrente.com" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 font-semibold text-indigo-700 hover:text-indigo-500">Recurrente</a></span>
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground dark:text-white/70 p-3">
+              <ShieldCheck className="h-5 w-5 text-success" />
+              <span className="text-xs">{t.payments.securePayment} <a href="https://recurrente.com" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 font-semibold text-[var(--terracota-700)] hover:text-[var(--terracota-500)]">Recurrente</a></span>
             </div>
           </div>
 
@@ -137,7 +137,7 @@ export default function PaymentForm({
               type="button"
               variant="ghost"
               onClick={onBack}
-              className="text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors duration-200"
+              className="text-muted-foreground dark:text-white/70 hover:text-foreground dark:hover:text-white transition-colors duration-200"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               {t.payments.goBack}

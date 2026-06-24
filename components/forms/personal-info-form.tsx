@@ -73,24 +73,24 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
           >
             <Label 
               htmlFor="name" 
-              className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2"
+              className="text-sm font-medium text-foreground dark:text-white/70 flex items-center gap-2"
             >
-              <User className="h-4 w-4 text-gray-500 dark:text-white/50" />
+              <User className="h-4 w-4 text-muted-foreground dark:text-white/50" />
               {t.forms.fullName}
             </Label>
             <Input
               {...register("name")}
               type="text"
               id="name"
-              className={`w-full transition-all duration-200 border-gray-200 dark:border-white/10 dark:bg-black/40 dark:text-white 
-                dark:placeholder:text-white/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
-                dark:focus:border-blue-400 dark:focus:ring-blue-400/20 ${
-                  errors.name ? "border-red-500 dark:border-red-500" : ""
+              className={`w-full transition-all duration-200 border-border dark:border-white/10 dark:bg-black/40 dark:text-white
+                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
+                dark:focus:border-[var(--naranja-500)] dark:focus:ring-[hsl(var(--primary)/0.2)] ${
+                  errors.name ? "border-destructive dark:border-destructive" : ""
                 }`}
               placeholder={t.forms.fullNamePlaceholder}
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+              <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
             )}
           </motion.div>
 
@@ -103,26 +103,26 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
           >
             <Label 
               htmlFor="email" 
-              className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2"
+              className="text-sm font-medium text-foreground dark:text-white/70 flex items-center gap-2"
             >
-              <Mail className="h-4 w-4 text-gray-500 dark:text-white/50" />
+              <Mail className="h-4 w-4 text-muted-foreground dark:text-white/50" />
               {t.auth.email}
             </Label>
             <Input
               {...register("email")}
               type="email"
               id="email"
-              className={`w-full transition-all duration-200 border-gray-200 dark:border-white/10 dark:bg-black/40 dark:text-white 
-                dark:placeholder:text-white/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
-                dark:focus:border-blue-400 dark:focus:ring-blue-400/20 ${
-                  errors.email ? "border-red-500 dark:border-red-500" : ""
-                } ${emailFromParams ? "bg-gray-100" : ""}`}
+              className={`w-full transition-all duration-200 border-border dark:border-white/10 dark:bg-black/40 dark:text-white
+                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
+                dark:focus:border-[var(--naranja-500)] dark:focus:ring-[hsl(var(--primary)/0.2)] ${
+                  errors.email ? "border-destructive dark:border-destructive" : ""
+                } ${emailFromParams ? "bg-muted" : ""}`}
               placeholder={t.forms.emailPlaceholderLong}
               disabled={!!emailFromParams}
               readOnly={!!emailFromParams}
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="text-destructive text-sm mt-1">{errors.email.message}</p>
             )}
           </motion.div>
 
@@ -135,24 +135,24 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
           >
             <Label 
               htmlFor="phone" 
-              className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2"
+              className="text-sm font-medium text-foreground dark:text-white/70 flex items-center gap-2"
             >
-              <Phone className="h-4 w-4 text-gray-500 dark:text-white/50" />
+              <Phone className="h-4 w-4 text-muted-foreground dark:text-white/50" />
               {t.forms.phoneNumber}
             </Label>
             <Input
               {...register("phone")}
               type="tel"
               id="phone"
-              className={`w-full transition-all duration-200 border-gray-200 dark:border-white/10 dark:bg-black/40 dark:text-white 
-                dark:placeholder:text-white/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
-                dark:focus:border-blue-400 dark:focus:ring-blue-400/20 ${
-                  errors.phone ? "border-red-500 dark:border-red-500" : ""
+              className={`w-full transition-all duration-200 border-border dark:border-white/10 dark:bg-black/40 dark:text-white
+                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
+                dark:focus:border-[var(--naranja-500)] dark:focus:ring-[hsl(var(--primary)/0.2)] ${
+                  errors.phone ? "border-destructive dark:border-destructive" : ""
                 }`}
               placeholder={t.forms.phoneNumberPlaceholder}
             />
             {errors.phone && (
-              <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+              <p className="text-destructive text-sm mt-1">{errors.phone.message}</p>
             )}
           </motion.div>
 
@@ -165,24 +165,24 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
           >
             <Label 
               htmlFor="dpi" 
-              className="text-sm font-medium text-gray-700 dark:text-white/70 flex items-center gap-2"
+              className="text-sm font-medium text-foreground dark:text-white/70 flex items-center gap-2"
             >
-              <CreditCard className="h-4 w-4 text-gray-500 dark:text-white/50" />
+              <CreditCard className="h-4 w-4 text-muted-foreground dark:text-white/50" />
               {t.forms.dpiNumber}
             </Label>
             <Input
               {...register("dpi")}
               type="text"
               id="dpi"
-              className={`w-full transition-all duration-200 border-gray-200 dark:border-white/10 dark:bg-black/40 dark:text-white 
-                dark:placeholder:text-white/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
-                dark:focus:border-blue-400 dark:focus:ring-blue-400/20 ${
-                  errors.dpi ? "border-red-500 dark:border-red-500" : ""
+              className={`w-full transition-all duration-200 border-border dark:border-white/10 dark:bg-black/40 dark:text-white
+                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
+                dark:focus:border-[var(--naranja-500)] dark:focus:ring-[hsl(var(--primary)/0.2)] ${
+                  errors.dpi ? "border-destructive dark:border-destructive" : ""
                 }`}
               placeholder={t.forms.dpiPlaceholder}
             />
             {errors.dpi && (
-              <p className="text-red-500 text-sm mt-1">{errors.dpi.message}</p>
+              <p className="text-destructive text-sm mt-1">{errors.dpi.message}</p>
             )}
           </motion.div>
         </div>
@@ -195,8 +195,8 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
         >
           <Button
             type="submit"
-            className="w-full bg-sky-900 hover:bg-sky-800 dark:bg-sky-700/90 dark:hover:bg-sky-800/90 
-              text-white transition-colors duration-200 py-6"
+            className="w-full bg-primary hover:bg-[hsl(var(--primary)/0.9)] dark:bg-primary dark:hover:bg-[hsl(var(--primary)/0.9)]
+              text-primary-foreground transition-colors duration-200 py-6"
           >
             {t.common.continue}
           </Button>

@@ -65,14 +65,14 @@ export const ModulesList = ({ items, onReorder, onEdit }: ModulesListProps) => {
                 {(provided) => (
                   <div
                     className={cn(
-                      "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700rounded-md mb-4 text-sm"
+                      "flex items-center gap-x-2 bg-secondary border-border border text-foreground rounded-md mb-4 text-sm"
                     )}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                   >
                     <div
                       className={cn(
-                        "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition-colors"
+                        "px-2 py-3 border-r border-r-border hover:bg-muted rounded-l-md transition-colors"
                       )}
                       {...provided.dragHandleProps}
                     >

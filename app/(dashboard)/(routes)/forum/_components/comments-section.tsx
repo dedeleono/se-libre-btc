@@ -102,7 +102,7 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
                     })}
                   </span>
                 </div>
-                <p className="text-sm text-slate-600">{comment.content}</p>
+                <p className="text-sm text-muted-foreground">{comment.content}</p>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
@@ -188,7 +188,7 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
                               })}
                             </span>
                           </div>
-                          <p className="text-sm text-slate-600">{reply.content}</p>
+                          <p className="text-sm text-muted-foreground">{reply.content}</p>
                         </div>
                       </div>
                     ))}

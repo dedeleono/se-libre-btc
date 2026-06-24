@@ -38,7 +38,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mt-6 text-lg leading-8 text-gray-100 max-w-2xl"
+              className="mt-6 text-lg leading-8 text-foreground/90 max-w-2xl"
             >
               {t.public.heroSubtitle}
             </motion.p>
@@ -50,21 +50,21 @@ const HeroSection = () => {
             >
               <Link
                 href="/courses"
-                className="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold text-white rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500/90 dark:hover:bg-emerald-600/90 shadow-lg hover:shadow-emerald-500/25"
+                className="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold text-success-foreground rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-success hover:bg-[hsl(var(--success)/0.9)] dark:bg-success dark:hover:bg-[hsl(var(--success)/0.9)] shadow-lg hover:shadow-success/25"
               >
                 {t.public.start}
                 <ArrowRight className="w-5 h-5" />
               </Link>
               {/* <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold text-white rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-sky-700 hover:bg-sky-800 dark:bg-sky-600/90 dark:hover:bg-sky-700/90 shadow-lg hover:shadow-sky-500/25"
+                className="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold text-primary-foreground rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-primary hover:bg-[hsl(var(--primary)/0.9)] dark:bg-primary dark:hover:bg-[hsl(var(--primary)/0.9)] shadow-lg hover:shadow-primary/25"
               >
                 Más información
                 <Info className="w-5 h-5" />
               </Link> */}
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="inline-flex items-center gap-2 px-6 py-7 text-base font-semibold text-white rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-sky-700 hover:bg-sky-800 dark:bg-sky-600/90 dark:hover:bg-sky-700/90 shadow-lg hover:shadow-sky-500/25">
+                  <Button className="inline-flex items-center gap-2 px-6 py-7 text-base font-semibold text-primary-foreground rounded-lg transition-all duration-300 transform hover:scale-[1.015] bg-primary hover:bg-[hsl(var(--primary)/0.9)] dark:bg-primary dark:hover:bg-[hsl(var(--primary)/0.9)] shadow-lg hover:shadow-primary/25">
                     {t.public.viewTutorial}
                     <Info className="w-5 h-5" />
                   </Button>

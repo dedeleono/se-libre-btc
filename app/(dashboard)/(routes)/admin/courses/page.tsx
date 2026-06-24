@@ -28,8 +28,8 @@ export default async function CoursesPage() {
       <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-start gap-4">
-            <div className="rounded-xl border bg-emerald-500/10 p-3">
-              <BookOpen className="h-7 w-7 text-emerald-600" />
+            <div className="rounded-xl border bg-[hsl(var(--success)/0.12)] p-3">
+              <BookOpen className="h-7 w-7 text-success" />
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-balance">{t.nav.courses}</h1>

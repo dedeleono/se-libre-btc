@@ -45,7 +45,7 @@ export default function ThemeToggle() {
             transition={{ duration: 0.2 }}
             className="absolute"
           >
-            <IoMdSunny className="h-5 w-5 text-yellow-500" />
+            <IoMdSunny className="h-5 w-5 text-[var(--maiz-500)]" />
           </motion.div>
           <motion.div
             initial={false}
@@ -57,7 +57,7 @@ export default function ThemeToggle() {
             transition={{ duration: 0.2 }}
             className="absolute"
           >
-            <IoMdMoon className="h-5 w-5 text-sky-300" />
+            <IoMdMoon className="h-5 w-5 text-[var(--terracota-500)]" />
           </motion.div>
           <span className="sr-only">Toggle theme</span>
         </Button>
@@ -73,7 +73,7 @@ export default function ThemeToggle() {
             hover:bg-white/10 focus:bg-white/10 dark:hover:bg-white/5 
             dark:focus:bg-white/5 transition-colors"
         >
-          <IoMdSunny className="h-4 w-4 text-yellow-500" />
+          <IoMdSunny className="h-4 w-4 text-[var(--maiz-500)]" />
           Light
         </DropdownMenuItem>
         <DropdownMenuItem 
@@ -82,7 +82,7 @@ export default function ThemeToggle() {
             hover:bg-white/10 focus:bg-white/10 dark:hover:bg-white/5 
             dark:focus:bg-white/5 transition-colors"
         >
-          <IoMdMoon className="h-4 w-4 text-sky-300" />
+          <IoMdMoon className="h-4 w-4 text-[var(--terracota-500)]" />
           Dark
         </DropdownMenuItem>
         <DropdownMenuItem 
@@ -92,7 +92,7 @@ export default function ThemeToggle() {
             dark:focus:bg-white/5 transition-colors"
         >
           <svg 
-            className="h-4 w-4 text-gray-400"
+            className="h-4 w-4 text-muted-foreground"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth="2"

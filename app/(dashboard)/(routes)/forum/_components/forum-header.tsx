@@ -40,9 +40,9 @@ export const ForumHeader = ({
         {canCreatePosts && (
           <Button 
             onClick={handleOpenForm}
-            className="w-full sm:w-auto bg-gradient-to-r from-primary/80 to-primary dark:from-sky-600 dark:to-sky-800
-              hover:from-primary hover:to-primary/80 dark:hover:from-sky-500 dark:hover:to-sky-700
-              text-white shadow-lg dark:shadow-sky-900/20 
+            className="w-full sm:w-auto bg-gradient-to-r from-primary/80 to-primary dark:from-primary dark:to-[hsl(var(--primary)/0.8)]
+              hover:from-primary hover:to-primary/80 dark:hover:from-primary dark:hover:to-[hsl(var(--primary)/0.9)]
+              text-white shadow-lg dark:shadow-primary/20
               dark:border-white/[0.05] dark:backdrop-blur-sm
               transition-all duration-300 dark-glow"
           >

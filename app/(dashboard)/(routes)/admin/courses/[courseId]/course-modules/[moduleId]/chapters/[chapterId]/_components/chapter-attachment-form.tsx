@@ -59,7 +59,7 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4">
+    <div className="mt-6 bg-muted rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         {t.course.resources}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">
@@ -75,7 +75,7 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
       {!isEditing && (
         <>
           {initialData.attachments.length === 0 && (
-            <p className="text-sm mt-2 text-slate-500 italic">
+            <p className="text-sm mt-2 text-muted-foreground italic">
               {t.admin.noFiles}
             </p>
           )}
@@ -85,7 +85,7 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
                 {initialData.attachments.map((attachment) => (
                   <div
                     key={attachment.id}
-                    className="flex items-center p-3 w-full bg-sky-100 border-sky-200 border text-sky-700 rounded-md justify-between"
+                    className="flex items-center p-3 w-full bg-[hsl(var(--primary)/0.1)] border-[var(--naranja-500)] border text-[var(--terracota-700)] rounded-md justify-between"
                   >
                     <File className="h-4 w-4 mr-2 flex-shrink-0" />
                     <p className="text-xs line-clamp-1">{attachment.name}</p>
@@ -97,7 +97,7 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
                     {deletingId !== attachment.id && (
                       <button
                         onClick={() => onDelete(attachment.id)}
-                        className="ml-2 -my-[11px] -mr-[11px] inline-flex items-center justify-center p-[11px] hover:opacity-50 transition-opacity bg-transparent text-red-500 border-none shadow-none active:scale-[0.96]"
+                        className="ml-2 -my-[11px] -mr-[11px] inline-flex items-center justify-center p-[11px] hover:opacity-50 transition-opacity bg-transparent text-destructive border-none shadow-none active:scale-[0.96]"
                       >
                         <X className="h-4 w-4" />
                       </button>

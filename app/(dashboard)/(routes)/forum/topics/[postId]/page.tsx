@@ -175,8 +175,8 @@ export default async function PostPage(props: PostPageProps) {
             {post.learningPath && (
               <Badge
                 variant="secondary"
-                className="bg-sky-100 text-sky-700 hover:bg-sky-200
-                  dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20"
+                className="bg-[hsl(var(--primary)/0.1)] text-[var(--terracota-700)] hover:bg-[hsl(var(--primary)/0.2)]
+                  dark:bg-[hsl(var(--primary)/0.1)] dark:text-[var(--terracota-500)] dark:hover:bg-[hsl(var(--primary)/0.2)]"
               >
                 {post.learningPath.title}
               </Badge>
@@ -185,8 +185,8 @@ export default async function PostPage(props: PostPageProps) {
             {post.cohort && (
               <Badge
                 variant="secondary"
-                className="bg-purple-100 text-purple-700 hover:bg-purple-200
-                  dark:bg-purple-500/10 dark:text-purple-300 dark:hover:bg-purple-500/20"
+                className="bg-[hsl(var(--primary)/0.1)] text-[var(--terracota-700)] hover:bg-[hsl(var(--primary)/0.2)]
+                  dark:bg-[hsl(var(--primary)/0.1)] dark:text-[var(--terracota-500)] dark:hover:bg-[hsl(var(--primary)/0.2)]"
               >
                 {post.cohort.title}
               </Badge>
@@ -195,8 +195,8 @@ export default async function PostPage(props: PostPageProps) {
             {post.course && (
               <Badge
                 variant="outline"
-                className="border-emerald-200 bg-emerald-50 text-emerald-700
-                  dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-300"
+                className="border-success bg-[hsl(var(--success)/0.12)] text-success
+                  dark:border-success dark:bg-[hsl(var(--success)/0.12)] dark:text-success"
               >
                 {post.course.title}
               </Badge>
@@ -205,9 +205,9 @@ export default async function PostPage(props: PostPageProps) {
             {post.meetingDate && (
               <Badge
                 variant="outline"
-                className="border-orange-200 bg-orange-100 text-orange-700
-                  dark:border-orange-400/20 dark:bg-orange-500/10 dark:text-orange-300
-                  dark:hover:bg-orange-500/20"
+                className="border-primary bg-[hsl(var(--primary)/0.12)] text-primary
+                  dark:border-primary dark:bg-[hsl(var(--primary)/0.12)] dark:text-primary
+                  dark:hover:bg-[hsl(var(--primary)/0.2)]"
               >
                 <Video className="h-3 w-3 mr-1.5" />
                 {format(post.meetingDate, "MMM d, yyyy 'at' h:mm a")}

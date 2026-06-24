@@ -116,7 +116,7 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
                     })}
                   </span>
                 </div>
-                <p className="text-sm text-slate-600 dark:text-white/70">
+                <p className="text-sm text-muted-foreground dark:text-white/70">
                   {discussion.content}
                 </p>
               </div>

@@ -197,13 +197,13 @@ export default function ResourcesPage(props: ResourcePageProps) {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-black mb-2 text-success dark:text-secondary font-['Open_Sans'] text-balance">{t.course.courseResources}</h1>
-        <p className="text-slate-600 dark:text-white/70 font-['Open_Sans'] text-sm">
+        <p className="text-muted-foreground dark:text-white/70 font-['Open_Sans'] text-sm">
           {t.course.resourcesSubtitle}
         </p>
       </div>
 
       <Tabs defaultValue="all" className="space-y-6">
-        <TabsList className="bg-slate-100 dark:bg-success/10 text-slate-600 dark:text-white/70">
+        <TabsList className="bg-muted dark:bg-success/10 text-muted-foreground dark:text-white/70">
           {Object.entries(resourceTypes).map(([key, label]) => (
             <TabsTrigger 
               key={key} 
@@ -215,7 +215,7 @@ export default function ResourcesPage(props: ResourcePageProps) {
             >
               {label}
               {groupedResources[key]?.length > 0 && (
-                <span className="ml-2 text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full tabular-nums
+                <span className="ml-2 text-xs bg-secondary text-foreground px-2 py-0.5 rounded-full tabular-nums
                   dark:bg-success/10 dark:text-success/90">
                   {groupedResources[key].length}
                 </span>
@@ -227,11 +227,11 @@ export default function ResourcesPage(props: ResourcePageProps) {
         <TabsContent value="all" className="space-y-4">
           {Object.entries(groupedResources).map(([type, resources]) => 
             resources.length > 0 && (
-              <Card key={type} className="border-slate-200 dark:bg-gradient-to-br dark:from-card/50 
+              <Card key={type} className="border-border dark:bg-gradient-to-br dark:from-card/50
                 dark:to-background/30 dark:border-white/[0.05] dark:backdrop-blur-xl">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2 text-slate-700 dark:text-white/90">
-                    {React.createElement(getFileIcon(type), { className: "h-5 w-5 text-slate-600 dark:text-white/70" })}
+                  <CardTitle className="text-lg flex items-center gap-2 text-foreground dark:text-white/90">
+                    {React.createElement(getFileIcon(type), { className: "h-5 w-5 text-muted-foreground dark:text-white/70" })}
                     {resourceTypes[type as keyof typeof resourceTypes] || type}
                   </CardTitle>
                 </CardHeader>
@@ -239,28 +239,28 @@ export default function ResourcesPage(props: ResourcePageProps) {
                   {resources.map((resource) => (
                     <div
                       key={resource.id}
-                      className="flex items-center p-3 w-full bg-sky-50 border-sky-200 border text-sky-700 
-                        rounded-md hover:bg-sky-100 transition-colors
-                        dark:bg-sky-500/5 dark:border-sky-500/10 dark:text-sky-300"
+                      className="flex items-center p-3 w-full bg-[hsl(var(--primary)/0.1)] border-[var(--naranja-500)] border text-[var(--terracota-700)]
+                        rounded-md hover:bg-[hsl(var(--primary)/0.15)] transition-colors
+                        dark:bg-[hsl(var(--primary)/0.05)] dark:border-[var(--naranja-500)] dark:text-[var(--terracota-500)]"
                     >
                       {React.createElement(getFileIcon(resource.type), { 
-                        className: "h-4 w-4 mr-2 flex-shrink-0 dark:text-sky-300/90" 
+                        className: "h-4 w-4 mr-2 flex-shrink-0 dark:text-[var(--terracota-500)]"
                       })}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate dark:text-sky-300">
+                        <p className="text-sm font-medium truncate dark:text-[var(--terracota-500)]">
                           {resource.name}
                         </p>
-                        <p className="text-xs text-sky-600/80 truncate dark:text-sky-300/70">
+                        <p className="text-xs text-[var(--terracota-700)] truncate dark:text-[var(--terracota-500)]">
                           {resource.source}
                         </p>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="ml-2 hover:bg-sky-200 dark:hover:bg-sky-500/10"
+                        className="ml-2 hover:bg-[hsl(var(--primary)/0.15)] dark:hover:bg-[hsl(var(--primary)/0.1)]"
                         onClick={() => window.open(resource.url, "_blank")}
                       >
-                        <Download className="h-4 w-4 dark:text-sky-300" />
+                        <Download className="h-4 w-4 dark:text-[var(--terracota-500)]" />
                       </Button>
                     </div>
                   ))}
@@ -281,28 +281,28 @@ export default function ResourcesPage(props: ResourcePageProps) {
                     {groupedResources[type]?.map((resource) => (
                       <div
                         key={resource.id}
-                        className="flex items-center p-3 w-full bg-sky-50 border-sky-200 border text-sky-700 
-                          rounded-md hover:bg-sky-100 transition-colors
-                          dark:bg-sky-500/5 dark:border-sky-500/10 dark:text-sky-300"
+                        className="flex items-center p-3 w-full bg-[hsl(var(--primary)/0.1)] border-[var(--naranja-500)] border text-[var(--terracota-700)]
+                          rounded-md hover:bg-[hsl(var(--primary)/0.15)] transition-colors
+                          dark:bg-[hsl(var(--primary)/0.05)] dark:border-[var(--naranja-500)] dark:text-[var(--terracota-500)]"
                       >
                         {React.createElement(getFileIcon(resource.type), { 
-                          className: "h-4 w-4 mr-2 flex-shrink-0 dark:text-sky-300/90" 
+                          className: "h-4 w-4 mr-2 flex-shrink-0 dark:text-[var(--terracota-500)]"
                         })}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate dark:text-sky-300">
+                          <p className="text-sm font-medium truncate dark:text-[var(--terracota-500)]">
                             {resource.name}
                           </p>
-                          <p className="text-xs text-sky-600/80 truncate dark:text-sky-300/70">
+                          <p className="text-xs text-[var(--terracota-700)] truncate dark:text-[var(--terracota-500)]">
                             {resource.source}
                           </p>
                         </div>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="ml-2 hover:bg-sky-200 dark:hover:bg-sky-500/10"
+                          className="ml-2 hover:bg-[hsl(var(--primary)/0.15)] dark:hover:bg-[hsl(var(--primary)/0.1)]"
                           onClick={() => window.open(resource.url, "_blank")}
                         >
-                          <Download className="h-4 w-4 dark:text-sky-300" />
+                          <Download className="h-4 w-4 dark:text-[var(--terracota-500)]" />
                         </Button>
                       </div>
                     ))}

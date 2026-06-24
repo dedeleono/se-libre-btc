@@ -37,7 +37,7 @@ export const ResourcesCard = ({ attachments }: ResourcesCardProps) => {
               {attachments.map((attachment) => (
                 <div
                   key={attachment.id}
-                  className="flex items-center p-3 w-full bg-sky-50 border-sky-200 border text-sky-700 rounded-md"
+                  className="flex items-center p-3 w-full bg-[hsl(var(--primary)/0.1)] border-[var(--naranja-500)] border text-[var(--terracota-700)] rounded-md"
                 >
                   <FileText className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span className="text-sm line-clamp-1 flex-1">

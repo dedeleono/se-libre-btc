@@ -114,9 +114,9 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
       </div>
 
       {result && (
-        <div className="rounded-md border bg-slate-50 p-4">
+        <div className="rounded-md border bg-muted p-4">
           <div className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-emerald-600" />
+            <CheckCircle className="h-5 w-5 text-success" />
             <p className="font-medium tabular-nums">
               {t.course.quizComplete(result.scorePercent)}
             </p>
@@ -169,7 +169,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
                         />
                         <span>{option.content}</span>
                         {showAnswers && resultQuestion?.options.find((item) => item.id === option.id)?.isCorrect && (
-                          <span className="ml-auto text-xs font-medium text-emerald-700">{t.course.correct}</span>
+                          <span className="ml-auto text-xs font-medium text-success">{t.course.correct}</span>
                         )}
                       </label>
                     );
@@ -178,7 +178,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
               )}
 
               {showAnswers && question.type === "FILL_IN_THE_BLANK" && (
-                <p className="mt-3 text-sm text-emerald-700">
+                <p className="mt-3 text-sm text-success">
                   {t.course.correctAnswer(getCorrectTextAnswer(resultQuestion?.metadata))}
                 </p>
               )}

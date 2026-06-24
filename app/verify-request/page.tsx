@@ -12,7 +12,7 @@ function VerifyRequestContent() {
   const { t } = useLocale();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[var(--naranja-050)] to-[var(--crema-100)] dark:from-background dark:to-secondary">
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -23,13 +23,13 @@ function VerifyRequestContent() {
           transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
           className="mb-4 flex justify-center"
         >
-          <Mail className="w-12 h-12 text-blue-500" />
+          <Mail className="w-12 h-12 text-[var(--terracota-500)]" />
         </motion.div>
         <motion.h2
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2"
+          className="text-2xl font-semibold text-foreground mb-2"
         >
           {t.auth.checkEmail}
         </motion.h2>
@@ -37,7 +37,7 @@ function VerifyRequestContent() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="text-gray-600 dark:text-gray-400"
+          className="text-muted-foreground"
         >
           {t.auth.magicLinkSent(email ?? "")}
         </motion.p>
@@ -45,7 +45,7 @@ function VerifyRequestContent() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-sm text-gray-500 dark:text-gray-400 mt-4"
+          className="text-sm text-muted-foreground mt-4"
         >
           {t.auth.clickLinkToContinue}
         </motion.p>
@@ -59,15 +59,15 @@ export default function VerifyRequest() {
 
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[var(--naranja-050)] to-[var(--crema-100)] dark:from-background dark:to-secondary">
         <div className="text-center">
           <div className="mb-4 flex justify-center">
-            <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+            <Loader2 className="w-12 h-12 text-[var(--terracota-500)] animate-spin" />
           </div>
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
+          <h2 className="text-2xl font-semibold text-foreground mb-2">
             {t.common.loading}
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground">
             {t.auth.pleaseWait}
           </p>
         </div>

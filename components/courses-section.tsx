@@ -44,11 +44,11 @@ const CoursesSection = () => {
   }, [t.public.loadPathsError]);
 
   if (isLoading) {
-    return <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">{[1, 2, 3].map((i) => <div key={i} className="h-48 animate-pulse rounded-2xl bg-gray-200" />)}</div>;
+    return <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">{[1, 2, 3].map((i) => <div key={i} className="h-48 animate-pulse rounded-2xl bg-secondary" />)}</div>;
   }
 
   if (error) {
-    return <div className="py-10 text-center"><p className="text-red-500">{error}</p><Button onClick={() => window.location.reload()} className="mt-4" variant="outline">{t.common.retry}</Button></div>;
+    return <div className="py-10 text-center"><p className="text-destructive">{error}</p><Button onClick={() => window.location.reload()} className="mt-4" variant="outline">{t.common.retry}</Button></div>;
   }
 
   return (
@@ -58,7 +58,7 @@ const CoursesSection = () => {
           <h2 className="bg-gradient-to-r from-accent via-secondary to-tertiary bg-clip-text text-4xl font-black tracking-tight text-transparent sm:text-5xl">
             {t.public.learningPathsTitle}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600 dark:text-white/70">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground dark:text-white/70">
             {t.public.learningPathsSubtitle}
           </p>
         </motion.div>
@@ -76,7 +76,7 @@ const CoursesSection = () => {
                 <CardTitle className="text-xl font-bold">{path.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-2 text-gray-600 dark:text-white/70">
+                <div className="flex items-center gap-2 text-muted-foreground dark:text-white/70">
                   <BookOpen className="h-4 w-4" />
                   <span className="text-sm">{t.public.learnersCount(path.enrollments.length)}</span>
                 </div>

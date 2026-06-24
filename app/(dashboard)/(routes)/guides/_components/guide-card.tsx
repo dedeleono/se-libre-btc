@@ -46,7 +46,7 @@ const ExpandableGuideCards = ({
         <Input
           type="text"
           placeholder={t.public.searchGuide}
-          className="w-full p-4 pl-12 pr-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-gray-800/50 dark:text-white dark:border-gray-600/50 backdrop-blur-sm"
+          className="w-full p-4 pl-12 pr-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-foreground/5 dark:text-white dark:border-border backdrop-blur-sm"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -80,7 +80,7 @@ const ExpandableGuideCards = ({
 
                   {/* Card Content */}
                   <CardHeader className="p-6">
-                    <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
+                    <CardTitle className="text-xl font-semibold text-foreground dark:text-white group-hover:text-primary transition-colors">
                       {guide.title}
                     </CardTitle>
                     <CardDescription className="text-sm text-muted-foreground line-clamp-2">
@@ -91,9 +91,9 @@ const ExpandableGuideCards = ({
               </DialogTrigger>
 
               {/* Modal Pop-Up */}
-              <DialogContent className="max-w-5xl bg-white dark:bg-gray-900 rounded-xl p-6">
+              <DialogContent className="max-w-5xl bg-white dark:bg-background rounded-xl p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{guide.title}</h2>
+                  <h2 className="text-2xl font-bold text-foreground dark:text-white">{guide.title}</h2>
                 </div>
                 <div className="relative rounded-lg overflow-hidden border">
                   <iframe

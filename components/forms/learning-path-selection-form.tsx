@@ -73,8 +73,8 @@ export default function LearningPathSelectionForm({
       <CardContent className="p-6">
         <div className="space-y-6">
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white/90">{t.forms.chooseLearningPath}</h2>
-            <p className="text-sm text-gray-500 dark:text-white/70">
+            <h2 className="text-xl font-semibold text-foreground dark:text-white/90">{t.forms.chooseLearningPath}</h2>
+            <p className="text-sm text-muted-foreground dark:text-white/70">
               {isFromInvitation 
                 ? t.forms.preselectedLearningPath
                 : t.forms.selectLearningPath}
@@ -86,7 +86,7 @@ export default function LearningPathSelectionForm({
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           ) : error ? (
-            <div className="flex items-center justify-center h-[300px] text-red-500">
+            <div className="flex items-center justify-center h-[300px] text-destructive">
               {error}
             </div>
           ) : (
@@ -109,8 +109,8 @@ export default function LearningPathSelectionForm({
                         "relative flex items-center p-4 rounded-lg border transition-all duration-200",
                         "hover:shadow-md cursor-pointer",
                         selectedLearningPath === learningPath.id
-                          ? "border-orange-500/50 bg-orange-50/50 dark:bg-orange-500/10 shadow-sm ring-1 ring-orange-500/20"
-                          : "border-gray-200 dark:border-white/10 hover:border-orange-200 dark:hover:border-orange-400/30",
+                          ? "border-primary/50 bg-[hsl(var(--primary)/0.05)] dark:bg-[hsl(var(--primary)/0.1)] shadow-sm ring-1 ring-[hsl(var(--primary)/0.2)]"
+                          : "border-border dark:border-white/10 hover:border-[hsl(var(--primary)/0.2)] dark:hover:border-primary/30",
                         isFromInvitation && selectedLearningPath !== learningPath.id && "opacity-50"
                       )}
                     >
@@ -123,13 +123,13 @@ export default function LearningPathSelectionForm({
                           disabled={isFromInvitation}
                           className={cn(
                             "peer h-5 w-5 cursor-pointer rounded-full border",
-                            "text-orange-500 focus:ring-orange-500 focus:ring-offset-0",
+                            "text-primary focus:ring-ring focus:ring-offset-0",
                             "transition-all duration-200",
                             "before:content-[''] before:block before:h-5 before:w-5",
                             "before:rounded-full before:transition-transform",
-                            "checked:border-orange-500 checked:before:bg-orange-500",
+                            "checked:border-primary checked:before:bg-primary",
                             "relative",
-                            selectedLearningPath === learningPath.id && "border-orange-500",
+                            selectedLearningPath === learningPath.id && "border-primary",
                             isFromInvitation && "cursor-not-allowed"
                           )}
                         />
@@ -143,8 +143,8 @@ export default function LearningPathSelectionForm({
                       <div className="ml-4 flex-1">
                         <div className="flex justify-between items-start">
                           <div className="space-y-1">
-                            <p className="font-medium text-gray-900 dark:text-white/90">{learningPath.title}</p>
-                            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-white/70">
+                            <p className="font-medium text-foreground dark:text-white/90">{learningPath.title}</p>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground dark:text-white/70">
                               <span className="flex items-center gap-1">
                                 <GraduationCap className="h-4 w-4" />
                                 {t.public.coursesCount(learningPath.courses.length)}
@@ -173,7 +173,7 @@ export default function LearningPathSelectionForm({
               type="button"
               variant="ghost"
               onClick={onBack}
-              className="text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white"
+              className="text-muted-foreground dark:text-white/70 hover:text-foreground dark:hover:text-white"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               {t.payments.goBack}
@@ -181,7 +181,7 @@ export default function LearningPathSelectionForm({
             <Button 
               onClick={handleSubmit} 
               disabled={!selectedLearningPath}
-              className="bg-sky-900 hover:bg-primary/90"
+              className="bg-primary hover:bg-[hsl(var(--primary)/0.9)]"
             >
               {t.common.continue}
             </Button>

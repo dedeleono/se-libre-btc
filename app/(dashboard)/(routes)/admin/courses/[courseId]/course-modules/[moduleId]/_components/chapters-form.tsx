@@ -105,10 +105,10 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
   };
 
   return (
-    <div className="mt-6 bg-slate-100 rounded-md p-4 relative">
+    <div className="mt-6 bg-muted rounded-md p-4 relative">
       {isUpdating && (
-        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-md flex items-center justify-center">
-          <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
+        <div className="absolute h-full w-full bg-[hsl(var(--muted-foreground)/0.2)] top-0 right-0 rounded-md flex items-center justify-center">
+          <Loader2 className="animate-spin h-6 w-6 text-[var(--terracota-700)]" />
         </div>
       )}
       <div className="font-medium flex items-center justify-between">
@@ -196,7 +196,7 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
         <div
           className={cn(
             "text-sm mt-2",
-            !initialData.chapters.length && "text-slate-500 italic"
+            !initialData.chapters.length && "text-muted-foreground italic"
           )}
         >
           {!initialData.chapters.length && t.admin.noLessons}

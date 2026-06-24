@@ -30,8 +30,8 @@ export default async function Home() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6 mb-4 md:mb-8">
           <div className="flex items-start gap-2 md:gap-4">
             <div
-              className="p-2 md:p-3 rounded-xl bg-emerald-600/10 dark:bg-emerald-600/20
-              border border-emerald-600/20 dark:border-emerald-600/30"
+              className="p-2 md:p-3 rounded-xl bg-[hsl(var(--success)/0.1)] dark:bg-[hsl(var(--success)/0.2)]
+              border border-[hsl(var(--success)/0.2)] dark:border-[hsl(var(--success)/0.3)]"
             >
               <LayoutDashboardIcon className="h-5 w-5 md:h-8 md:w-8 text-success dark:text-white" />
             </div>
@@ -61,8 +61,8 @@ export default async function Home() {
               <CardTitle className="sm:text-sm text-xs font-medium">
                 {t.dashboard.totalRevenue}
               </CardTitle>
-              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-full">
-                <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <div className="p-2 bg-[hsl(var(--success)/0.12)] dark:bg-[hsl(var(--success)/0.15)] rounded-full">
+                <DollarSign className="h-4 w-4 text-success dark:text-success" />
               </div>
             </CardHeader>
             <CardContent>
@@ -77,8 +77,8 @@ export default async function Home() {
               <CardTitle className="sm:text-sm text-xs font-medium">
                 {t.dashboard.students}
               </CardTitle>
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <div className="p-2 bg-[hsl(var(--primary)/0.1)] dark:bg-[hsl(var(--primary)/0.15)] rounded-full">
+                <Users className="h-4 w-4 text-[var(--terracota-500)] dark:text-[var(--terracota-500)]" />
               </div>
             </CardHeader>
             <CardContent>
@@ -109,8 +109,8 @@ export default async function Home() {
               <CardTitle className="sm:text-sm text-xs font-medium">
                 {t.dashboard.learningPaths}
               </CardTitle>
-              <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
-                <Route className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+              <div className="p-2 bg-[var(--maiz-100)] dark:bg-[hsl(var(--primary)/0.15)] rounded-full">
+                <Route className="h-4 w-4 text-[var(--maiz-500)] dark:text-[var(--maiz-500)]" />
               </div>
             </CardHeader>
             <CardContent>

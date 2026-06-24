@@ -36,10 +36,10 @@ const InfoSection = () => {
             transition={{ delay: index * 0.2 }}
             className="group relative rounded-2xl dark:bg-background/30 backdrop-blur-lg dark:border-accent/10 dark:border-2 bg-white p-6 shadow-lg transition-all hover:shadow-xl font-['Open_Sans']"
           >
-            <div className="absolute -inset-px bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 transition-opacity group-hover:opacity-10 rounded-2xl" />
-            <feature.icon className="h-8 w-8 text-emerald-600" />
+            <div className="absolute -inset-px bg-gradient-to-r from-accent to-accent opacity-0 transition-opacity group-hover:opacity-10 rounded-2xl" />
+            <feature.icon className="h-8 w-8 text-success" />
             <h3 className="mt-4 text-xl font-bold text-nowrap">{feature.title}</h3>
-            <p className="mt-2 text-gray-600 text-sm">{feature.description}</p>
+            <p className="mt-2 text-muted-foreground text-sm">{feature.description}</p>
           </motion.div>
         ))}
       </div>

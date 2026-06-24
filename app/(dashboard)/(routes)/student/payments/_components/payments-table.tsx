@@ -63,20 +63,20 @@ export function PaymentsTable() {
       COMPLETED: {
         label: t.payments.paid,
         icon: CheckCircle,
-        className: "bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30",
-        iconClassName: "text-green-600 dark:text-green-400"
+        className: "bg-[hsl(var(--success)/0.12)] text-success border border-success dark:bg-[hsl(var(--success)/0.12)] dark:text-success dark:border-success",
+        iconClassName: "text-success dark:text-success"
       },
       PENDING: {
         label: t.payments.pending,
         icon: AlertCircle,
-        className: "bg-yellow-50 text-yellow-700 border border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-900/30",
-        iconClassName: "text-yellow-600 dark:text-yellow-400"
+        className: "bg-[var(--maiz-100)] text-[var(--maiz-500)] border border-[var(--maiz-500)] dark:bg-[var(--maiz-100)] dark:text-[var(--maiz-500)] dark:border-[var(--maiz-500)]",
+        iconClassName: "text-[var(--maiz-500)] dark:text-[var(--maiz-500)]"
       },
       FAILED: {
         label: t.payments.failed,
         icon: XCircle,
-        className: "bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30",
-        iconClassName: "text-red-600 dark:text-red-400"
+        className: "bg-[hsl(var(--destructive)/0.1)] text-destructive border border-destructive dark:bg-[hsl(var(--destructive)/0.1)] dark:text-destructive dark:border-destructive",
+        iconClassName: "text-destructive dark:text-destructive"
       }
     } as const;
 

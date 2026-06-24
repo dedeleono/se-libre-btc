@@ -60,7 +60,7 @@ export const ModuleTitleForm = ({ initialData, courseId, moduleId }: ModuleTitle
   };
 
   return (
-    <div className="mt-6 dark:bg-slate-100 bg-white rounded-md p-4">
+    <div className="mt-6 dark:bg-muted bg-white rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         {t.profile.fullName}
         <Button onClick={toggleEdit} variant="ghost" className="cursor-pointer">

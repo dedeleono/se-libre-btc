@@ -77,8 +77,8 @@ export default async function PaymentsPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Card className="p-3 sm:p-4 border-none">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-green-100 rounded-full">
-                <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-600" />
+              <div className="p-2 bg-[hsl(var(--success)/0.12)] rounded-full">
+                <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-success" />
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
@@ -93,8 +93,8 @@ export default async function PaymentsPage() {
 
           <Card className="p-3 sm:p-4 border-none">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600" />
+              <div className="p-2 bg-[hsl(var(--primary)/0.1)] rounded-full">
+                <CreditCard className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[var(--terracota-500)]" />
               </div>
               <div className="space-y-0.5">
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">

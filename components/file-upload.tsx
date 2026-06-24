@@ -207,7 +207,7 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
             transition-colors duration-200 ease-in-out
             ${isDragActive 
               ? "border-primary bg-primary/5 dark:bg-primary/10" 
-              : "border-gray-300 dark:border-white/[0.1] hover:border-primary/50 dark:hover:border-primary/50"
+              : "border-border dark:border-white/[0.1] hover:border-primary/50 dark:hover:border-primary/50"
             }
             ${isUploading ? "pointer-events-none opacity-70" : ""}
           `}

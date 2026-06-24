@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/auth-client";
 import { useLocale } from "@/lib/i18n";
 
 interface EnrollmentButtonProps {
@@ -35,9 +36,23 @@ export function EnrollmentButton({
 }: EnrollmentButtonProps) {
   const { t } = useLocale();
   const router = useRouter();
+  const { data: session, isPending } = useSession();
   const [isLoading, setIsLoading] = useState(false);
 
+  const goToSignIn = () => {
+    const callbackUrl = redirectTo ?? endpointByType[productType](productId);
+    router.push(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  };
+
   const onClick = async () => {
+    // Enrollment requires an authenticated user. Gate the click on the client
+    // session so logged-out visitors are sent through the sign-in flow instead
+    // of firing an enroll request (the server also enforces this with a 401).
+    if (!session?.user) {
+      goToSignIn();
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await axios.post(endpointByType[productType](productId));
@@ -49,7 +64,7 @@ export function EnrollmentButton({
       }
     } catch (error: any) {
       if (error.response?.status === 401) {
-        router.push("/sign-in");
+        goToSignIn();
         return;
       }
       if (error.response?.status === 402) {
@@ -66,7 +81,7 @@ export function EnrollmentButton({
     <Button
       type="button"
       onClick={onClick}
-      disabled={isLoading}
+      disabled={isLoading || isPending}
       className={className}
       variant={variant}
       size={size}

@@ -121,9 +121,9 @@ export default async function GuidesPage() {
         </div>
       </div>
     </ScrollArea>
-    // <Card className="border border-red-500 bg-red-100 text-red-700 p-10 m-10">
+    // <Card className="border border-destructive bg-[hsl(var(--destructive)/0.1)] text-destructive p-10 m-10">
     //   <CardHeader className="flex flex-col items-center text-center">
-    //     <LucideGitPullRequestDraft className="w-12 h-12 text-red-600" />
+    //     <LucideGitPullRequestDraft className="w-12 h-12 text-destructive" />
     //     <CardTitle className="mt-2 text-lg">Acceso restringido</CardTitle>
     //   </CardHeader>
     //   <CardContent>

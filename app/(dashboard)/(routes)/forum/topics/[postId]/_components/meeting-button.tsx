@@ -16,10 +16,10 @@ export const MeetingButton = ({ meetingLink }: MeetingButtonProps) => {
     <Button
       variant="outline"
       onClick={onClick}
-      className="bg-emerald-100/80 text-emerald-700 border-emerald-200
-        hover:bg-emerald-200/80 hover:text-emerald-800
-        dark:bg-emerald-500/10 dark:text-emerald-300 
-        dark:border-emerald-400/20 dark:hover:bg-emerald-500/20
+      className="bg-[hsl(var(--success)/0.12)] text-success border-success
+        hover:bg-[hsl(var(--success)/0.2)] hover:text-success
+        dark:bg-[hsl(var(--success)/0.12)] dark:text-success
+        dark:border-success dark:hover:bg-[hsl(var(--success)/0.2)]
         dark:backdrop-blur-sm transition-all duration-300"
     >
       <Video className="h-4 w-4 mr-2" />

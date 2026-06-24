@@ -60,7 +60,7 @@ export function CreateReplyForm({ postId }: CreateReplyFormProps) {
                 <Textarea
                   {...field}
                   placeholder={t.forum.writeReply}
-                  className="min-h-[100px] resize-none focus:ring-2 focus:ring-slate-200"
+                  className="min-h-[100px] resize-none focus:ring-2 focus:ring-ring"
                 />
               </FormControl>
             </FormItem>

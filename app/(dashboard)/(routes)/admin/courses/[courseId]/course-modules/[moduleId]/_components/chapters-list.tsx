@@ -73,14 +73,14 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                 {(provided) => (
                   <div
                     className={cn(
-                      "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700rounded-md mb-4 text-sm"
+                      "flex items-center gap-x-2 bg-secondary border-border border text-foreground rounded-md mb-4 text-sm"
                     )}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                   >
                     <div
                       className={cn(
-                        "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition-colors"
+                        "px-2 py-3 border-r border-r-border hover:bg-muted rounded-l-md transition-colors"
                       )}
                       {...provided.dragHandleProps}
                     >
@@ -91,7 +91,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                       {chapter.isIntro && (
                         <Badge
                           variant={"outline"}
-                          className="rounded-full px-3 py-1 text-sky-100 bg-sky-800 font-semibold text-xs"
+                          className="rounded-full px-3 py-1 text-primary-foreground bg-primary font-semibold text-xs"
                         >
                           {t.admin.intro}
                         </Badge>
@@ -99,7 +99,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                       {chapter.type === ChapterType.QUIZ && (
                         <Badge
                           variant={"outline"}
-                          className="rounded-full px-3 py-1 text-slate-100 bg-orange-500 font-semibold text-xs"
+                          className="rounded-full px-3 py-1 text-primary-foreground bg-primary font-semibold text-xs"
                         >
                           Quiz
                         </Badge>
@@ -107,7 +107,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                       {chapter.type === ChapterType.RESOURCE && (
                         <Badge
                           variant={"outline"}
-                          className="rounded-full px-3 py-1 text-slate-100 bg-teal-700 font-semibold text-xs"
+                          className="rounded-full px-3 py-1 text-primary-foreground bg-primary font-semibold text-xs"
                         >
                           {t.admin.assignment}
                         </Badge>
@@ -115,7 +115,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
 
                       <Badge
                         variant={"outline"}
-                        className="rounded-full px-3 py-1 text-slate-100 bg-slate-500 font-semibold text-xs"
+                        className="rounded-full px-3 py-1 text-background bg-foreground font-semibold text-xs"
                       >
                         {!chapter.isPublished ? t.common.draft : t.common.published}
                       </Badge>

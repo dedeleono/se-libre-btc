@@ -76,12 +76,12 @@ const StepIcon = ({
       className={cn(
         "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-200",
         isActive
-          ? "border-emerald-700 bg-emerald-700 text-white dark:border-emerald-600 dark:bg-emerald-600"
+          ? "border-success bg-success text-success-foreground dark:border-success dark:bg-success"
           : state === 'success'
-          ? "border-green-500 bg-green-500 text-white"
+          ? "border-success bg-success text-success-foreground"
           : state === 'error'
-          ? "border-red-500 bg-red-500 text-white"
-          : "border-gray-300 dark:border-white/20 text-gray-500 dark:text-white/70"
+          ? "border-destructive bg-destructive text-destructive-foreground"
+          : "border-border dark:border-white/20 text-muted-foreground dark:text-white/70"
       )}
     >
       <motion.div
@@ -222,7 +222,7 @@ export default function OnboardingForm({
         </CardDescription>
       </CardHeader>
       
-      <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.05]">
+      <div className="px-6 py-4 border-b border-border dark:border-white/[0.05]">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-foreground">{t.onboarding.freeAccess}</p>
@@ -252,7 +252,7 @@ export default function OnboardingForm({
                 />
                 <div className="mt-2 text-center">
                   <div className="text-sm font-medium">{step.label}</div>
-                  <div className="text-xs text-gray-500">{step.description}</div>
+                  <div className="text-xs text-muted-foreground">{step.description}</div>
                 </div>
               </div>
             ))}

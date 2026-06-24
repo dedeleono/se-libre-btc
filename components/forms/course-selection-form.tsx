@@ -42,13 +42,13 @@ export default function CourseSelectionForm({ onSubmit }: { onSubmit: (data: { s
         <button
           type="button"
           onClick={prevStep}
-          className="bg-gray-300 text-black px-4 py-2 rounded"
+          className="bg-secondary text-foreground px-4 py-2 rounded"
         >
           Back
         </button>
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-primary text-primary-foreground px-4 py-2 rounded"
         >
           Next
         </button>

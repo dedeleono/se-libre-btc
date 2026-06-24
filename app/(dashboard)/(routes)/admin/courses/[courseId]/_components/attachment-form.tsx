@@ -73,7 +73,7 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
       {!isEditing && (
         <>
           {initialData.attachments.length === 0 && (
-            <p className="text-sm mt-2 text-slate-500 italic">
+            <p className="text-sm mt-2 text-muted-foreground italic">
               {t.admin.noFiles}
             </p>
           )}
@@ -97,7 +97,7 @@ export const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) =
                     {deletingId !== attachment.id && (
                       <button
                         onClick={() => onDelete(attachment.id)}
-                        className="ml-2 -my-[11px] -mr-[11px] inline-flex items-center justify-center p-[11px] hover:opacity-50 transition-opacity bg-transparent text-red-500 border-none shadow-none active:scale-[0.96]"
+                        className="ml-2 -my-[11px] -mr-[11px] inline-flex items-center justify-center p-[11px] hover:opacity-50 transition-opacity bg-transparent text-destructive border-none shadow-none active:scale-[0.96]"
                       >
                         <X className="h-4 w-4" />
                       </button>

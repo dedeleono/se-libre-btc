@@ -198,9 +198,9 @@ export default async function CoursePreviewPage(
                         <div key={chapter.id} className="flex items-center justify-between rounded-md bg-muted/40 p-3">
                           <div className="flex items-center gap-3">
                             {chapter.type === "QUIZ" ? (
-                              <CheckCircle className="h-4 w-4 text-emerald-600" />
+                              <CheckCircle className="h-4 w-4 text-success" />
                             ) : (
-                              <PlayCircle className="h-4 w-4 text-sky-600" />
+                              <PlayCircle className="h-4 w-4 text-[var(--terracota-700)]" />
                             )}
                             <span>{chapter.title}</span>
                           </div>

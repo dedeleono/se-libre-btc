@@ -680,7 +680,7 @@ export const QuizBuilder = ({
                       className={cn(
                         "flex h-10 w-10 items-center justify-center rounded-full border transition-colors active:scale-[0.96]",
                         correctOptionIndexes.includes(index)
-                          ? "border-emerald-600 bg-emerald-50 text-emerald-700"
+                          ? "border-success bg-[hsl(var(--success)/0.12)] text-success"
                           : "bg-background text-muted-foreground"
                       )}
                       aria-label={t.admin.markOptionCorrect(index + 1)}
@@ -724,7 +724,7 @@ export const QuizBuilder = ({
                     className={cn(
                       "flex min-h-14 items-center justify-between rounded-md border p-4 text-sm transition-colors active:scale-[0.97]",
                       correctOptionIndexes.includes(index)
-                        ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/30"
+                        ? "border-success bg-[hsl(var(--success)/0.12)] text-success dark:bg-[hsl(var(--success)/0.15)]"
                         : "bg-background hover:bg-muted/60"
                     )}
                   >
@@ -891,7 +891,7 @@ export const QuizBuilder = ({
                       {item.type === "FILL_IN_THE_BLANK" ? (
                         <div className="flex flex-wrap gap-2">
                           {acceptedAnswers.map((answer) => (
-                            <Badge key={answer} className="bg-emerald-600 hover:bg-emerald-600">
+                            <Badge key={answer} className="bg-success hover:bg-success">
                               {answer}
                             </Badge>
                           ))}
@@ -907,12 +907,12 @@ export const QuizBuilder = ({
                                 className={cn(
                                   "flex items-start gap-2 rounded-md border px-3 py-2 text-sm",
                                   option.isCorrect
-                                    ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:bg-emerald-950/30"
+                                    ? "border-success bg-[hsl(var(--success)/0.12)] text-success dark:bg-[hsl(var(--success)/0.15)]"
                                     : "bg-background text-muted-foreground"
                                 )}
                               >
                                 {option.isCorrect ? (
-                                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" />
+                                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                                 ) : (
                                   <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                                 )}

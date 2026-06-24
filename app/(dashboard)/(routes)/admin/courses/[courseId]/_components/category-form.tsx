@@ -101,7 +101,7 @@ export const CategoryForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            initialData.categories.length === 0 && "text-slate-500 italic"
+            initialData.categories.length === 0 && "text-muted-foreground italic"
           )}
         >
           {selectedOptions.length > 0

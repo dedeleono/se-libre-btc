@@ -104,14 +104,14 @@ export const ChapterContentForm = ({
           className="shrink-0"
         >
           {isEditing && (
-            <span className="flex items-center text-slate-600">{t.common.cancel}</span>
+            <span className="flex items-center text-muted-foreground">{t.common.cancel}</span>
           )}
           {!isEditing &&
             !initialData.videoUrl &&
             !initialData.pdfUrl &&
             !initialData.richContent &&
             !initialData.youtubeUrl && (
-              <span className="flex items-center text-indigo-600">
+              <span className="flex items-center text-[var(--terracota-700)]">
                 <PlusCircle className="h-4 w-4 mr-2" />
                 {t.admin.addContent}
               </span>
@@ -121,7 +121,7 @@ export const ChapterContentForm = ({
               initialData.pdfUrl ||
               initialData.richContent ||
               initialData.youtubeUrl) && (
-              <span className="flex items-center text-slate-600">
+              <span className="flex items-center text-muted-foreground">
                 <Pencil className="h-4 w-4 mr-2" />
                 {t.common.edit}
               </span>
@@ -135,10 +135,10 @@ export const ChapterContentForm = ({
           !initialData.pdfUrl &&
           !initialData.youtubeUrl &&
           !initialData.richContent ? (
-            <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md border-2 border-dashed border-slate-300 transition-colors hover:bg-slate-300/50">
+            <div className="flex items-center justify-center h-60 bg-secondary rounded-md border-2 border-dashed border-border transition-colors hover:bg-muted/60">
               <div className="text-center">
-                <File className="h-12 w-12 text-slate-500 mx-auto mb-2" />
-                <p className="text-slate-500 text-sm">
+                <File className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                <p className="text-muted-foreground text-sm">
                   No hay contenido agregado
                 </p>
               </div>
@@ -187,7 +187,7 @@ export const ChapterContentForm = ({
               className={cn(
                 "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-colors",
                 contentType === "video"
-                  ? "border-primary bg-primary/10 text-primary"
+                  ? "border-primary bg-[hsl(var(--primary)/0.1)] text-primary"
                   : "bg-background hover:bg-muted/60"
               )}
             >
@@ -196,7 +196,7 @@ export const ChapterContentForm = ({
                 htmlFor="video"
                 className="flex items-center cursor-pointer"
               >
-                <Video className="h-4 w-4 mr-2 text-slate-600" />
+                <Video className="h-4 w-4 mr-2 text-muted-foreground" />
                 Video
               </Label>
             </div>
@@ -204,13 +204,13 @@ export const ChapterContentForm = ({
               className={cn(
                 "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-colors",
                 contentType === "youtube"
-                  ? "border-primary bg-primary/10 text-primary"
+                  ? "border-primary bg-[hsl(var(--primary)/0.1)] text-primary"
                   : "bg-background hover:bg-muted/60"
               )}
             >
               <RadioGroupItem value="youtube" id="youtube" />
               <Label htmlFor="youtube" className="flex items-center cursor-pointer">
-                <Video className="h-4 w-4 mr-2 text-slate-600" />
+                <Video className="h-4 w-4 mr-2 text-muted-foreground" />
                 YouTube
               </Label>
             </div>
@@ -218,13 +218,13 @@ export const ChapterContentForm = ({
               className={cn(
                 "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-colors",
                 contentType === "pdf"
-                  ? "border-primary bg-primary/10 text-primary"
+                  ? "border-primary bg-[hsl(var(--primary)/0.1)] text-primary"
                   : "bg-background hover:bg-muted/60"
               )}
             >
               <RadioGroupItem value="pdf" id="pdf" />
               <Label htmlFor="pdf" className="flex items-center cursor-pointer">
-                <File className="h-4 w-4 mr-2 text-slate-600" />
+                <File className="h-4 w-4 mr-2 text-muted-foreground" />
                 PDF
               </Label>
             </div>
@@ -232,7 +232,7 @@ export const ChapterContentForm = ({
               className={cn(
                 "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-colors",
                 contentType === "richText"
-                  ? "border-primary bg-primary/10 text-primary"
+                  ? "border-primary bg-[hsl(var(--primary)/0.1)] text-primary"
                   : "bg-background hover:bg-muted/60"
               )}
             >
@@ -241,7 +241,7 @@ export const ChapterContentForm = ({
                 htmlFor="richText"
                 className="flex items-center cursor-pointer"
               >
-                <FileText className="h-4 w-4 mr-2 text-slate-600" />
+                <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
                 Text
               </Label>
             </div>
@@ -329,7 +329,7 @@ export const ChapterContentForm = ({
                     setRichContent(value);
                   }}
                   height="600px"
-                  className="border border-gray-200 rounded-lg"
+                  className="border border-border rounded-lg"
                   style={{ 
                     minHeight: "400px",
                     maxHeight: "80vh"

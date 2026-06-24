@@ -174,7 +174,7 @@ export default async function ChapterIdPage(
                 <h1 className="font-medium text-2xl text-balance">
                   {t.admin.lessonCreationEditing}
                 </h1>
-                <span className="text-sm text-slate-700 tabular-nums">
+                <span className="text-sm text-foreground tabular-nums">
                   {t.admin.completeAllFields(completionText)}
                 </span>
               </div>

@@ -38,12 +38,12 @@ const StepIcon = ({
       className={cn(
         "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-200",
         isActive
-          ? "border-emerald-700 bg-emerald-700 text-white dark:border-emerald-600 dark:bg-emerald-600"
+          ? "border-success bg-success text-success-foreground dark:border-success dark:bg-success"
           : state === 'success'
-          ? "border-green-500 bg-green-500 text-white"
+          ? "border-success bg-success text-success-foreground"
           : state === 'error'
-          ? "border-red-500 bg-red-500 text-white"
-          : "border-gray-300 dark:border-white/20 text-gray-500 dark:text-white/70"
+          ? "border-destructive bg-destructive text-destructive-foreground"
+          : "border-border dark:border-white/20 text-muted-foreground dark:text-white/70"
       )}
     >
       <motion.div
@@ -235,39 +235,39 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
 
   return (
     <div className="min-h-[600px] max-w-4xl mx-auto md:p-8">
-      <div className="bg-white dark:bg-black/40 rounded-2xl shadow-lg border border-gray-100 dark:border-white/[0.05]">
-        <div className="md:p-6 p-4 border-b border-gray-100 dark:border-white/[0.05]">
+      <div className="bg-white dark:bg-black/40 rounded-2xl shadow-lg border border-border dark:border-white/[0.05]">
+        <div className="md:p-6 p-4 border-b border-border dark:border-white/[0.05]">
           <h1 className="md:text-2xl text-xl font-semibold text-success dark:text-secondary">
             {t.forms.completeEnrollment}
           </h1>
-          <p className="mt-2 text-sm text-gray-500 dark:text-white/70">
+          <p className="mt-2 text-sm text-muted-foreground dark:text-white/70">
             {t.forms.completeEnrollmentDescription}
           </p>
         </div>
 
         {/* Overall Process Progress */}
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-white/[0.05]">
+        <div className="px-6 py-4 border-b border-border dark:border-white/[0.05]">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200",
-                "border-emerald-700 bg-emerald-700 text-white dark:border-emerald-600 dark:bg-emerald-600"
+                "border-success bg-success text-success-foreground dark:border-success dark:bg-success"
               )}>
                 1
               </div>
-              <span className="ml-2 text-sm font-medium text-emerald-700 dark:text-emerald-400">
+              <span className="ml-2 text-sm font-medium text-success dark:text-success">
                 {t.forms.enrollmentAndPayment}
               </span>
             </div>
-            <div className="flex-1 h-[2px] bg-gray-200 dark:bg-white/10 mx-4" />
+            <div className="flex-1 h-[2px] bg-secondary dark:bg-white/10 mx-4" />
             <div className="flex items-center">
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-200",
-                "border-gray-300 dark:border-white/20 text-gray-500 dark:text-white/70"
+                "border-border dark:border-white/20 text-muted-foreground dark:text-white/70"
               )}>
                 2
               </div>
-              <span className="ml-2 text-sm font-medium text-gray-500 dark:text-white/70">
+              <span className="ml-2 text-sm font-medium text-muted-foreground dark:text-white/70">
                 {t.profile.title}
               </span>
             </div>
@@ -288,12 +288,12 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
                     className={cn(
                       "mt-2 text-xs font-semibold transition-colors duration-200",
                       stepStates[step.id as keyof CheckoutFormData] === 'success'
-                        ? "text-green-500"
+                        ? "text-success"
                         : stepStates[step.id as keyof CheckoutFormData] === 'error'
-                        ? "text-red-500"
+                        ? "text-destructive"
                         : currentStepIndex === index
-                        ? "text-emerald-700 dark:text-emerald-400"
-                        : "text-gray-400 dark:text-white/50"
+                        ? "text-success dark:text-success"
+                        : "text-muted-foreground dark:text-white/50"
                     )}
                   >
                     {step.label}
@@ -329,7 +329,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="bg-white dark:bg-black/40 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-white/[0.05]"
+                className="bg-white dark:bg-black/40 rounded-xl p-6 shadow-sm border border-border dark:border-white/[0.05]"
               >
                 <PersonalInfoForm
                   initialData={formData.personalInfo}
@@ -347,7 +347,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="bg-white dark:bg-black/40 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-white/[0.05]"
+                className="bg-white dark:bg-black/40 rounded-xl p-6 shadow-sm border border-border dark:border-white/[0.05]"
               >
                 <LearningPathSelectionForm
                   initialData={formData.productSelection}

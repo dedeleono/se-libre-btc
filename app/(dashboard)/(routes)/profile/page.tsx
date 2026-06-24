@@ -52,8 +52,8 @@ export default async function ProfilePage() {
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-x-2">
-                  <div className="rounded-full bg-teal-700/10 p-2">
-                    <UserCircle className="h-5 w-5 text-teal-700" />
+                  <div className="rounded-full bg-[hsl(var(--primary)/0.1)] p-2">
+                    <UserCircle className="h-5 w-5 text-primary" />
                   </div>
                   <CardTitle>{t.profile.personalInformation}</CardTitle>
                 </div>
@@ -79,24 +79,24 @@ export default async function ProfilePage() {
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-x-2">
-                  <div className="rounded-full bg-sky-700/10 p-2">
-                    <Mail className="h-5 w-5 text-sky-700" />
+                  <div className="rounded-full bg-[hsl(var(--primary)/0.1)] p-2">
+                    <Mail className="h-5 w-5 text-primary" />
                   </div>
                   <CardTitle>{t.profile.accountDetails}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="rounded-lg bg-sky-700/5 p-4">
+                <div className="rounded-lg bg-[hsl(var(--primary)/0.05)] p-4">
                   <p className="text-sm font-medium">{t.auth.email}</p>
                   <p className="text-sm text-muted-foreground">{profileData.email}</p>
                 </div>
-                <div className="rounded-lg bg-sky-700/5 p-4">
+                <div className="rounded-lg bg-[hsl(var(--primary)/0.05)] p-4">
                   <p className="text-sm font-medium">{t.profile.role}</p>
                   <p className="text-sm text-muted-foreground">
                     {profileData.role === UserRole.ADMIN ? t.profile.adminRole : t.profile.studentRole}
                   </p>
                 </div>
-                <div className="rounded-lg bg-sky-700/5 p-4">
+                <div className="rounded-lg bg-[hsl(var(--primary)/0.05)] p-4">
                   <p className="text-sm font-medium">{t.profile.enrollments}</p>
                   <p className="text-sm text-muted-foreground">
                     {t.profile.enrollmentsSummary(profileData.courseEnrollments.length, profileData.learningPathEnrollments.length)}

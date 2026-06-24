@@ -135,7 +135,7 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                       {post.learningPathId && (
                         <Badge
                           variant="secondary"
-                          className="text-xs sm:text-sm bg-sky-100 text-sky-700 hover:bg-sky-200"
+                          className="text-xs sm:text-sm bg-[hsl(var(--primary)/0.1)] text-[var(--terracota-700)] hover:bg-[hsl(var(--primary)/0.2)]"
                         >
                           {post.learningPath?.title}
                         </Badge>
@@ -143,7 +143,7 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                       {post.cohortId && (
                         <Badge
                           variant="secondary"
-                          className="text-xs sm:text-sm bg-purple-100 text-purple-700 hover:bg-purple-200"
+                          className="text-xs sm:text-sm bg-[hsl(var(--primary)/0.1)] text-[var(--terracota-700)] hover:bg-[hsl(var(--primary)/0.2)]"
                         >
                           {post.cohort?.title}
                         </Badge>
@@ -151,7 +151,7 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                       {post.courseId && (
                         <Badge
                           variant="outline"
-                          className="text-xs sm:text-sm border-emerald-200 text-emerald-700"
+                          className="text-xs sm:text-sm border-success text-success"
                         >
                           {post?.course?.title}
                         </Badge>
@@ -159,7 +159,7 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                       {post.meetingLink && (
                         <Badge
                           variant="secondary"
-                          className="text-xs sm:text-sm bg-orange-100 text-orange-700 hover:bg-orange-200 cursor-pointer"
+                          className="text-xs sm:text-sm bg-[hsl(var(--primary)/0.12)] text-primary hover:bg-[hsl(var(--primary)/0.2)] cursor-pointer"
                         >
                           <Video className="h-3 w-3 mr-1" />
                           <span className="hidden sm:inline">
@@ -182,7 +182,7 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() => handleDeleteClick(post.id)}
-                            className="text-red-600 cursor-pointer"
+                            className="text-destructive cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             {t.forum.deletePost}
@@ -197,8 +197,8 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                   <div className="flex items-center gap-3 sm:gap-4 dark:text-white/40">
                     {post.meetingLink && (
                       <div
-                        className="flex items-center gap-1.5 text-orange-400/70 
-                        hover:text-orange-400 transition-colors"
+                        className="flex items-center gap-1.5 text-[hsl(var(--primary)/0.7)]
+                        hover:text-primary transition-colors"
                       >
                         <Video className="h-4 w-4" />
                         <span className="text-xs font-medium">{t.forum.meeting}</span>

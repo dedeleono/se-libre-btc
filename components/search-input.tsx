@@ -36,12 +36,12 @@ export const SearchInput = () => {
 
   return (
     <div className="relative">
-      <Search className="absolute h-4 w-4 top-3 left-3 text-slate-600" />
+      <Search className="absolute h-4 w-4 top-3 left-3 text-muted-foreground" />
       <Input
         value={value}
         onChange={(e) => setValue(e.target.value)}
         type="text"
-        className="w-full md:w-[300px] pl-12 border-slate-200 focus:ring-slate-200"
+        className="w-full md:w-[300px] pl-12 border-border focus:ring-ring"
         placeholder={t.nav.browseCourses}
       />
     </div>

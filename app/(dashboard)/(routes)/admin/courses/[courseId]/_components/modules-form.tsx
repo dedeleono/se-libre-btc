@@ -143,7 +143,7 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
         <div
           className={cn(
             "text-sm mt-2",
-            !initialData.modules.length && "text-slate-500 italic"
+            !initialData.modules.length && "text-muted-foreground italic"
           )}
         >
           {!initialData.modules.length && t.admin.noModules}
