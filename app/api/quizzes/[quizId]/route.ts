@@ -10,6 +10,7 @@ const quizSettingsSchema = z.object({
   passingScore: z.coerce.number().int().min(0).max(100).optional(),
   allowRetries: z.boolean().optional(),
   showCorrectAnswers: z.boolean().optional(),
+  isFinalExam: z.boolean().optional(),
 });
 
 export async function PATCH(req: Request, props: { params: Promise<{ quizId: string }> }) {
@@ -33,6 +34,7 @@ export async function PATCH(req: Request, props: { params: Promise<{ quizId: str
       passingScore: body.passingScore,
       allowRetries: body.allowRetries,
       showCorrectAnswers: body.showCorrectAnswers,
+      isFinalExam: body.isFinalExam,
     },
   });
 

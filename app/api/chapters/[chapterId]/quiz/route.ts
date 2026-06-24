@@ -10,6 +10,7 @@ const quizSettingsSchema = z.object({
   passingScore: z.coerce.number().int().min(0).max(100).default(0),
   allowRetries: z.boolean().default(true),
   showCorrectAnswers: z.boolean().default(true),
+  isFinalExam: z.boolean().default(false),
 });
 
 export async function POST(req: Request, props: { params: Promise<{ chapterId: string }> }) {
@@ -43,6 +44,7 @@ export async function POST(req: Request, props: { params: Promise<{ chapterId: s
       passingScore: body.passingScore,
       allowRetries: body.allowRetries,
       showCorrectAnswers: body.showCorrectAnswers,
+      isFinalExam: body.isFinalExam,
     },
     update: {
       title: body.title || chapter.title,
@@ -50,6 +52,7 @@ export async function POST(req: Request, props: { params: Promise<{ chapterId: s
       passingScore: body.passingScore,
       allowRetries: body.allowRetries,
       showCorrectAnswers: body.showCorrectAnswers,
+      isFinalExam: body.isFinalExam,
     },
   });
 

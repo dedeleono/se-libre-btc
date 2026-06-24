@@ -7,6 +7,7 @@ import { useWalletSimulator } from "./use-wallet-simulator";
 import { PhaseStepper } from "./presentational/phase-stepper";
 import { PracticeBanner } from "./presentational/practice-banner";
 import { ResetButton } from "./presentational/reset-button";
+import { AddressDisplay } from "./presentational/address-display";
 import { CreatePanel } from "./panels/create-panel";
 import { BackupPanel } from "./panels/backup-panel";
 import { ReceivePanel } from "./panels/receive-panel";
@@ -29,6 +30,16 @@ export default function WalletSimulator({
       </div>
       <PracticeBanner />
       <PhaseStepper phases={PHASE_ORDER} current={state.phase} reached={state.reachedPhases} />
+
+      {/* Persistent wallet address: visible from the moment the wallet exists,
+          across every phase, so users always know which address to use/copy. */}
+      {state.wallet && (
+        <AddressDisplay
+          address={state.wallet.address}
+          label={t.walletSim.persistentAddressLabel}
+          hint={t.walletSim.persistentAddressHint}
+        />
+      )}
 
       {state.phase === "create" && (
         <CreatePanel state={state} actions={actions} />

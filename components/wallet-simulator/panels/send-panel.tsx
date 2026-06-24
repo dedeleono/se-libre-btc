@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLocale } from "@/lib/i18n";
 import { canAdvance } from "@/lib/wallet-sim/simulation";
-import type { SimulatorState } from "@/lib/wallet-sim/types";
+import { SAMPLE_COUNTERPARTY, type SimulatorState } from "@/lib/wallet-sim/types";
 import type { WalletSimActions } from "../use-wallet-simulator";
 import { FeeSelector } from "../presentational/fee-selector";
 import { BalanceDisplay } from "../presentational/balance-display";
 import { TxStatus } from "../presentational/tx-status";
+import { AddressDisplay } from "../presentational/address-display";
 
 export function SendPanel({ state, actions, locale }: { state: SimulatorState; actions: WalletSimActions; locale: string }) {
   const { t } = useLocale();
@@ -37,6 +38,9 @@ export function SendPanel({ state, actions, locale }: { state: SimulatorState; a
               onChange={(e) => actions.updateDraft({ toAddress: e.target.value })}
             />
             {errors.toAddress && <p className="text-sm text-destructive">{t.walletSim.send.errors[errors.toAddress]}</p>}
+            {/* Copyable sample destination so users aren't stuck for a valid
+                testnet address to paste above. */}
+            <AddressDisplay address={SAMPLE_COUNTERPARTY} label={t.walletSim.txCounterparty} />
           </div>
           <div className="space-y-1">
             <Label htmlFor="amount">{t.walletSim.send.amount}</Label>

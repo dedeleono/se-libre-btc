@@ -161,6 +161,7 @@ export const QuizBuilder = ({
   const [settings, setSettings] = useState({
     allowRetries: quiz?.allowRetries ?? true,
     showCorrectAnswers: quiz?.showCorrectAnswers ?? true,
+    isFinalExam: quiz?.isFinalExam ?? false,
   });
   const [draft, setDraft] = useState<QuestionDraft>(createDraft);
   const [options, setOptions] = useState(createDefaultOptions);
@@ -217,6 +218,7 @@ export const QuizBuilder = ({
       passingScore: 0,
       allowRetries: settings.allowRetries,
       showCorrectAnswers: settings.showCorrectAnswers,
+      isFinalExam: settings.isFinalExam,
     });
 
     return response.data.id as string;
@@ -231,6 +233,7 @@ export const QuizBuilder = ({
         passingScore: 0,
         allowRetries: settings.allowRetries,
         showCorrectAnswers: settings.showCorrectAnswers,
+        isFinalExam: settings.isFinalExam,
       };
 
       if (quiz) {
@@ -499,6 +502,17 @@ export const QuizBuilder = ({
         </div>
 
         <div className="grid gap-4 p-5 lg:grid-cols-2">
+          <label className="flex min-h-20 items-center justify-between gap-4 rounded-md border-2 border-foreground bg-background p-4 lg:col-span-2">
+            <div>
+              <p className="text-sm font-medium">{t.admin.finalExam}</p>
+              <p className="text-xs text-muted-foreground">{t.admin.finalExamHelp}</p>
+            </div>
+            <Switch
+              checked={settings.isFinalExam}
+              onCheckedChange={(checked) => setSettings((current) => ({ ...current, isFinalExam: checked }))}
+            />
+          </label>
+
           <label className="flex min-h-20 items-center justify-between gap-4 rounded-md border bg-background p-4">
             <div>
               <p className="text-sm font-medium">{t.admin.allowRetries}</p>

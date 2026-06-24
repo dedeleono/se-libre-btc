@@ -6,7 +6,6 @@ import { useLocale } from "@/lib/i18n";
 import type { SimulatorState } from "@/lib/wallet-sim/types";
 import type { WalletSimActions } from "../use-wallet-simulator";
 import { SeedPhraseGrid } from "../presentational/seed-phrase-grid";
-import { AddressDisplay } from "../presentational/address-display";
 
 export function CreatePanel({ state, actions }: { state: SimulatorState; actions: WalletSimActions }) {
   const { t } = useLocale();
@@ -23,7 +22,8 @@ export function CreatePanel({ state, actions }: { state: SimulatorState; actions
       ) : (
         <div className="space-y-4">
           <SeedPhraseGrid words={words} revealed />
-          <AddressDisplay address={state.wallet.address} />
+          {/* The wallet address is now shown persistently above the panels
+              (see WalletSimulator), so it is intentionally not repeated here. */}
           <Button onClick={actions.next}>{t.walletSim.create.continue}</Button>
         </div>
       )}

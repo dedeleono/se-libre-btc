@@ -474,6 +474,10 @@ model Quiz {
   passingScore       Int     @default(70)
   allowRetries       Boolean @default(true)
   showCorrectAnswers Boolean @default(true)
+  // When true, this quiz IS the course's final exam and is used to gate
+  // certificate eligibility (must be aced 100%). Preferred over the positional
+  // heuristic in lib/certificate-eligibility.ts.
+  isFinalExam        Boolean @default(false)
   chapterId          String  @unique
 
   chapter   Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)

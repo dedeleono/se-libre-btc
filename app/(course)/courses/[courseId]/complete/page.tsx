@@ -10,6 +10,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 import { CompletionHero } from "./_components/completion-hero";
 import { CertificateStudio } from "./_components/certificate-studio";
 import { MaverickCta } from "./_components/maverick-cta";
+import { GuateLibreFooter } from "./_components/guate-libre-footer";
 import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,7 @@ export default async function CourseCompletePage(props: { params: Promise<{ cour
         <CertificateLockedCard eligibility={eligibility} />
         <Separator className="my-2" />
         <MaverickCta />
+        <GuateLibreFooter />
       </div>
     );
   }
@@ -70,6 +72,8 @@ export default async function CourseCompletePage(props: { params: Promise<{ cour
       <Separator className="my-2" />
 
       <MaverickCta />
+
+      <GuateLibreFooter />
     </div>
   );
 }

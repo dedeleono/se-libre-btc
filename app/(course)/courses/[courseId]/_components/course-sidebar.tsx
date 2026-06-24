@@ -9,6 +9,7 @@ import {
 import { CourseSidebarItem } from "./course-sidebar-item";
 import { Course, CourseModule, Chapter, ChapterProgress } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import GuateLibreLogo from "@/components/guate-libre-logo";
 
 interface CourseSidebarProps {
   course: Course & {
@@ -43,6 +44,7 @@ export const CourseSidebar = ({
       className="flex h-full flex-col overflow-y-auto border-r-2 border-foreground bg-background"
     >
       <div className="flex flex-col border-b-2 border-foreground p-6">
+        <GuateLibreLogo width={150} priority className="mb-4" />
         <div className="page-eyebrow">Lección</div>
         <h1 className="mt-3 text-3xl">
           {course.title}
