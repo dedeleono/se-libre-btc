@@ -18,14 +18,14 @@ export default async function AdminStudentsPage() {
           <Users className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t.admin.studentsTitle}</h1>
-          <p className="text-sm text-muted-foreground">{t.admin.manageStudents}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-balance">{t.admin.studentsTitle}</h1>
+          <p className="text-sm text-muted-foreground text-pretty">{t.admin.manageStudents}</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t.admin.studentsCount(students.length)}</CardTitle>
+          <CardTitle className="tabular-nums">{t.admin.studentsCount(students.length)}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {students.map((student) => (

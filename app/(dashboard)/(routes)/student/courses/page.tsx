@@ -44,8 +44,8 @@ export default async function StudentCoursesPage() {
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-6 p-4 pt-6 md:p-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t.nav.myLearning}</h1>
-          <p className="text-sm text-muted-foreground">{t.student.myLearningSubtitle}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-balance">{t.nav.myLearning}</h1>
+          <p className="text-sm text-muted-foreground text-pretty">{t.student.myLearningSubtitle}</p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

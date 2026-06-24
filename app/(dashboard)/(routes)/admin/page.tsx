@@ -37,8 +37,8 @@ export default async function Home() {
             </div>
             <div>
               <h2
-                className="text-2xl font-black tracking-tight sm:text-4xl 
-                text-success dark:text-white/90 font-['Open_Sans']"
+                className="text-2xl font-black tracking-tight sm:text-4xl
+                text-success dark:text-white/90 font-['Open_Sans'] text-balance"
               >
                 {t.nav.dashboard}
               </h2>
@@ -66,7 +66,7 @@ export default async function Home() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-primary tabular-nums">
                 {formatPrice(analytics.totalRevenue)}
               </div>
             </CardContent>
@@ -82,7 +82,7 @@ export default async function Home() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-primary tabular-nums">
                 +{analytics.totalStudents}
               </div>
             </CardContent>
@@ -98,7 +98,7 @@ export default async function Home() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-primary tabular-nums">
                 {analytics.totalCourses}
               </div>
             </CardContent>
@@ -114,7 +114,7 @@ export default async function Home() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-primary tabular-nums">
                 {analytics.totalLearningPaths}
               </div>
             </CardContent>

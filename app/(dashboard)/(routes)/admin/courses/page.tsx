@@ -32,8 +32,8 @@ export default async function CoursesPage() {
               <BookOpen className="h-7 w-7 text-emerald-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">{t.nav.courses}</h1>
-              <p className="text-sm text-muted-foreground">
+              <h1 className="text-3xl font-bold tracking-tight text-balance">{t.nav.courses}</h1>
+              <p className="text-sm text-muted-foreground text-pretty">
                 {t.admin.manageCatalog}
               </p>
             </div>
@@ -63,8 +63,8 @@ export default async function CoursesPage() {
               <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-4">
                 <div>{t.admin.status}: {course.isPublished ? t.common.published : t.common.draft}</div>
                 <div>{t.admin.difficulty}: {course.difficulty}</div>
-                <div>{t.admin.modules}: {course._count.modules}</div>
-                <div>{t.admin.enrollments}: {course._count.enrollments}</div>
+                <div className="tabular-nums">{t.admin.modules}: {course._count.modules}</div>
+                <div className="tabular-nums">{t.admin.enrollments}: {course._count.enrollments}</div>
               </CardContent>
             </Card>
           ))}

@@ -179,7 +179,7 @@ export function PaymentsTable() {
             ) : (
               payments.map((payment: PaymentWithUser) => (
                 <TableRow key={payment.id} className="hover:bg-muted/50">
-                  <TableCell className="py-4 sm:text-sm text-xs">
+                  <TableCell className="py-4 sm:text-sm text-xs tabular-nums">
                     {format(new Date(payment.paymentDate), "dd/MM/yyyy")}
                   </TableCell>
                   <TableCell className="py-4 sm:text-sm text-xs">
@@ -190,7 +190,7 @@ export function PaymentsTable() {
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="py-4 sm:text-sm text-xs font-medium">
+                  <TableCell className="py-4 sm:text-sm text-xs font-medium tabular-nums">
                     {formatPrice(payment.amount)}
                   </TableCell>
                   <TableCell className="py-4 sm:text-sm text-xs">

@@ -72,7 +72,7 @@ export const ModulesList = ({ items, onReorder, onEdit }: ModulesListProps) => {
                   >
                     <div
                       className={cn(
-                        "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition"
+                        "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition-colors"
                       )}
                       {...provided.dragHandleProps}
                     >
@@ -80,10 +80,14 @@ export const ModulesList = ({ items, onReorder, onEdit }: ModulesListProps) => {
                     </div>
                     {module.title}
                     <div className="ml-auto pr-2 flex items-center gap-x-2">
-                      <Pencil
-                        className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
+                      <button
+                        type="button"
                         onClick={() => onEdit(module.id)}
-                      />
+                        className="-m-[11px] inline-flex items-center justify-center p-[11px] transition-colors hover:opacity-75 active:scale-[0.96]"
+                        aria-label="Edit module"
+                      >
+                        <Pencil className="w-4 h-4 cursor-pointer" />
+                      </button>
                     </div>
                   </div>
                 )}

@@ -89,10 +89,10 @@ function CertificateLockedCard({ eligibility }: { eligibility: CertificateEligib
             <LockKeyhole className="h-6 w-6" />
           </div>
           <div className="space-y-2">
-            <h2 className="font-[var(--font-display)] text-3xl uppercase leading-none">
+            <h2 className="font-[var(--font-display)] text-3xl uppercase leading-none text-balance">
               {t.certificateLockedTitle}
             </h2>
-            <p className="max-w-2xl text-sm text-muted-foreground">
+            <p className="max-w-2xl text-sm text-muted-foreground tabular-nums">
               {t.certificateLockedScoreDescription(eligibility.bestFinalQuizScorePercent)}
             </p>
           </div>

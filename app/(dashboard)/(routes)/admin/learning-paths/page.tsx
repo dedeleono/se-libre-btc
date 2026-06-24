@@ -21,8 +21,8 @@ export default async function AdminLearningPathsPage() {
             <Route className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t.nav.learningPaths}</h1>
-            <p className="text-sm text-muted-foreground">{t.admin.bundleCourses}</p>
+            <h1 className="text-3xl font-bold tracking-tight text-balance">{t.nav.learningPaths}</h1>
+            <p className="text-sm text-muted-foreground text-pretty">{t.admin.bundleCourses}</p>
           </div>
         </div>
         <Button asChild>
@@ -49,8 +49,8 @@ export default async function AdminLearningPathsPage() {
             </CardHeader>
             <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
               <div>{t.admin.status}: {path.isPublished ? t.common.published : t.common.draft}</div>
-              <div>{t.nav.courses}: {path._count.courses}</div>
-              <div>{t.admin.enrollments}: {path._count.enrollments}</div>
+              <div className="tabular-nums">{t.nav.courses}: {path._count.courses}</div>
+              <div className="tabular-nums">{t.admin.enrollments}: {path._count.enrollments}</div>
             </CardContent>
           </Card>
         ))}

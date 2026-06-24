@@ -62,7 +62,7 @@ export function CertificateStudio({
   return (
     <Card className="p-6">
       <div className="space-y-1">
-        <h2 className="font-[var(--font-display)] text-3xl uppercase leading-none">{t.completion.certificateSectionTitle}</h2>
+        <h2 className="font-[var(--font-display)] text-3xl uppercase leading-none text-balance">{t.completion.certificateSectionTitle}</h2>
         <p className="text-sm text-muted-foreground">{t.completion.certificateSectionSubtitle}</p>
       </div>
 

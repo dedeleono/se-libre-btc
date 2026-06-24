@@ -490,7 +490,7 @@ export const QuizBuilder = ({
               <h3 className="font-medium">{t.admin.selfCheckBehavior}</h3>
             </div>
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-              <Badge variant="secondary">{t.admin.questionsCount(sortedQuestions.length)}</Badge>
+              <Badge variant="secondary" className="tabular-nums">{t.admin.questionsCount(sortedQuestions.length)}</Badge>
               <Badge variant="secondary">{t.admin.equalWeight}</Badge>
               <Badge variant={quiz ? "default" : "outline"}>{quiz ? t.admin.configured : t.common.draft}</Badge>
             </div>
@@ -602,7 +602,7 @@ export const QuizBuilder = ({
                         setFormError(null);
                       }}
                       className={cn(
-                        "flex min-h-20 items-start gap-3 rounded-md border p-3 text-left transition-colors",
+                        "flex min-h-20 items-start gap-3 rounded-md border p-3 text-left transition-colors active:scale-[0.97]",
                         isSelected
                           ? "border-primary bg-primary/10 text-primary"
                           : "bg-background hover:bg-muted/60"
@@ -632,7 +632,7 @@ export const QuizBuilder = ({
                       setCorrectOptionIndexes((current) => [current[0] ?? 0]);
                     }}
                     className={cn(
-                      "rounded-md border p-3 text-left transition-colors",
+                      "rounded-md border p-3 text-left transition-colors active:scale-[0.97]",
                       !draft.allowMultipleAnswers
                         ? "border-primary bg-primary/10 text-primary"
                         : "bg-background hover:bg-muted/60"
@@ -645,7 +645,7 @@ export const QuizBuilder = ({
                     type="button"
                     onClick={() => setDraft((current) => ({ ...current, allowMultipleAnswers: true }))}
                     className={cn(
-                      "rounded-md border p-3 text-left transition-colors",
+                      "rounded-md border p-3 text-left transition-colors active:scale-[0.97]",
                       draft.allowMultipleAnswers
                         ? "border-primary bg-primary/10 text-primary"
                         : "bg-background hover:bg-muted/60"
@@ -671,14 +671,14 @@ export const QuizBuilder = ({
               </div>
               <div className="space-y-2">
                 {options.map((option, index) => (
-                  <div key={index} className="grid grid-cols-[32px_1fr_auto] items-center gap-2">
+                  <div key={index} className="grid grid-cols-[40px_1fr_auto] items-center gap-2">
                     <button
                       type="button"
                       onClick={() =>
                         draft.allowMultipleAnswers ? toggleCorrectOption(index) : markSingleCorrectOption(index)
                       }
                       className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-full border transition-colors",
+                        "flex h-10 w-10 items-center justify-center rounded-full border transition-colors active:scale-[0.96]",
                         correctOptionIndexes.includes(index)
                           ? "border-emerald-600 bg-emerald-50 text-emerald-700"
                           : "bg-background text-muted-foreground"
@@ -722,7 +722,7 @@ export const QuizBuilder = ({
                     type="button"
                     onClick={() => markSingleCorrectOption(index)}
                     className={cn(
-                      "flex min-h-14 items-center justify-between rounded-md border p-4 text-sm transition-colors",
+                      "flex min-h-14 items-center justify-between rounded-md border p-4 text-sm transition-colors active:scale-[0.97]",
                       correctOptionIndexes.includes(index)
                         ? "border-emerald-600 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/30"
                         : "bg-background hover:bg-muted/60"
@@ -797,7 +797,7 @@ export const QuizBuilder = ({
         <div className="flex flex-col gap-3 border-b p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <h3 className="font-medium">{t.admin.questionBank}</h3>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground tabular-nums">
               {sortedQuestions.length
                 ? t.admin.savedQuestionsCount(sortedQuestions.length)
                 : t.admin.noQuestionsYet}
@@ -827,7 +827,7 @@ export const QuizBuilder = ({
               return (
                 <article key={item.id} className="p-5">
                   <div className="flex items-start gap-3">
-                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium">
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium tabular-nums">
                       {index + 1}
                     </div>
 

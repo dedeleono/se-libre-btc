@@ -36,10 +36,10 @@ const CalendarPage: FC = () => {
             <CalendarIcon className="h-6 w-6 md:h-8 md:w-8 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-balance">
               Calendario de Actividades
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground text-pretty">
               Gestiona y visualiza todas tus actividades programadas
             </p>
           </div>
@@ -68,17 +68,17 @@ const CalendarPage: FC = () => {
                   {entries.map((entry) => (
                     <Card
                       key={`${program}-${entry.no}-${entry.grado}`}
-                      className="min-w-0 shadow-sm hover:shadow-md transition-all duration-200 border-border/40 hover:border-border/60"
+                      className="min-w-0 shadow-sm hover:shadow-md transition-[box-shadow,border-color] duration-200 border-border/40 hover:border-border/60"
                     >
                       <CardHeader className="pb-2 space-y-1">
                         <CardTitle className="flex justify-between items-center text-base">
                           <div className="flex items-center gap-2">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold tabular-nums">
                               #{entry.no}
                             </div>
                             <div className="flex flex-col">
                               <span className="font-medium text-foreground">{entry.grado}</span>
-                              <span className="text-xs text-muted-foreground">{entry.fecha}</span>
+                              <span className="text-xs text-muted-foreground tabular-nums">{entry.fecha}</span>
                             </div>
                           </div>
                         </CardTitle>
@@ -89,13 +89,13 @@ const CalendarPage: FC = () => {
                             <div className="mt-0.5">
                               <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />
                             </div>
-                            <p className="text-sm leading-relaxed">
+                            <p className="text-sm leading-relaxed text-pretty">
                               {entry.actividad}
                             </p>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
-                            <span>{entry.hora}</span>
+                            <span className="tabular-nums">{entry.hora}</span>
                           </div>
                         </div>
                       </CardContent>

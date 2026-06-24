@@ -51,7 +51,7 @@ export function MaverickCta() {
             <p className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--naranja-500)]">
               {t.completion.maverickKicker}
             </p>
-            <h2 className="mt-3 font-[var(--font-display)] text-3xl uppercase leading-[1.05] md:text-4xl">
+            <h2 className="mt-3 font-[var(--font-display)] text-3xl uppercase leading-[1.05] md:text-4xl text-balance">
               {t.completion.maverickTitle}
             </h2>
           </div>

@@ -84,8 +84,8 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <MessageSquare className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">{t.forum.noContentYet}</h3>
-            <p className="text-sm text-muted-foreground max-w-sm">
+            <h3 className="text-lg font-semibold mb-2 text-balance">{t.forum.noContentYet}</h3>
+            <p className="text-sm text-muted-foreground max-w-sm text-pretty">
               {t.forum.emptyPrompt}
             </p>
           </div>

@@ -99,7 +99,7 @@ export async function RecentSales() {
               {sale.course?.title ?? sale.learningPath?.title ?? sale.productType}
             </p>
           </div>
-          <div className="ml-auto text-right">
+          <div className="ml-auto text-right tabular-nums">
             <p className="text-sm font-medium">{formatPrice(sale.amount)}</p>
             <p className="text-xs text-muted-foreground">
               {format(new Date(sale.paymentDate), "MMM d, yyyy")}

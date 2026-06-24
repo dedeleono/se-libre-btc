@@ -51,7 +51,7 @@ export const CourseSidebarItem = ({
       className={cn(
         "my-1 flex w-full items-center gap-x-3 rounded-[2px] px-3 py-4 text-left text-sm font-bold text-muted-foreground",
         "hover:bg-secondary hover:text-foreground",
-        "transition-all duration-200",
+        "transition-colors duration-200",
         isActive && 
           "border-2 border-foreground bg-foreground text-background hover:bg-foreground hover:text-background dark:bg-primary dark:text-primary-foreground",
         !isAccessible && "opacity-60"

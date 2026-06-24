@@ -97,9 +97,9 @@ export const AttachmentForm = ({ initialData, courseId, moduleId, chapterId }: A
                     {deletingId !== attachment.id && (
                       <button
                         onClick={() => onDelete(attachment.id)}
-                        className="ml-2 hover:opacity-50 transition bg-transparent text-red-500 border-none shadow-none"
+                        className="ml-2 -my-[11px] -mr-[11px] inline-flex items-center justify-center p-[11px] hover:opacity-50 transition-opacity bg-transparent text-red-500 border-none shadow-none active:scale-[0.96]"
                       >
-                        <X className="h-4 w-4 " />
+                        <X className="h-4 w-4" />
                       </button>
                     )}
                   </div>

@@ -26,13 +26,13 @@ export default function ThemeToggle() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button 
-          variant="ghost" 
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
           size="icon"
           className="relative w-10 h-10 rounded-xl bg-white/5 backdrop-blur-sm 
-            border border-white/10 shadow-inner hover:shadow-lg hover:border-white/20 
-            transition-all duration-300 dark:bg-black/20 
+            border border-white/10 shadow-inner hover:shadow-lg hover:border-white/20
+            transition-[background-color,border-color,box-shadow,color] duration-300 dark:bg-black/20
             hover:bg-white/10 hover:text-foreground dark:hover:bg-white/5"
         >
           <motion.div

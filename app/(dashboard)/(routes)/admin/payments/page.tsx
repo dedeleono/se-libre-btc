@@ -64,7 +64,7 @@ export default async function PaymentsPage() {
             <div>
               <h2 className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl
                 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
-                dark:from-white dark:to-white/70 font-['Open_Sans']">
+                dark:from-white dark:to-white/70 font-['Open_Sans'] text-balance">
                 {t.nav.payments}
               </h2>
               <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans']">
@@ -84,7 +84,7 @@ export default async function PaymentsPage() {
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
                   {t.dashboard.totalRevenue}
                 </p>
-                <p className="text-xl sm:text-2xl font-bold">
+                <p className="text-xl sm:text-2xl font-bold tabular-nums">
                   {formatPrice(data.totalRevenue)}
                 </p>
               </div>
@@ -100,7 +100,7 @@ export default async function PaymentsPage() {
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
                   {t.admin.monthlyRevenue}
                 </p>
-                <p className="text-xl sm:text-2xl font-bold">
+                <p className="text-xl sm:text-2xl font-bold tabular-nums">
                   {formatPrice(data.monthlyRevenue)}
                 </p>
               </div>
@@ -116,7 +116,7 @@ export default async function PaymentsPage() {
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
                   {t.admin.totalPayments}
                 </p>
-                <p className="text-xl sm:text-2xl font-bold">{data.totalPayments}</p>
+                <p className="text-xl sm:text-2xl font-bold tabular-nums">{data.totalPayments}</p>
               </div>
             </div>
           </Card>
@@ -130,7 +130,7 @@ export default async function PaymentsPage() {
                 <p className="text-xs sm:text-sm font-medium text-muted-foreground">
                   {t.admin.pendingPayments}
                 </p>
-                <p className="text-xl sm:text-2xl font-bold">{data.pendingPayments}</p>
+                <p className="text-xl sm:text-2xl font-bold tabular-nums">{data.pendingPayments}</p>
               </div>
             </div>
           </Card>

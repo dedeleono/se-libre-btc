@@ -48,17 +48,17 @@ const CourseModuleIdPage = async (
         <div className="w-full">
           <Link
             href={`/admin/courses/${params.courseId}/`}
-            className="flex items-center text-sm hover:opacity-75 transition mb-6"
+            className="flex items-center text-sm hover:opacity-75 transition-opacity mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             {t.admin.goBack}
           </Link>
           <div className="flex items-center justify-between w-full">
             <div className="flex flex-col gap-y-2">
-              <h1 className="font-medium text-2xl">
+              <h1 className="font-medium text-2xl text-balance">
                 {t.admin.courseModulesTitle}
               </h1>
-              <span className="text-sm text-slate-700">
+              <span className="text-sm text-slate-700 tabular-nums">
                 {t.admin.completeAllFields(completionText)}
               </span>
             </div>

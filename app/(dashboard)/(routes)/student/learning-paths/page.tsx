@@ -17,8 +17,8 @@ export default async function StudentLearningPathsPage() {
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t.student.learningPaths}</h1>
-        <p className="text-sm text-muted-foreground">{t.student.guidedCurricula}</p>
+        <h1 className="text-3xl font-bold tracking-tight text-balance">{t.student.learningPaths}</h1>
+        <p className="text-sm text-muted-foreground text-pretty">{t.student.guidedCurricula}</p>
       </div>
       <div className="grid gap-4">
         {enrollments.map((enrollment) => (

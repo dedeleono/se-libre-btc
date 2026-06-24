@@ -34,7 +34,7 @@ function SocialLink({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="text-foreground transition-opacity hover:opacity-60"
+      className="inline-flex items-center justify-center -m-[11px] p-[11px] text-foreground transition-opacity hover:opacity-60"
     >
       <svg viewBox="0 0 24 24" aria-hidden="true" className="h-[18px] w-[18px] fill-current">
         <path d={icon === "ig" ? INSTAGRAM_PATH : X_PATH} />
@@ -55,7 +55,7 @@ export default function Home() {
             <div className="page-eyebrow">Dinero Libre Guatemala</div>
             <div className="space-y-5">
               <h1 className="page-title max-w-[10ch]">{t.public.heroTitle}</h1>
-              <p className="max-w-xl text-lg font-semibold leading-relaxed text-muted-foreground">
+              <p className="max-w-xl text-pretty text-lg font-semibold leading-relaxed text-muted-foreground">
                 {t.public.heroSubtitle}
               </p>
             </div>
@@ -122,8 +122,8 @@ export default function Home() {
           ].map((item) => (
             <div key={item.title} className="stamp-card p-6">
               <item.icon className="mb-6 h-8 w-8 text-[var(--terracota-500)] dark:text-[var(--maiz-500)]" />
-              <h2 className="text-3xl">{item.title}</h2>
-              <p className="mt-4 text-sm font-semibold leading-relaxed text-muted-foreground">
+              <h2 className="text-balance text-3xl">{item.title}</h2>
+              <p className="mt-4 text-pretty text-sm font-semibold leading-relaxed text-muted-foreground">
                 {item.body}
               </p>
             </div>
@@ -137,10 +137,10 @@ export default function Home() {
             <div className="page-eyebrow text-[var(--cafe-300)]">
               Ruta práctica
             </div>
-            <h2 className="mt-4 text-6xl text-[var(--crema-050)] md:text-7xl">
+            <h2 className="mt-4 text-balance text-6xl text-[var(--crema-050)] md:text-7xl">
               Dinerlo Libre 1:1
             </h2>
-            <p className="mt-6 text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
+            <p className="mt-6 text-pretty text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
               Aprende los fundamentos, práctica con recursos reales y avanza con
               una comunidad enfocada en la soberanía financiera a través de la
               tecnología innovadora de Bitcoin.
@@ -238,8 +238,8 @@ export default function Home() {
         <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
           <div className="md:sticky md:top-28 h-fit">
             <div className="page-eyebrow">{t.public.faqEyebrow}</div>
-            <h2 className="mt-4 text-6xl">{t.public.faqTitle}</h2>
-            <p className="mt-4 font-semibold leading-relaxed text-muted-foreground">
+            <h2 className="mt-4 text-balance text-6xl">{t.public.faqTitle}</h2>
+            <p className="mt-4 text-pretty font-semibold leading-relaxed text-muted-foreground">
               {t.public.faqSubtitle}
             </p>
             <div className="stamp-card mt-8 p-6">

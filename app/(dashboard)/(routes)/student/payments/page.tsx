@@ -31,13 +31,13 @@ export default async function PaymentsPage() {
             </div>
             <div>
               <h2
-                className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl
+                className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl text-balance
                 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
                 dark:from-white dark:to-white/70 font-['Open_Sans']"
               >
                 {t.payments.historyTitle}
               </h2>
-              <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans']">
+              <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans'] text-pretty">
                 {t.payments.historySubtitle}
               </p>
             </div>

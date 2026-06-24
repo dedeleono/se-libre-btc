@@ -46,7 +46,7 @@ export const CourseSidebar = ({
       <div className="flex flex-col border-b-2 border-foreground p-6">
         <GuateLibreLogo width={150} priority className="mb-4" />
         <div className="page-eyebrow">Lección</div>
-        <h1 className="mt-3 text-3xl">
+        <h1 className="mt-3 text-3xl text-balance">
           {course.title}
         </h1>
       </div>
@@ -56,7 +56,7 @@ export const CourseSidebar = ({
             <AccordionItem value={module.id} key={module.id}>
               <AccordionTrigger
                 className={cn(
-                  "px-6 text-sm font-bold uppercase tracking-[0.08em] transition-all",
+                  "px-6 text-sm font-bold uppercase tracking-[0.08em] transition-colors",
                   "data-[state=open]:bg-secondary data-[state=open]:text-foreground"
                 )}
               >

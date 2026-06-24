@@ -21,8 +21,8 @@ export default async function AdminCohortsPage() {
             <Calendar className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t.nav.cohorts}</h1>
-            <p className="text-sm text-muted-foreground">{t.admin.manageLiveHybrid}</p>
+            <h1 className="text-3xl font-bold tracking-tight text-balance">{t.nav.cohorts}</h1>
+            <p className="text-sm text-muted-foreground text-pretty">{t.admin.manageLiveHybrid}</p>
           </div>
         </div>
         <Button asChild>
@@ -44,8 +44,8 @@ export default async function AdminCohortsPage() {
             </CardHeader>
             <CardContent className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
               <div>{t.admin.status}: {cohort.status}</div>
-              <div>{t.admin.enrollments}: {cohort._count.enrollments}</div>
-              <div>{t.admin.liveSessions}: {cohort._count.liveSessions}</div>
+              <div className="tabular-nums">{t.admin.enrollments}: {cohort._count.enrollments}</div>
+              <div className="tabular-nums">{t.admin.liveSessions}: {cohort._count.liveSessions}</div>
             </CardContent>
           </Card>
         ))}

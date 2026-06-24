@@ -39,8 +39,8 @@ const StudentPage = async () => {
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t.student.welcome(user.firstName || user.name || t.student.learnerFallback)}</h1>
-          <p className="text-sm text-muted-foreground">{t.student.subtitle}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-balance">{t.student.welcome(user.firstName || user.name || t.student.learnerFallback)}</h1>
+          <p className="text-sm text-muted-foreground text-pretty">{t.student.subtitle}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -99,7 +99,7 @@ function DashboardStat({ title, value, icon: Icon, href, openLabel }: { title: s
         <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold tabular-nums">{value}</div>
         <Button asChild variant="link" className="h-auto p-0 text-xs"><Link href={href}>{openLabel}</Link></Button>
       </CardContent>
     </Card>

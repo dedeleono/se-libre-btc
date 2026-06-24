@@ -80,7 +80,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                   >
                     <div
                       className={cn(
-                        "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition"
+                        "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition-colors"
                       )}
                       {...provided.dragHandleProps}
                     >
@@ -119,10 +119,14 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                       >
                         {!chapter.isPublished ? t.common.draft : t.common.published}
                       </Badge>
-                      <Pencil
-                        className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
+                      <button
+                        type="button"
                         onClick={() => onEdit(chapter.id)}
-                      />
+                        className="-m-[11px] inline-flex items-center justify-center p-[11px] transition-colors hover:opacity-75 active:scale-[0.96]"
+                        aria-label="Edit chapter"
+                      >
+                        <Pencil className="w-4 h-4 cursor-pointer" />
+                      </button>
                     </div>
                   </div>
                 )}

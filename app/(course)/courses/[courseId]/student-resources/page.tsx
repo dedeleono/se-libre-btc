@@ -196,7 +196,7 @@ export default function ResourcesPage(props: ResourcePageProps) {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-black mb-2 text-success dark:text-secondary font-['Open_Sans']">{t.course.courseResources}</h1>
+        <h1 className="text-2xl font-black mb-2 text-success dark:text-secondary font-['Open_Sans'] text-balance">{t.course.courseResources}</h1>
         <p className="text-slate-600 dark:text-white/70 font-['Open_Sans'] text-sm">
           {t.course.resourcesSubtitle}
         </p>
@@ -209,13 +209,13 @@ export default function ResourcesPage(props: ResourcePageProps) {
               key={key} 
               value={key}
               disabled={key !== 'all' && !groupedResources[key]?.length}
-              className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary 
+              className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary
                 dark:data-[state=active]:bg-success/20 dark:data-[state=active]:text-accent/90
-                rounded-lg transition-all duration-200"
+                rounded-lg transition-colors duration-200"
             >
               {label}
               {groupedResources[key]?.length > 0 && (
-                <span className="ml-2 text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full
+                <span className="ml-2 text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full tabular-nums
                   dark:bg-success/10 dark:text-success/90">
                   {groupedResources[key].length}
                 </span>

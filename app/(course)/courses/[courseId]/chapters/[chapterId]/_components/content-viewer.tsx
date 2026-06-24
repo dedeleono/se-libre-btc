@@ -275,7 +275,7 @@ export const ContentViewer = ({
           <div className="mt-0 space-y-1">
             <div className="flex justify-between text-sm font-bold text-muted-foreground">
               <span>{t.course.courseProgress}</span>
-              <span>{progress}%</span>
+              <span className="tabular-nums">{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>

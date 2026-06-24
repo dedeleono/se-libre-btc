@@ -98,8 +98,8 @@ const CourseIdPage = async (props: { params: Promise<{ courseId: string }> }) =>
       <div className="p-6 ">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
-            <h1 className="text-2xl font-medium">{t.admin.courseSetup}</h1>
-            <span className="text-sm text-slate-700">
+            <h1 className="text-2xl font-medium text-balance">{t.admin.courseSetup}</h1>
+            <span className="text-sm text-slate-700 tabular-nums">
               {t.admin.completedFields(completionText)}
             </span>
           </div>

@@ -169,7 +169,7 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
 
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
-      <Link href="/admin/learning-paths" className="flex items-center text-sm transition hover:opacity-75">
+      <Link href="/admin/learning-paths" className="flex items-center text-sm transition-opacity hover:opacity-75">
         <ArrowLeft className="mr-2 h-4 w-4" />
         {t.admin.backToLearningPaths}
       </Link>

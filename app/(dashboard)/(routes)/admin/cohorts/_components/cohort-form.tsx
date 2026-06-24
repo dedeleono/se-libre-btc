@@ -185,7 +185,7 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
       <div className="flex items-center justify-between gap-4">
-        <Link href="/admin/cohorts" className="flex items-center text-sm transition hover:opacity-75">
+        <Link href="/admin/cohorts" className="flex items-center text-sm transition-opacity hover:opacity-75">
           <ArrowLeft className="mr-2 h-4 w-4" />
           {t.admin.backToCohorts}
         </Link>

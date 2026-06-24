@@ -33,7 +33,7 @@ export const CourseMobileSidebar = ({
 
   return (
     <Sheet>
-      <SheetTrigger className="md:hidden pr-4 hover:opacity-75 transition">
+      <SheetTrigger className="md:hidden inline-flex items-center justify-center -m-[11px] p-[11px] hover:opacity-75 transition-opacity">
         <Menu className="dark:text-white/90 text-primary" />
       </SheetTrigger>
       <SheetContent 

@@ -174,7 +174,7 @@ export function PaymentsTable() {
             ) : (
               payments.map((payment: any) => (
                 <TableRow key={payment.id}>
-                  <TableCell className="sm:text-sm text-xs">
+                  <TableCell className="sm:text-sm text-xs tabular-nums">
                     {format(new Date(payment.paymentDate), "dd/MM/yyyy")}
                   </TableCell>
                   <TableCell className="sm:text-sm text-xs">
@@ -194,7 +194,7 @@ export function PaymentsTable() {
                     </div>
                   </TableCell>
                   
-                  <TableCell className="sm:text-sm text-xs">{formatPrice(payment.amount)}</TableCell>
+                  <TableCell className="sm:text-sm text-xs tabular-nums">{formatPrice(payment.amount)}</TableCell>
                   <TableCell className="sm:text-sm text-xs">{getStatusBadge(payment.status)}</TableCell>
                 </TableRow>
               ))

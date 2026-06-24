@@ -185,7 +185,7 @@ export const ChapterContentForm = ({
           >
             <div
               className={cn(
-                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-all",
+                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-colors",
                 contentType === "video"
                   ? "border-primary bg-primary/10 text-primary"
                   : "bg-background hover:bg-muted/60"
@@ -202,7 +202,7 @@ export const ChapterContentForm = ({
             </div>
             <div
               className={cn(
-                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-all",
+                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-colors",
                 contentType === "youtube"
                   ? "border-primary bg-primary/10 text-primary"
                   : "bg-background hover:bg-muted/60"
@@ -216,7 +216,7 @@ export const ChapterContentForm = ({
             </div>
             <div
               className={cn(
-                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-all",
+                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-colors",
                 contentType === "pdf"
                   ? "border-primary bg-primary/10 text-primary"
                   : "bg-background hover:bg-muted/60"
@@ -230,7 +230,7 @@ export const ChapterContentForm = ({
             </div>
             <div
               className={cn(
-                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-all",
+                "flex min-h-12 items-center gap-2 rounded-md border p-3 transition-colors",
                 contentType === "richText"
                   ? "border-primary bg-primary/10 text-primary"
                   : "bg-background hover:bg-muted/60"

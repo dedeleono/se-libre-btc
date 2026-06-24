@@ -32,7 +32,7 @@ const SidebarItem = ({
       aria-current={isActive ? "page" : undefined}
       className={cn(
         "flex min-h-10 w-full items-center gap-x-3 rounded-[2px] px-3 py-2 text-sm font-bold",
-        "transition-all duration-200",
+        "transition-colors duration-200",
         "text-muted-foreground hover:bg-secondary hover:text-foreground",
         isActive &&
           "border-2 border-foreground bg-foreground text-background hover:bg-foreground hover:text-background dark:bg-primary dark:text-primary-foreground",

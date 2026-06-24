@@ -13,8 +13,8 @@ export default function AdminSettingsPage() {
           <Settings className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t.admin.settingsTitle}</h1>
-          <p className="text-sm text-muted-foreground">{t.admin.settingsSubtitle}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-balance">{t.admin.settingsTitle}</h1>
+          <p className="text-sm text-muted-foreground text-pretty">{t.admin.settingsSubtitle}</p>
         </div>
       </div>
       <Card><CardHeader><CardTitle>{t.common.comingSoon}</CardTitle></CardHeader><CardContent className="text-sm text-muted-foreground">{t.admin.settingsComingSoonDescription}</CardContent></Card>

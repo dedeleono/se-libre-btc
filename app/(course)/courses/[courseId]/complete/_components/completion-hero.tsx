@@ -19,8 +19,8 @@ export function CompletionHero({ courseTitle }: { courseTitle: string }) {
     >
       {mounted && <ConfettiBurst />}
       <span className="text-5xl">🎉</span>
-      <h1 className="font-[var(--font-display)] text-5xl uppercase leading-none">{t.completion.heroTitle}</h1>
-      <p className="text-lg font-semibold text-muted-foreground">{t.completion.heroSubtitle(courseTitle)}</p>
+      <h1 className="font-[var(--font-display)] text-5xl uppercase leading-none text-balance">{t.completion.heroTitle}</h1>
+      <p className="text-lg font-semibold text-muted-foreground text-pretty">{t.completion.heroSubtitle(courseTitle)}</p>
     </motion.div>
   );
 }

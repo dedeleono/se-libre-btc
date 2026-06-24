@@ -94,11 +94,11 @@ export default async function CoursePreviewPage(
               </div>
 
               <div className="space-y-3">
-                <h1 className="text-3xl font-bold tracking-tight md:text-5xl">
+                <h1 className="text-3xl font-bold tracking-tight md:text-5xl text-balance">
                   {course.title}
                 </h1>
                 {course.shortDescription && (
-                  <p className="max-w-3xl text-lg text-muted-foreground">
+                  <p className="max-w-3xl text-lg text-muted-foreground text-pretty">
                     {course.shortDescription}
                   </p>
                 )}
@@ -113,7 +113,7 @@ export default async function CoursePreviewPage(
                   <PlayCircle className="h-4 w-4" />
                   {t.course.lessonsCount(publishedChapters.length)}
                 </span>
-                <span className="flex items-center gap-2">
+                <span className="flex items-center gap-2 tabular-nums">
                   <Users className="h-4 w-4" />
                   {t.course.enrolledCount(course.enrollments.length)}
                 </span>
@@ -134,7 +134,7 @@ export default async function CoursePreviewPage(
                   src={course.imageUrl}
                   alt={course.title}
                   fill
-                  className="object-cover"
+                  className="object-cover outline outline-1 -outline-offset-1 outline-black/10 dark:outline-white/10"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-muted-foreground">
@@ -175,7 +175,7 @@ export default async function CoursePreviewPage(
         <div className="space-y-8">
           {course.description && (
             <Card className="p-6">
-              <h2 className="mb-3 text-2xl font-semibold">{t.course.aboutThisCourse}</h2>
+              <h2 className="mb-3 text-2xl font-semibold text-balance">{t.course.aboutThisCourse}</h2>
               <div className="prose max-w-none text-muted-foreground">
                 <Preview value={course.description} />
               </div>
@@ -183,7 +183,7 @@ export default async function CoursePreviewPage(
           )}
 
           <Card className="p-6">
-            <h2 className="mb-5 text-2xl font-semibold">{t.course.courseContent}</h2>
+            <h2 className="mb-5 text-2xl font-semibold text-balance">{t.course.courseContent}</h2>
             <Accordion type="single" collapsible className="space-y-3">
               {course.modules.map((module, index) => (
                 <AccordionItem key={module.id} value={module.id} className="rounded-md border px-4">
@@ -220,7 +220,7 @@ export default async function CoursePreviewPage(
 
         <aside className="space-y-6">
           <Card className="p-6">
-            <h2 className="mb-4 text-lg font-semibold">{t.course.includedResources}</h2>
+            <h2 className="mb-4 text-lg font-semibold text-balance">{t.course.includedResources}</h2>
             <div className="space-y-3">
               {course.attachments.length ? (
                 course.attachments.map((attachment) => (

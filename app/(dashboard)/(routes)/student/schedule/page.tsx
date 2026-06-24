@@ -25,8 +25,8 @@ export default async function StudentSchedulePage() {
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t.nav.schedule}</h1>
-        <p className="text-sm text-muted-foreground">{t.student.scheduleSubtitle}</p>
+        <h1 className="text-3xl font-bold tracking-tight text-balance">{t.nav.schedule}</h1>
+        <p className="text-sm text-muted-foreground text-pretty">{t.student.scheduleSubtitle}</p>
       </div>
       <div className="grid gap-4">
         {liveSessions.map((liveSession) => {
@@ -46,7 +46,7 @@ export default async function StudentSchedulePage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3 text-sm text-muted-foreground">
-                <div className="font-semibold">
+                <div className="font-semibold tabular-nums">
                   {end ? t.student.sessionTimeRange(start, end) : start}
                 </div>
                 {liveSession.description && liveSession.description.trim() && (

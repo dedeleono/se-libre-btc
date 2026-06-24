@@ -106,8 +106,8 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-bold">{quiz.title}</h1>
-        {quiz.description && <p className="mt-2 text-muted-foreground">{quiz.description}</p>}
+        <h1 className="text-2xl font-bold text-balance">{quiz.title}</h1>
+        {quiz.description && <p className="mt-2 text-muted-foreground text-pretty">{quiz.description}</p>}
         <p className="mt-2 text-sm text-muted-foreground">
           {t.course.quizSelfCheck}
         </p>
@@ -117,7 +117,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
         <div className="rounded-md border bg-slate-50 p-4">
           <div className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-emerald-600" />
-            <p className="font-medium">
+            <p className="font-medium tabular-nums">
               {t.course.quizComplete(result.scorePercent)}
             </p>
           </div>

@@ -40,7 +40,7 @@ export const CourseCard = ({
   const cardHref = isEnrolled ? enrolledHref : `/courses/preview/${id}`;
 
   return (
-      <div className="stamp-card group flex h-full w-full flex-col overflow-hidden p-3 transition">
+      <div className="stamp-card group flex h-full w-full flex-col overflow-hidden p-3 transition-[transform,box-shadow] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_hsl(var(--foreground))] dark:hover:shadow-[6px_6px_0_var(--naranja-500)]">
         <Link href={cardHref}>
         <div className="relative w-full aspect-video overflow-hidden border-2 border-foreground">
           {imageUrl ? (
@@ -54,7 +54,7 @@ export const CourseCard = ({
         </Link>
         <div className="flex flex-col pt-2">
           <Link href={cardHref}>
-            <div className="line-clamp-2 font-[var(--font-display)] text-2xl uppercase leading-none transition group-hover:text-[var(--terracota-500)]">
+            <div className="line-clamp-2 text-balance font-[var(--font-display)] text-2xl uppercase leading-none transition-colors group-hover:text-[var(--terracota-500)]">
                 {title}
             </div>
           </Link>
@@ -72,7 +72,7 @@ export const CourseCard = ({
             {isEnrolled && progress !== null && (
                 <div className="flex items-center gap-x-2 text-sm md:text-xs">
                     <IconBadge size="sm" icon={CheckCircle}/>
-                    <p>
+                    <p className="tabular-nums">
                         {progress}%
                     </p>
                 </div>

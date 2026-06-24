@@ -17,8 +17,8 @@ export default async function StudentNotesPage() {
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t.student.notes}</h1>
-        <p className="text-sm text-muted-foreground">{t.student.notesSubtitle}</p>
+        <h1 className="text-3xl font-bold tracking-tight text-balance">{t.student.notes}</h1>
+        <p className="text-sm text-muted-foreground text-pretty">{t.student.notesSubtitle}</p>
       </div>
       <div className="grid gap-4">
         {notes.map((note) => (
@@ -26,7 +26,7 @@ export default async function StudentNotesPage() {
             <CardHeader><CardTitle className="text-lg">{note.chapter.title}</CardTitle></CardHeader>
             <CardContent className="space-y-2 text-sm">
               <p className="text-muted-foreground">{note.course.title}</p>
-              <p>{note.content}</p>
+              <p className="text-pretty">{note.content}</p>
             </CardContent>
           </Card>
         ))}
