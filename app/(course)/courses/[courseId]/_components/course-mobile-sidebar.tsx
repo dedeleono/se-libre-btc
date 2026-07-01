@@ -3,8 +3,14 @@
 import { useSession } from "@/lib/auth-client";
 import { Chapter, Course, CourseModule, ChapterProgress } from "@prisma/client";
 import { Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { CourseSidebar } from "./course-sidebar";
+import { useLocale } from "@/lib/i18n";
 
 interface CourseMobileSidebarProps {
   course: Course & {
@@ -23,29 +29,36 @@ interface CourseMobileSidebarProps {
   chaptersAccessibility: Record<string, boolean>;
 }
 
-export const CourseMobileSidebar = ({ 
-  course, 
+export const CourseMobileSidebar = ({
+  course,
   progressCount,
-  chaptersAccessibility 
+  chaptersAccessibility,
 }: CourseMobileSidebarProps) => {
   const { data: session } = useSession();
-  const currentUserRole = (session?.user as { role?: string } | undefined)?.role;
+  const currentUserRole = (session?.user as { role?: string } | undefined)
+    ?.role;
+  const { t } = useLocale();
 
   return (
     <Sheet>
-      <SheetTrigger className="md:hidden inline-flex items-center justify-center -m-[11px] p-[11px] hover:opacity-75 transition-opacity">
+      <SheetTrigger
+        aria-label={t.nav.menu}
+        className="md:hidden inline-flex items-center justify-center -m-[11px] p-[11px] hover:opacity-75 transition-opacity"
+      >
         <Menu className="dark:text-white/90 text-primary" />
       </SheetTrigger>
-      <SheetContent 
-        side="left" 
+      <SheetContent
+        side="left"
         className="p-0 bg-background w-72 dark:bg-gradient-to-b dark:from-card/50 dark:to-background/30 
           dark:border-white/[0.05] dark:backdrop-blur-xl"
       >
-        <CourseSidebar 
-          course={course} 
+        <SheetTitle className="sr-only">{t.nav.myLearning}</SheetTitle>
+        <CourseSidebar
+          course={course}
           userSession={session}
           chaptersAccessibility={chaptersAccessibility}
           currentUserRole={currentUserRole}
+          progressCount={progressCount}
         />
       </SheetContent>
     </Sheet>

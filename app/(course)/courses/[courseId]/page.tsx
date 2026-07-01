@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getFirstPublishedChapterId } from "@/lib/course-navigation";
 import { redirect } from "next/navigation";
 
 // Fallback entry: dashboard / course cards now link directly to the first
@@ -29,7 +30,7 @@ const CoursePage = async (props: { params: Promise<{ courseId: string }> }) => {
   }
 
   // First published chapter in (module.position, chapter.position) order.
-  const firstChapterId = course.modules.flatMap((module) => module.chapters)[0]?.id;
+  const firstChapterId = getFirstPublishedChapterId(course.modules);
 
   if (!firstChapterId) {
     return redirect("/student/browse");

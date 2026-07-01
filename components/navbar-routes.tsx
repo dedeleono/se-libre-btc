@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { FileText } from "lucide-react";
+import { FileText, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 
@@ -20,7 +20,9 @@ export const NavbarRoutes = () => {
   const isCoursePage = pathName?.includes("/courses");
   const isStudentBrowsePage = pathName?.includes("/student/browse");
   const courseId = pathName?.match(/\/courses\/([^\/]+)/)?.[1] ?? null;
-  const canManageCourses = (session?.user as { role?: string } | undefined)?.role === "ADMIN";
+  const userRole = (session?.user as { role?: string } | undefined)?.role;
+  const canManageCourses = userRole === "ADMIN";
+  const canReturnToStudentDashboard = userRole === "STUDENT" && isCoursePage;
 
   return (
     <div className="ml-auto flex items-center gap-x-2">
@@ -41,13 +43,40 @@ export const NavbarRoutes = () => {
         </Button>
       )}
 
+      {canReturnToStudentDashboard && (
+        <Button
+          asChild
+          size="sm"
+          variant="outline"
+          className="hidden sm:inline-flex"
+        >
+          <Link href="/student">
+            <LayoutDashboard data-icon="inline-start" />
+            {t.nav.dashboard}
+          </Link>
+        </Button>
+      )}
+
+      {canReturnToStudentDashboard && (
+        <Button asChild size="icon" variant="outline" className="sm:hidden">
+          <Link href="/student" aria-label={t.nav.dashboard}>
+            <LayoutDashboard data-icon="icon" />
+          </Link>
+        </Button>
+      )}
+
       {isCoursePage && courseId && (
-        <Link href={`/courses/${courseId}/student-resources`} className="w-full">
-          <Button size="sm" variant="ghost" className="w-full gap-2 rounded-sm hover:bg-transparent dark:text-white/70 dark:hover:bg-white/[0.06] dark:hover:text-white">
-            <FileText className="h-4 w-4" />
+        <Button
+          asChild
+          size="sm"
+          variant="ghost"
+          className="gap-2 rounded-sm dark:text-white/70 dark:hover:bg-white/[0.06] dark:hover:text-white"
+        >
+          <Link href={`/courses/${courseId}/student-resources`}>
+            <FileText data-icon="inline-start" />
             {t.nav.resources}
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       )}
       <LanguageToggle />
       <ThemeToggle />
