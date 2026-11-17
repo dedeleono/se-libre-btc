@@ -15,10 +15,11 @@ export type RevocationPlan = {
   alreadyRevoked: number;
   byReason: Partial<Record<CertificateEligibilityReason, number>>;
   toRevoke: string[];
+  needsReview: string[];
 };
 
 export function selectCertificatesToRevoke(checks: CertificateCheck[]): RevocationPlan {
-  const plan: RevocationPlan = { checked: 0, eligible: 0, alreadyRevoked: 0, byReason: {}, toRevoke: [] };
+  const plan: RevocationPlan = { checked: 0, eligible: 0, alreadyRevoked: 0, byReason: {}, toRevoke: [], needsReview: [] };
 
   for (const check of checks) {
     if (!isCertificateValid(check)) {
@@ -29,7 +30,8 @@ export function selectCertificatesToRevoke(checks: CertificateCheck[]): Revocati
     const { eligible, reason } = check.eligibility;
     plan.byReason[reason] = (plan.byReason[reason] ?? 0) + 1;
     if (eligible) plan.eligible += 1;
-    else plan.toRevoke.push(check.id);
+    else if (reason === "FINAL_QUIZ_SCORE_TOO_LOW") plan.toRevoke.push(check.id);
+    else if (reason === "FINAL_QUIZ_UNRESOLVED") plan.needsReview.push(check.id);
   }
 
   return plan;

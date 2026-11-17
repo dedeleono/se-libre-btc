@@ -24,6 +24,7 @@ describe("selectCertificatesToRevoke", () => {
       alreadyRevoked: 0,
       byReason: {},
       toRevoke: [],
+      needsReview: [],
     });
   });
 
@@ -34,14 +35,27 @@ describe("selectCertificatesToRevoke", () => {
     expect(plan.byReason).toEqual({ ELIGIBLE: 1, NO_QUIZZES: 1 });
   });
 
-  it("revokes every ineligible reason", () => {
+  it("revokes certificates whose holder scored below 100 or never took the final", () => {
+    const plan = selectCertificatesToRevoke([check("low", tooLow), check("never", neverTaken), check("ok", perfect)]);
+    expect(plan.toRevoke).toEqual(["low", "never"]);
+    expect(plan.needsReview).toEqual([]);
+  });
+
+  it("lists certificates with an unresolved final for review and never revokes them", () => {
+    const plan = selectCertificatesToRevoke([check("unresolved", unresolved)]);
+    expect(plan.toRevoke).toEqual([]);
+    expect(plan.needsReview).toEqual(["unresolved"]);
+  });
+
+  it("splits a mixed set by reason", () => {
     const plan = selectCertificatesToRevoke([
       check("low", tooLow),
       check("never", neverTaken),
       check("unresolved", unresolved),
       check("ok", perfect),
     ]);
-    expect(plan.toRevoke).toEqual(["low", "never", "unresolved"]);
+    expect(plan.toRevoke).toEqual(["low", "never"]);
+    expect(plan.needsReview).toEqual(["unresolved"]);
     expect(plan.checked).toBe(4);
     expect(plan.eligible).toBe(1);
     expect(plan.byReason).toEqual({ FINAL_QUIZ_SCORE_TOO_LOW: 2, FINAL_QUIZ_UNRESOLVED: 1, ELIGIBLE: 1 });
@@ -50,6 +64,7 @@ describe("selectCertificatesToRevoke", () => {
   it("skips certificates that are already revoked", () => {
     const plan = selectCertificatesToRevoke([check("gone", tooLow, new Date("2026-11-17T00:00:00Z"))]);
     expect(plan.toRevoke).toEqual([]);
+    expect(plan.needsReview).toEqual([]);
     expect(plan.checked).toBe(0);
     expect(plan.alreadyRevoked).toBe(1);
   });

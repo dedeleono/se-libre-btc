@@ -32,6 +32,11 @@ async function main() {
   console.log(`To revoke: ${plan.toRevoke.length}`);
   console.log("By reason:", plan.byReason);
   console.log("Certificate ids to revoke:", plan.toRevoke);
+  console.log(`Needs review: ${plan.needsReview.length}`);
+  if (plan.needsReview.length > 0) {
+    console.log("These certificates belong to courses whose final exam can't be resolved. Fix the course's final exam, then re-run. They are never revoked automatically.");
+    console.log("Certificate ids needing review:", plan.needsReview);
+  }
 
   if (!apply) {
     console.log("Dry run only. Re-run with --apply to revoke.");
