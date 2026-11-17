@@ -62,3 +62,38 @@
     animation: dl-fade-in 200ms var(--dl-ease-out) backwards;
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .dl-landing [data-reveal="rise"] {
+    transition:
+      opacity 420ms var(--dl-ease-out),
+      transform 420ms var(--dl-ease-out);
+  }
+
+  .dl-landing [data-reveal="rise"][data-reveal-state="hidden"] {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dl-landing [data-reveal] {
+    transition: opacity 240ms var(--dl-ease-out);
+  }
+
+  .dl-landing [data-reveal][data-reveal-state="hidden"] {
+    opacity: 0;
+  }
+}
+
+.dl-landing [data-reveal] {
+  transition-delay: calc(var(--dl-step, 0) * var(--dl-stagger));
+}
+
+@media print {
+  .dl-landing [data-reveal][data-reveal-state="hidden"] {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}

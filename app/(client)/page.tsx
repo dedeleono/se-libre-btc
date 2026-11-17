@@ -13,6 +13,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 import GuateLibreLogo from "@/components/guate-libre-logo";
 
 import "./landing-motion.css";
+import LandingReveal from "./landing-reveal";
 
 const posters = ["19.png", "24.png"];
 
@@ -122,7 +123,7 @@ export default function Home() {
               body: t.public.features[2].description,
             },
           ].map((item) => (
-            <div key={item.title} className="stamp-card p-6">
+            <div key={item.title} data-reveal="rise" className="stamp-card p-6">
               <item.icon className="mb-6 h-8 w-8 text-[var(--terracota-500)] dark:text-[var(--maiz-500)]" />
               <h2 className="text-balance text-3xl">{item.title}</h2>
               <p className="mt-4 text-pretty text-sm font-semibold leading-relaxed text-muted-foreground">
@@ -276,6 +277,7 @@ export default function Home() {
           </Accordion>
         </div>
       </section>
+      <LandingReveal />
     </main>
   );
 }
