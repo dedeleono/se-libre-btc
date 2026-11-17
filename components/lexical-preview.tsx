@@ -25,6 +25,7 @@ export function LexicalPreview({ value, className }: LexicalPreviewProps) {
     doc
       .querySelectorAll('.toolbar, .actions, .floating-text-format-popup, [role="toolbar"], [data-lexical-toolbar="true"]')
       .forEach((el) => el.remove());
+    doc.querySelectorAll(".ContentEditable__root").forEach((el) => el.replaceWith(...el.childNodes));
     doc.querySelectorAll("[contenteditable]").forEach((el) => el.removeAttribute("contenteditable"));
     doc.querySelectorAll("table").forEach((table) => {
       const parent = table.parentElement;
