@@ -28,6 +28,9 @@ import { useLocale } from "@/lib/i18n";
 import { AgeRangeSelect } from "@/components/forms/age-range-select";
 import Combobox from "@/components/ui/combobox";
 import { COUNTRIES, getRegionsForCountry, countryHasRegions } from "@/lib/constants/countries";
+import type { ProfileFieldErrors } from "@/lib/validations/profile";
+
+const SERVER_CHECKED_FIELDS = ["phone", "ageRange", "country", "region"] as const;
 
 interface ProfileFormProps {
   initialData: {
@@ -83,8 +86,22 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
 
       toast.success(t.profile.updated);
       router.refresh();
-    } catch {
-      toast.error(t.common.somethingWentWrong);
+    } catch (error) {
+      const fieldErrors: ProfileFieldErrors | undefined =
+        axios.isAxiosError(error) && error.response?.status === 400
+          ? error.response.data?.fieldErrors
+          : undefined;
+      const invalidFields = SERVER_CHECKED_FIELDS.filter((field) => fieldErrors?.[field]);
+      if (invalidFields.length === 0) {
+        toast.error(t.common.somethingWentWrong);
+        return;
+      }
+      for (const field of invalidFields) {
+        form.setError(field, {
+          message: field === "phone" ? t.profile.invalidPhone : t.profile.invalidSelection,
+        });
+      }
+      form.setFocus(invalidFields[0]);
     }
   };
 
@@ -171,6 +188,9 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                 <FormControl>
                   <Input
                     {...field}
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
                     className={cn(
                       "transition-all duration-300 focus:scale-[1.002]",
                       "bg-background"

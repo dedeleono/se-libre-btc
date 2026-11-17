@@ -34,6 +34,9 @@ import { useLocale } from "@/lib/i18n";
 import { AgeRangeSelect } from "@/components/forms/age-range-select";
 import Combobox from "@/components/ui/combobox";
 import { COUNTRIES, getRegionsForCountry, countryHasRegions } from "@/lib/constants/countries";
+import type { ProfileFieldErrors } from "@/lib/validations/profile";
+
+const SERVER_CHECKED_FIELDS = ["ageRange", "country", "region"] as const;
 
 interface OnboardingFormProps {
   organizationId: string;
@@ -207,7 +210,20 @@ export default function OnboardingForm({
       }
     } catch (error) {
       console.error(error);
-      toast.error(t.common.somethingWentWrong);
+      const fieldErrors: ProfileFieldErrors | undefined =
+        axios.isAxiosError(error) && error.response?.status === 400
+          ? error.response.data?.fieldErrors
+          : undefined;
+      const invalidFields = SERVER_CHECKED_FIELDS.filter((field) => fieldErrors?.[field]);
+      if (invalidFields.length === 0) {
+        toast.error(t.common.somethingWentWrong);
+        return;
+      }
+      for (const field of invalidFields) {
+        form.setError(field, { message: t.profile.invalidSelection });
+      }
+      setStepStates((prev) => ({ ...prev, "personal-info": "error" }));
+      setCurrentStepIndex(0);
     } finally {
       setIsLoading(false);
     }
