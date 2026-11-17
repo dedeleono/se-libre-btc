@@ -66,9 +66,10 @@ yarn prisma generate
 Run quality checks:
 
 ```bash
-yarn tsc --noEmit
+yarn typecheck
 yarn lint
-yarn build
+yarn test
+yarn build   # needs a filled-in .env
 ```
 
 Start the app:
