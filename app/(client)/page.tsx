@@ -163,6 +163,7 @@ export default function Home() {
                   alt={`Dinero Libre poster ${index + 1}`}
                   width={1545}
                   height={2000}
+                  data-reveal="wipe"
                   className="h-full w-full object-cover"
                 />
               </div>

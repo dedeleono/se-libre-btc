@@ -74,6 +74,15 @@
     opacity: 0;
     transform: translateY(16px);
   }
+
+  .dl-landing [data-reveal="wipe"] {
+    clip-path: inset(0);
+    transition: clip-path 640ms var(--dl-ease-out);
+  }
+
+  .dl-landing [data-reveal="wipe"][data-reveal-state="hidden"] {
+    clip-path: inset(0 0 100% 0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
