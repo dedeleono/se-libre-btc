@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   BookOpen,
@@ -13,8 +14,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { auth } from "@/lib/auth";
 import { getCourseLearningHref } from "@/lib/course-navigation";
+import {
+  PROFILE_NUDGE_DISMISSED_COOKIE,
+  isDemographicsIncomplete,
+} from "@/lib/demographics";
 import { prisma } from "@/lib/db";
 import { getServerMessages } from "@/lib/i18n-server";
+
+import { ProfileCompletionBanner } from "./_components/profile-completion-banner";
+
+const PAGE_TITLE_ID = "student-dashboard-title";
 
 const StudentPage = async () => {
   const t = getServerMessages();
@@ -91,11 +100,19 @@ const StudentPage = async () => {
 
   if (!user) return redirect("/");
 
+  const showProfileNudge =
+    isDemographicsIncomplete(user) &&
+    (await cookies()).get(PROFILE_NUDGE_DISMISSED_COOKIE)?.value !== "1";
+
   return (
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-balance">
+          <h1
+            id={PAGE_TITLE_ID}
+            tabIndex={-1}
+            className="text-3xl font-bold tracking-tight text-balance"
+          >
             {t.student.welcome(
               user.firstName || user.name || t.student.learnerFallback,
             )}
@@ -104,6 +121,16 @@ const StudentPage = async () => {
             {t.student.subtitle}
           </p>
         </div>
+
+        {showProfileNudge && (
+          <ProfileCompletionBanner
+            title={t.student.profileNudge.title}
+            body={t.student.profileNudge.body}
+            ctaLabel={t.student.profileNudge.cta}
+            dismissLabel={t.student.profileNudge.dismiss}
+            returnFocusId={PAGE_TITLE_ID}
+          />
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <DashboardStat
