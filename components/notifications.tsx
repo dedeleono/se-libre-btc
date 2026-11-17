@@ -18,10 +18,9 @@ import {
 import { cn } from "@/lib/utils";
 import { NotificationType, UserRole } from "@prisma/client";
 import { useEffect, useState, useMemo, memo, useCallback, forwardRef, useImperativeHandle, useRef } from "react";
-import { supabase } from "@/lib/supabase/supabase";
+import { supabase } from "@/lib/supabase/browser";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { SupabaseNotifications } from "@/lib/supabase/notifications";
 import { Suspense } from "react";
 import { toast } from "sonner";
 import { useLocale } from "@/lib/i18n";
@@ -67,6 +66,16 @@ interface NotificationsProps {
 export interface NotificationsHandle {
   markAllAsRead: () => Promise<void>;
   refreshNotifications: () => void;
+}
+
+async function markNotificationRead(notificationId: string) {
+  const response = await fetch(`/api/notifications/${notificationId}/mark-read`, { method: "PATCH" });
+  if (!response.ok) throw new Error("Failed to mark notification as read");
+}
+
+async function markAllNotificationsRead() {
+  const response = await fetch("/api/notifications/mark-all-read", { method: "PATCH" });
+  if (!response.ok) throw new Error("Failed to mark all notifications as read");
 }
 
 // Memoized notification item component
@@ -247,7 +256,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
         setUnreadCount(0);
 
         // Update database
-        await SupabaseNotifications.markAllAsRead(userId);
+        await markAllNotificationsRead();
         
         // Refresh server state
         router.refresh();
@@ -266,7 +275,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
           description: t.notifications.tryLater
         });
       }
-    }, [notifications, unreadCount, userId, router, t.notifications]);
+    }, [notifications, unreadCount, router, t.notifications]);
 
     // Expose methods via ref
     useImperativeHandle(ref, () => ({
@@ -287,7 +296,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
           setUnreadCount(prev => Math.max(0, prev - 1));
           
           // Update the database
-          await SupabaseNotifications.markAsRead(notification.id, userId);
+          await markNotificationRead(notification.id);
           
           // Refresh the router to sync server state
           router.refresh();
@@ -320,7 +329,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       } else if (notification.type === NotificationType.USER_SIGNUP && userRole === "ADMIN") {
         router.push("/admin/students");
       }
-    }, [userId, router, userRole, t.notifications.markOneError]);
+    }, [router, userRole, t.notifications.markOneError]);
 
     const getNotificationIcon = useCallback((type: NotificationType) => {
       switch (type) {
@@ -365,28 +374,9 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
             
             const newNotification = payload.new as Notification;
             
-            if (newNotification.senderId) {
-              
-              const { data: senderData, error } = await supabase
-                .from('User')
-                .select('name, image')
-                .eq('id', newNotification.senderId)
-                .single();
-
-              if (error) {
-                console.error('NotificationsComponent: Error fetching sender data:', error);
-              } else if (senderData) {
-                console.log('NotificationsComponent: Found sender data:', senderData);
-                newNotification.sender = {
-                  name: senderData.name,
-                  image: senderData.image
-                };
-              }
-            }
-
-            
             setNotifications(prev => [newNotification, ...prev]);
             setUnreadCount(prev => prev + 1);
+            router.refresh();
           }
         )
         .on(
@@ -419,7 +409,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
           channelRef.current.unsubscribe();
         }
       };
-    }, [userId, mounted]);
+    }, [userId, mounted, router]);
 
     if (!mounted) {
       return null;

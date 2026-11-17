@@ -67,11 +67,12 @@ The code also accepts older `BACKBLAZE_*` and AWS-compatible variable names for 
 
 If direct browser uploads fail and fall back to server-side upload, configure CORS on the Backblaze bucket to allow `PUT` from the app domain and local development origin.
 
-Supabase, when used:
+Supabase (realtime notifications only; exposed to the browser by design, protect data with RLS):
 
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Do not set a Supabase service-role key; the app does not use one.
 
 Payments, when enabled:
 
