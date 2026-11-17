@@ -435,7 +435,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
               className={cn(
                 "relative rounded-full transition-all duration-200",
                 "hover:bg-primary/10 hover:text-primary",
-                "focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2",
+                "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 unreadCount > 0 && "text-primary dark:text-white/80"
               )}
             >
