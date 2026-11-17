@@ -19,10 +19,13 @@ Run these checks before deploying:
 ```bash
 DATABASE_URL="postgresql://user:pass@host:5432/db" DIRECT_URL="postgresql://user:pass@host:5432/db" yarn prisma validate
 yarn prisma generate
-yarn tsc --noEmit
+yarn typecheck
 yarn lint
+yarn test
 yarn build
 ```
+
+Run `yarn verify` before you push. Vercel runs the tests and `next build`, which typechecks and lints, on every preview deploy. A failing check blocks the deploy.
 
 ## Database
 
@@ -37,6 +40,8 @@ The current platform data model includes courses, modules, chapters, learning pa
 
 ## Environment Variables
 
+Copy `.env.example` to `.env` and fill in values. It lists every variable the code reads.
+
 Core:
 
 - `DATABASE_URL`
@@ -45,6 +50,12 @@ Core:
 - `BETTER_AUTH_SECRET`
 - `AUTH_SECRET`
 - `NEXT_PUBLIC_APP_URL`
+- `PRISMA_DEBUG` — optional; `true` logs every Prisma query.
+
+Google sign-in:
+
+- `AUTH_GOOGLE_ID` — OAuth client ID. Required because `lib/auth.ts` always registers the Google provider.
+- `AUTH_GOOGLE_SECRET` — OAuth client secret. Required because `lib/auth.ts` always registers the Google provider.
 
 Email:
 
@@ -53,6 +64,7 @@ Email:
 - `EMAIL_SERVER_USER`
 - `EMAIL_SERVER_PASSWORD`
 - `EMAIL_FROM`
+- `CONTACT_EMAIL` — optional; recipient of the public contact form.
 
 Storage (Backblaze B2 S3-compatible API):
 
@@ -62,6 +74,7 @@ Storage (Backblaze B2 S3-compatible API):
 - `B2_APPLICATION_KEY` — Backblaze application key secret.
 - `B2_ENDPOINT` — required S3 endpoint host, for example `s3.us-east-005.backblazeb2.com`. No separate region env var is required; the code infers it from this endpoint.
 - `B2_DOWNLOAD_URL` — optional public/custom/CDN base URL. If unset, public URLs use `https://{bucket}.{B2_ENDPOINT}/{key}`.
+- `STORAGE_PUBLIC_ACCESS` — optional; `true` links files straight to the public bucket, otherwise files are proxied through `/api/s3/file/...`.
 
 The code also accepts older `BACKBLAZE_*` and AWS-compatible variable names for compatibility, but the current local `.env` uses the `B2_*` names above.
 
