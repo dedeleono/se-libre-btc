@@ -1,7 +1,10 @@
+"use client";
+
 import { FileText, Download, FileDownIcon } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useLocale } from "@/lib/i18n";
 
 interface ResourcesCardProps {
   attachments?: Array<{
@@ -12,6 +15,7 @@ interface ResourcesCardProps {
 }
 
 export const ResourcesCard = ({ attachments }: ResourcesCardProps) => {
+  const { t } = useLocale();
   if (!attachments || attachments.length === 0) {
     return null;
   }
@@ -25,7 +29,7 @@ export const ResourcesCard = ({ attachments }: ResourcesCardProps) => {
             className="text-sm font-semibold flex items-center gap-x-2"
           >
             <FileDownIcon className="h-4 w-4" />
-            Recursos
+            {t.course.resources}
           </Label>
         </CardTitle>
       </CardHeader>
