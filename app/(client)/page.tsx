@@ -12,6 +12,8 @@ import {
 import { getServerMessages } from "@/lib/i18n-server";
 import GuateLibreLogo from "@/components/guate-libre-logo";
 
+import "./landing-motion.css";
+
 const posters = ["19.png", "24.png"];
 
 const INSTAGRAM_PATH =
@@ -47,7 +49,7 @@ export default function Home() {
   const t = getServerMessages();
 
   return (
-    <main className="dl-app min-h-screen overflow-hidden">
+    <main className="dl-app dl-landing min-h-screen overflow-hidden">
       <section className="relative border-b-2 border-foreground">
         <div className="absolute inset-0 dl-stamped" />
         <div className="relative mx-auto grid min-h-[calc(100vh-80px)] max-w-[1160px] items-center gap-12 px-4 py-12 md:grid-cols-[1.05fr_0.95fr] md:px-8">
