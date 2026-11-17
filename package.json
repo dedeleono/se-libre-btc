@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "verify": "yarn typecheck && yarn lint && yarn test",
+    "vercel-build": "yarn test && yarn build"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
