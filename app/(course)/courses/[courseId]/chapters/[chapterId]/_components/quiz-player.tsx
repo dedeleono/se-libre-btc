@@ -53,7 +53,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
           textAnswer: textAnswers[question.id] || null,
         })),
       });
-      setResult({ ...response.data, answerKey: response.data.answerKey ?? [] });
+      setResult(response.data);
       toast.success(t.course.quizSubmitted);
       // Finishing a quiz can complete the whole course. Prompt the student to
       // their certificate / Maverick page instead of stranding them here.
