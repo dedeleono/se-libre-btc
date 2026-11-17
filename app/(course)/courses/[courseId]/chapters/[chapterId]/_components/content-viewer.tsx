@@ -167,38 +167,29 @@ export const ContentViewer = ({
 
   return (
     <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-y-4 p-4">
-      <Card className="p-6">
-        <div className="flex justify-between items-start">
-          <div className="space-y-0">
-            <div className="flex items-center gap-2">
-              <Label className="pl-5 pt-5 font-[var(--font-display)] text-4xl uppercase leading-none">
-                {title}
-              </Label>
-              {isPreviewMode && (
-                <Badge
-                  variant="secondary"
-                  className="bg-secondary text-foreground"
-                >
-                  {t.course.preview}
-                </Badge>
-              )}
-            </div>
-            {description && description.trim() && (
-            <div className="text-sm font-semibold text-muted-foreground">
-                <Preview value={description} />
-              </div>
+      <Card className="p-4 sm:p-6">
+        <header className="flex min-w-0 flex-col gap-4">
+          <div className="flex min-w-0 flex-wrap items-start gap-x-3 gap-y-2">
+            <h1 className="min-w-0 flex-1 basis-full text-balance text-[clamp(1.75rem,1.25rem+2vw,2.25rem)] leading-[1.05] [overflow-wrap:anywhere] sm:basis-0">
+              {title}
+            </h1>
+            {isPreviewMode && (
+              <Badge variant="secondary" className="bg-secondary text-foreground">
+                {t.course.preview}
+              </Badge>
             )}
           </div>
-        </div>
-        {progress > 0 && isAuthenticated && !isPreviewMode && (
-          <div className="mt-0 space-y-1">
-            <div className="flex justify-between text-sm font-bold text-muted-foreground">
-              <span>{t.course.courseProgress}</span>
-              <span className="tabular-nums">{progress}%</span>
+          {description?.trim() && <Preview value={description} className="lesson-content" />}
+          {progress > 0 && isAuthenticated && !isPreviewMode && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-sm font-bold text-muted-foreground">
+                <span>{t.course.courseProgress}</span>
+                <span className="tabular-nums">{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-2" />
             </div>
-            <Progress value={progress} className="h-2" />
-          </div>
-        )}
+          )}
+        </header>
       </Card>
 
       {isAuthenticated && (
@@ -262,30 +253,38 @@ export const ContentViewer = ({
                 <div className="aspect-video">
                   <iframe
                     src={youtubeUrl}
-                    className="w-full h-full"
+                    title={t.course.videoFrameTitle(title)}
+                    className="h-full w-full border-0"
                     allowFullScreen
-                    frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   />
                 </div>
               )}
 
               {pdfUrl && (
-                <div className="relative min-h-[500px] w-full bg-secondary">
-                  <div className="absolute inset-0">
-                    <iframe
-                      src={`${pdfUrl}#toolbar=0`}
-                      className="w-full h-full border-none"
-                    />
+                <>
+                  <div className="flex justify-end border-b-2 border-foreground p-3">
+                    <Button asChild variant="outline" size="sm" className="min-h-11">
+                      <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                        {t.course.openPdf}
+                      </a>
+                    </Button>
                   </div>
-                </div>
+                  <div className="relative min-h-[500px] w-full bg-secondary">
+                    <div className="absolute inset-0">
+                      <iframe
+                        src={`${pdfUrl}#toolbar=0`}
+                        title={t.course.pdfFrameTitle(title)}
+                        className="w-full h-full border-none"
+                      />
+                    </div>
+                  </div>
+                </>
               )}
 
               {richContent && (
-                <div className="p-6">
-                  <div className="prose max-w-none">
-                    <Preview value={richContent} />
-                  </div>
+                <div className="p-4 sm:p-6">
+                  <Preview value={richContent} className="lesson-content" />
                 </div>
               )}
 
@@ -427,7 +426,7 @@ export const ContentViewer = ({
               </Label>
               <div className="mt-2">
                 {notes ? (
-                  <div className="prose max-w-none">
+                  <div>
                     {typeof notes === 'string' && notes.startsWith('{"root":') ? (
                       <div className="text-sm">
                         {JSON.parse(notes).root?.children?.[0]?.children?.[0]?.text || t.common.noContent}
