@@ -83,8 +83,8 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
               type="text"
               id="name"
               className={`w-full transition-all duration-200 border-border dark:border-white/10 dark:bg-black/40 dark:text-white
-                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
-                dark:focus:border-[var(--naranja-500)] dark:focus:ring-[hsl(var(--primary)/0.2)] ${
+                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-ring
+                dark:focus:border-[var(--naranja-500)] ${
                   errors.name ? "border-destructive dark:border-destructive" : ""
                 }`}
               placeholder={t.forms.fullNamePlaceholder}
@@ -113,8 +113,8 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
               type="email"
               id="email"
               className={`w-full transition-all duration-200 border-border dark:border-white/10 dark:bg-black/40 dark:text-white
-                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
-                dark:focus:border-[var(--naranja-500)] dark:focus:ring-[hsl(var(--primary)/0.2)] ${
+                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-ring
+                dark:focus:border-[var(--naranja-500)] ${
                   errors.email ? "border-destructive dark:border-destructive" : ""
                 } ${emailFromParams ? "bg-muted" : ""}`}
               placeholder={t.forms.emailPlaceholderLong}
@@ -145,8 +145,8 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
               type="tel"
               id="phone"
               className={`w-full transition-all duration-200 border-border dark:border-white/10 dark:bg-black/40 dark:text-white
-                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
-                dark:focus:border-[var(--naranja-500)] dark:focus:ring-[hsl(var(--primary)/0.2)] ${
+                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-ring
+                dark:focus:border-[var(--naranja-500)] ${
                   errors.phone ? "border-destructive dark:border-destructive" : ""
                 }`}
               placeholder={t.forms.phoneNumberPlaceholder}
@@ -175,8 +175,8 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
               type="text"
               id="dpi"
               className={`w-full transition-all duration-200 border-border dark:border-white/10 dark:bg-black/40 dark:text-white
-                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)]
-                dark:focus:border-[var(--naranja-500)] dark:focus:ring-[hsl(var(--primary)/0.2)] ${
+                dark:placeholder:text-white/50 focus:border-[var(--naranja-500)] focus:ring-2 focus:ring-ring
+                dark:focus:border-[var(--naranja-500)] ${
                   errors.dpi ? "border-destructive dark:border-destructive" : ""
                 }`}
               placeholder={t.forms.dpiPlaceholder}

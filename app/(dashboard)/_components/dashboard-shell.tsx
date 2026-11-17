@@ -23,6 +23,11 @@ function getInitialCollapsed() {
     .some((cookie) => cookie === `${SIDEBAR_COOKIE_NAME}=true`);
 }
 
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  return target.isContentEditable || target.closest("input, textarea, select, [contenteditable='true']") !== null;
+}
+
 export function DashboardShell({ navbar, sidebar, children }: DashboardShellProps) {
   const [collapsed, setCollapsed] = React.useState(getInitialCollapsed);
 
@@ -37,6 +42,7 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
   React.useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "b") {
+        if (event.defaultPrevented || isEditableTarget(event.target)) return;
         event.preventDefault();
         toggleCollapsed();
       }

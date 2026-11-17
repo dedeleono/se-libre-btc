@@ -109,7 +109,7 @@ export default function LearningPathSelectionForm({
                         "relative flex items-center p-4 rounded-lg border transition-all duration-200",
                         "hover:shadow-md cursor-pointer",
                         selectedLearningPath === learningPath.id
-                          ? "border-primary/50 bg-[hsl(var(--primary)/0.05)] dark:bg-[hsl(var(--primary)/0.1)] shadow-sm ring-1 ring-[hsl(var(--primary)/0.2)]"
+                          ? "border-primary/50 bg-[hsl(var(--primary)/0.05)] dark:bg-[hsl(var(--primary)/0.1)] shadow-sm ring-2 ring-ring"
                           : "border-border dark:border-white/10 hover:border-[hsl(var(--primary)/0.2)] dark:hover:border-primary/30",
                         isFromInvitation && selectedLearningPath !== learningPath.id && "opacity-50"
                       )}
