@@ -2859,9 +2859,10 @@ hr.selected {
 .lesson-content :is(blockquote, .PlaygroundEditorTheme__quote) {
   margin: 0 0 1em;
   padding-inline-start: 1em;
-  border-inline-start: 3px solid hsl(var(--foreground) / 0.2);
+  border-inline-start: 1px solid hsl(var(--foreground) / 0.35);
   color: hsl(var(--muted-foreground));
   font-size: inherit;
+  font-style: italic;
 }
 
 .lesson-content :is(code, .PlaygroundEditorTheme__textCode) {
