@@ -109,7 +109,6 @@
     "vaul": "^1.1.2",
     "y-websocket": "^3.0.0",
     "yjs": "^13.6.27",
-    "ytdl-core": "^4.11.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
