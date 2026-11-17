@@ -2,12 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import { Lock, Clock, CreditCard, Loader2, FileText, ChevronRight, Loader } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ResourcesCard } from "./resources-card";
@@ -46,10 +44,7 @@ interface ContentViewerProps {
   courseId: string;
   chapterId: string;
   nextChapterId?: string;
-  isLocked: boolean;
-  lockType?: "time" | "subscription" | "intro";
-  startTime?: Date | null;
-  endTime?: Date | null;
+  lockType?: "intro";
   completeOnEnd: boolean;
   progress?: number;
   description?: string;
@@ -63,66 +58,6 @@ interface ContentViewerProps {
   hasWalletSimulator?: boolean;
 }
 
-interface LockScreenProps {
-  type: "time" | "subscription" | "intro";
-  startTime?: Date | null;
-  endTime?: Date | null;
-  courseId: string;
-}
-
-const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => {
-  const { t } = useLocale();
-
-  return (
-    <div className="flex h-[calc(100vh-14rem)] items-center justify-center">
-      <Card className="relative mx-auto max-w-md space-y-6 p-8 text-center">
-        {type === "intro" && (
-          <>
-            <div className="mx-auto w-fit border-2 border-foreground bg-primary p-4 text-primary-foreground">
-              <Lock className="h-12 w-12" />
-            </div>
-            <h2 className="text-3xl">{t.course.sampleContentTitle}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t.course.sampleContentDescription}
-            </p>
-          </>
-        )}
-
-        {type === "time" && (
-          <>
-            <div className="mx-auto w-fit border-2 border-foreground bg-[var(--maiz-500)] p-4 text-[var(--volcan-900)]">
-              <Clock className="h-12 w-12" />
-            </div>
-            <h2 className="text-3xl">{t.course.timeRestricted}</h2>
-            <p className="text-sm text-muted-foreground">
-              {!startTime 
-                ? t.course.lessonUnavailable
-                : t.course.lessonAvailableOn(new Date(startTime).toLocaleDateString())
-              }
-              {endTime && t.course.untilDate(new Date(endTime).toLocaleDateString())}
-            </p>
-          </>
-        )}
-
-        {type === "subscription" && (
-          <>
-            <div className="mx-auto w-fit border-2 border-foreground bg-secondary p-4">
-              <CreditCard className="h-12 w-12" />
-            </div>
-            <h2 className="text-3xl">{t.course.lockedContent}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t.course.enrollToAccess}
-            </p>
-            <Button asChild className="w-full">
-              <Link href={`/courses/preview/${courseId}`}>{t.course.viewCourse}</Link>
-            </Button>
-          </>
-        )}
-      </Card>
-    </div>
-  );
-};
-
 export const ContentViewer = ({
   videoUrl,
   pdfUrl,
@@ -132,10 +67,7 @@ export const ContentViewer = ({
   courseId,
   chapterId,
   nextChapterId,
-  isLocked,
   lockType,
-  startTime,
-  endTime,
   completeOnEnd,
   progress = 0,
   description,
@@ -160,7 +92,6 @@ export const ContentViewer = ({
     const hasCookie = document.cookie.split('; ').some(cookie => 
       cookie.startsWith(`intro_chapter_${chapterId}=`)
     );
-    console.log('hasCookie', hasCookie);
     setIsPreviewMode(lockType === "intro" && hasCookie);
   }, [lockType, chapterId]);
 
@@ -234,10 +165,6 @@ export const ContentViewer = ({
     setActiveTab(tab);
   };
 
-  if (isLocked && (lockType === "time" || lockType === "subscription")) {
-    return <LockScreen type={lockType} startTime={startTime} endTime={endTime} courseId={courseId} />;
-  }
-
   return (
     <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-y-4 p-4">
       <Card className="p-6">
@@ -262,14 +189,6 @@ export const ContentViewer = ({
               </div>
             )}
           </div>
-          {isLoading && isAuthenticated && !isPreviewMode && (
-            <div
-              className="flex items-center justify-center border-2 border-foreground bg-secondary p-2 text-foreground"
-            >
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              <p className="text-sm">{t.course.updatingProgress}</p>
-            </div>
-          )}
         </div>
         {progress > 0 && isAuthenticated && !isPreviewMode && (
           <div className="mt-0 space-y-1">
@@ -331,10 +250,7 @@ export const ContentViewer = ({
               {videoUrl && (
                 <div className="aspect-video">
                   <video
-                    className={cn(
-                      "w-full h-full",
-                      isLoading && "opacity-50 transition-opacity"
-                    )}
+                    className="w-full h-full"
                     src={videoUrl}
                     controls
                     onEnded={onVideoEnd}
@@ -402,39 +318,6 @@ export const ContentViewer = ({
                 </div>
               )}
 
-              {(videoUrl || youtubeUrl) && isLoading && (
-                <div
-                  className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-                >
-                  <div className="flex items-center space-x-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm font-bold">
-                      {t.course.loadingVideo}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {pdfUrl && isLoading && (
-                <div
-                  className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-                >
-                  <div className="flex items-center space-x-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm font-bold">
-                      {t.course.loadingDocument}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {richContent && isLoading && (
-                <div className="p-6 space-y-4">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-4 w-5/6" />
-                </div>
-              )}
             </div>
           </Card>
 

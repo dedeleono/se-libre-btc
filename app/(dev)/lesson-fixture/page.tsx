@@ -26,7 +26,6 @@ export default async function LessonFixturePage(props: {
             isAuthenticated={enrolled}
             lockType={enrolled ? undefined : "intro"}
             attachments={[]}
-            isLocked={false}
           />
         </div>
       </main>
