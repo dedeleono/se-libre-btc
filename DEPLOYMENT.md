@@ -25,7 +25,7 @@ yarn test
 yarn build
 ```
 
-CI (.github/workflows/ci.yml) runs the same checks except the build on every pull request.
+Run `yarn verify` before you push. Vercel runs the tests and `next build`, which typechecks and lints, on every preview deploy. A failing check blocks the deploy.
 
 ## Database
 

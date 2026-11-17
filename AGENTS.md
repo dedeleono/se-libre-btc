@@ -18,11 +18,9 @@ Next.js 15 App Router, React 19, TypeScript strict, Prisma 5 (Postgres on Supaba
 
 ## Verify before you push
 
-```bash
-yarn typecheck && yarn lint && yarn test
-```
+Run `yarn verify` before you push. It runs `yarn typecheck`, `yarn lint`, and `yarn test`.
 
-CI runs the same on every PR (`.github/workflows/ci.yml`).
+Vercel runs the tests and `next build`, which typechecks and lints, on every preview deploy. A failing check blocks the deploy.
 
 ## Where things live
 

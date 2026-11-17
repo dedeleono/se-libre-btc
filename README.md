@@ -72,6 +72,8 @@ yarn test
 yarn build   # needs a filled-in .env
 ```
 
+Run `yarn verify` before you push. Vercel runs the tests and `next build`, which typechecks and lints, on every preview deploy. A failing check blocks the deploy.
+
 Start the app:
 
 ```bash
