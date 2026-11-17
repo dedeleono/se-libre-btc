@@ -60,6 +60,12 @@ const config: Config = {
           foreground: "hsl(var(--success-foreground))",
         },
       },
+      textColor: {
+        primary: { DEFAULT: "hsl(var(--primary-text))" },
+      },
+      fill: {
+        primary: { DEFAULT: "hsl(var(--primary-text))" },
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
