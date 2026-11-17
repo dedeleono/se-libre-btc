@@ -6,11 +6,16 @@ import { auth } from "@/lib/auth";
 import { getProgress } from "@/actions/get-progress";
 import { generateSerial, prefillRecipientName } from "@/lib/certificate";
 import { getCertificateEligibility } from "@/lib/certificate-eligibility";
+import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 
 async function requireUser() {
   const session = await auth();
   if (!session?.user?.id) throw new Error("UNAUTHORIZED");
   return session.user.id;
+}
+
+async function assertEnrolled(userId: string, courseId: string) {
+  if (!(await hasCourseEnrollmentAccess(userId, courseId))) throw new Error("NOT_ENROLLED");
 }
 
 async function assertCourseComplete(userId: string, courseId: string) {
@@ -49,6 +54,7 @@ function toSummary(c: CertificateSummary): CertificateSummary {
 
 export async function ensureCertificate(courseId: string): Promise<CertificateSummary> {
   const userId = await requireUser();
+  await assertEnrolled(userId, courseId);
   await assertCourseComplete(userId, courseId);
   await assertFinalQuizAced(userId, courseId);
 
@@ -96,6 +102,7 @@ export async function updateCertificate(input: {
   const userId = await requireUser();
   const cert = await prisma.certificate.findUnique({ where: { id: input.id } });
   if (!cert || cert.userId !== userId) throw new Error("NOT_FOUND");
+  await assertEnrolled(userId, cert.courseId);
   await assertFinalQuizAced(userId, cert.courseId);
 
   const data: { recipientName?: string; design?: "STANDARD" | "PUNK" } = {};
