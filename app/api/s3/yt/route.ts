@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import ytdl from "ytdl-core";
 import {prisma} from "@/lib/db";
+import { parseYouTubeId } from "@/lib/youtube";
 
 export async function POST(req: Request) {
     try {
@@ -16,15 +16,7 @@ export async function POST(req: Request) {
             return new NextResponse("YouTube URL is required", { status: 400 });
         }
 
-        // Extract video ID and create embed URL
-        const urlObj = new URL(youtubeUrl);
-        let videoId = '';
-
-        if (urlObj.hostname === 'youtu.be') {
-            videoId = urlObj.pathname.slice(1);
-        } else if (urlObj.hostname === 'www.youtube.com' || urlObj.hostname === 'youtube.com') {
-            videoId = urlObj.searchParams.get('v') || '';
-        }
+        const videoId = parseYouTubeId(youtubeUrl);
 
         if (!videoId) {
             return new NextResponse("Invalid YouTube URL", { status: 400 });
