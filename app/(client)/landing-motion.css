@@ -72,6 +72,7 @@
 
   .dl-landing [data-reveal="rise"][data-reveal-state="hidden"] {
     opacity: 0;
+    transition: none;
     transform: translateY(16px);
   }
 
@@ -82,6 +83,7 @@
 
   .dl-landing [data-reveal="wipe"][data-reveal-state="hidden"] {
     clip-path: inset(0 0 100% 0);
+    transition: none;
   }
 }
 
@@ -92,6 +94,7 @@
 
   .dl-landing [data-reveal][data-reveal-state="hidden"] {
     opacity: 0;
+    transition: none;
   }
 }
 
