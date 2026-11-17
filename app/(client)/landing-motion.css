@@ -1,3 +1,64 @@
 .dl-landing {
   --dl-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --dl-stagger: 60ms;
+}
+
+@keyframes dl-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dl-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes dl-rule-draw {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes dl-stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(1.12) rotate(-3deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.985) rotate(0deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dl-landing .dl-hero-eyebrow {
+    animation: dl-fade-in 360ms var(--dl-ease-out) backwards;
+  }
+
+  .dl-landing .dl-hero-eyebrow::before {
+    animation: dl-rule-draw 480ms var(--dl-ease-out) backwards;
+  }
+
+  .dl-landing .dl-hero-rise {
+    animation: dl-rise-in 480ms var(--dl-ease-out) backwards;
+    animation-delay: calc(var(--dl-step) * var(--dl-stagger));
+  }
+
+  .dl-landing .dl-hero-stamp {
+    animation: dl-stamp-in 420ms var(--dl-ease-out) 300ms backwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dl-landing .dl-hero-eyebrow,
+  .dl-landing .dl-hero-rise,
+  .dl-landing .dl-hero-stamp {
+    animation: dl-fade-in 200ms var(--dl-ease-out) backwards;
+  }
 }

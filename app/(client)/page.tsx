@@ -54,14 +54,14 @@ export default function Home() {
         <div className="absolute inset-0 dl-stamped" />
         <div className="relative mx-auto grid min-h-[calc(100vh-80px)] max-w-[1160px] items-center gap-12 px-4 py-12 md:grid-cols-[1.05fr_0.95fr] md:px-8">
           <div className="space-y-8">
-            <div className="page-eyebrow">Dinero Libre Guatemala</div>
+            <div className="page-eyebrow dl-hero-eyebrow">Dinero Libre Guatemala</div>
             <div className="space-y-5">
               <h1 className="page-title max-w-[10ch]">{t.public.heroTitle}</h1>
-              <p className="max-w-xl text-pretty text-lg font-semibold leading-relaxed text-muted-foreground">
+              <p className="dl-hero-rise max-w-xl text-pretty text-lg font-semibold leading-relaxed text-muted-foreground [--dl-step:1]">
                 {t.public.heroSubtitle}
               </p>
             </div>
-            <div className="flex flex-wrap gap-4">
+            <div className="dl-hero-rise flex flex-wrap gap-4 [--dl-step:2]">
               <Button asChild size="lg">
                 <Link href="/courses">
                   {t.public.start}
@@ -96,7 +96,7 @@ export default function Home() {
                 className="hidden h-auto w-full object-contain dark:block"
               />
             </div>
-            <div className="absolute -bottom-5 -left-5 hidden border-2 border-foreground bg-primary px-4 py-3 font-[var(--font-display)] text-3xl uppercase leading-none text-primary-foreground shadow-[4px_4px_0_hsl(var(--foreground))] md:block">
+            <div className="dl-hero-stamp absolute -bottom-5 -left-5 hidden border-2 border-foreground bg-primary px-4 py-3 font-[var(--font-display)] text-3xl uppercase leading-none text-primary-foreground shadow-[4px_4px_0_hsl(var(--foreground))] md:block">
               Sé tu propio banco
             </div>
           </div>
