@@ -21,8 +21,13 @@ import { useLocale } from "@/lib/i18n";
 
 const WalletSimulator = dynamic(() => import("@/components/wallet-simulator"), {
   ssr: false,
-  loading: () => <div className="p-6 text-sm text-muted-foreground">Cargando simulador…</div>,
+  loading: () => <SimulatorLoading />,
 });
+
+function SimulatorLoading() {
+  const { t } = useLocale();
+  return <div className="p-6 text-sm text-muted-foreground">{t.course.loadingSimulator}</div>;
+}
 
 // The Lexical-based Editor (~15 @lexical/* packages) is only used for the
 // authenticated notes feature. Load it on demand so it stays out of the
