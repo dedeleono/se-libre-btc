@@ -32,6 +32,7 @@ async function assertCourseComplete(userId: string, courseId: string) {
 async function assertFinalQuizAced(userId: string, courseId: string) {
   const eligibility = await getCertificateEligibility(userId, courseId);
   if (!eligibility.eligible) throw new Error("FINAL_QUIZ_NOT_PASSED");
+  return eligibility;
 }
 
 export type CertificateSummary = {
@@ -56,7 +57,7 @@ export async function ensureCertificate(courseId: string): Promise<CertificateSu
   const userId = await requireUser();
   await assertEnrolled(userId, courseId);
   await assertCourseComplete(userId, courseId);
-  await assertFinalQuizAced(userId, courseId);
+  const eligibility = await assertFinalQuizAced(userId, courseId);
 
   const existing = await prisma.certificate.findUnique({
     where: { userId_courseId: { userId, courseId } },
@@ -74,6 +75,8 @@ export async function ensureCertificate(courseId: string): Promise<CertificateSu
           courseId,
           serial: generateSerial(),
           recipientName: prefillRecipientName(user),
+          finalQuizId: eligibility.finalQuiz?.id ?? null,
+          finalQuizScorePercent: eligibility.bestFinalQuizScorePercent,
         },
       });
       return toSummary(created);
