@@ -18,12 +18,12 @@ import {
 import { cn } from "@/lib/utils";
 import { NotificationType, UserRole } from "@prisma/client";
 import { useEffect, useState, useMemo, memo, useCallback, forwardRef, useImperativeHandle, useRef } from "react";
-import { supabase } from "@/lib/supabase/browser";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { toast } from "sonner";
 import { useLocale } from "@/lib/i18n";
+import { startVisiblePolling } from "@/lib/notification-polling";
 
 interface Sender {
   name: string | null;
@@ -36,8 +36,8 @@ interface Notification {
   title: string;
   body: string;
   isRead: boolean;
-  senderId: string | null;
-  receiverId: string;
+  senderId?: string | null;
+  receiverId?: string;
   paymentId?: string;
   forumPostId?: string;
   courseId?: string;
@@ -45,7 +45,7 @@ interface Notification {
   cohortId?: string;
   liveSessionId?: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   sender?: {
     name: string | null;
     image: string | null;
@@ -71,6 +71,12 @@ export interface NotificationsHandle {
 async function markNotificationRead(notificationId: string) {
   const response = await fetch(`/api/notifications/${notificationId}/mark-read`, { method: "PATCH" });
   if (!response.ok) throw new Error("Failed to mark notification as read");
+}
+
+async function fetchNotifications(): Promise<Notification[] | null> {
+  const response = await fetch("/api/notifications", { cache: "no-store" });
+  if (!response.ok) return null;
+  return response.json();
 }
 
 async function markAllNotificationsRead() {
@@ -233,7 +239,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState<number>(0);
     const router = useRouter();
-    const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+    const localChangeRef = useRef(0);
 
     // Initialize state after mount
     useEffect(() => {
@@ -252,11 +258,13 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
         previousUnreadCount = unreadCount;
 
         // Optimistically update UI
+        localChangeRef.current += 1;
         setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
         setUnreadCount(0);
 
         // Update database
         await markAllNotificationsRead();
+        localChangeRef.current += 1;
         
         // Refresh server state
         router.refresh();
@@ -290,6 +298,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       if (!notification.isRead) {
         try {
           // Optimistically update the UI
+          localChangeRef.current += 1;
           setNotifications(prev => 
             prev.map(n => n.id === notification.id ? { ...n, isRead: true } : n)
           );
@@ -297,6 +306,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
           
           // Update the database
           await markNotificationRead(notification.id);
+          localChangeRef.current += 1;
           
           // Refresh the router to sync server state
           router.refresh();
@@ -353,63 +363,22 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       }
     }, []);
 
-    // Set up real-time subscription
-    useEffect(() => {
-      if (!userId || !mounted) {
-        console.log('NotificationsComponent: Skipping subscription setup - userId:', userId, 'mounted:', mounted);
+    const refreshFromServer = useCallback(async () => {
+      const changeAtStart = localChangeRef.current;
+      try {
+        const latest = await fetchNotifications();
+        if (!latest || changeAtStart !== localChangeRef.current) return;
+        setNotifications(latest);
+        setUnreadCount(latest.filter(n => !n.isRead).length);
+      } catch {
         return;
       }
+    }, []);
 
-      channelRef.current = supabase
-        .channel(`notifications:${userId}`)
-        .on(
-          "postgres_changes",
-          { 
-            event: "INSERT", 
-            schema: "public", 
-            table: "Notification",
-            filter: `receiverId=eq.${userId}`
-          },
-          async (payload) => {
-            
-            const newNotification = payload.new as Notification;
-            
-            setNotifications(prev => [newNotification, ...prev]);
-            setUnreadCount(prev => prev + 1);
-            router.refresh();
-          }
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "Notification",
-            filter: `receiverId=eq.${userId}`
-          },
-          (payload) => {
-            
-            const updatedNotification = payload.new as Notification;
-            setNotifications(prev =>
-              prev.map(n =>
-                n.id === updatedNotification.id ? { ...n, ...updatedNotification } : n
-              )
-            );
-            if (updatedNotification.isRead) {
-              setUnreadCount(prev => Math.max(0, prev - 1));
-            }
-          }
-        )
-        .subscribe((status) => {
-          console.log('Subscription status:', status);
-        });
-
-      return () => {
-        if (channelRef.current) {
-          channelRef.current.unsubscribe();
-        }
-      };
-    }, [userId, mounted, router]);
+    useEffect(() => {
+      if (!userId || !mounted) return;
+      return startVisiblePolling(refreshFromServer, { doc: document, win: window });
+    }, [userId, mounted, refreshFromServer]);
 
     if (!mounted) {
       return null;

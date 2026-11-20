@@ -25,3 +25,32 @@ export async function createUserSignupNotification(
     })),
   });
 }
+
+export async function listBellNotifications(userId: string) {
+  const rows = await prisma.notification.findMany({
+    where: { receiverId: userId },
+    select: {
+      id: true,
+      type: true,
+      title: true,
+      body: true,
+      isRead: true,
+      createdAt: true,
+      paymentId: true,
+      forumPostId: true,
+      courseId: true,
+      learningPathId: true,
+      sender: { select: { name: true, image: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return rows.map((row) => ({
+    ...row,
+    paymentId: row.paymentId ?? undefined,
+    forumPostId: row.forumPostId ?? undefined,
+    courseId: row.courseId ?? undefined,
+    learningPathId: row.learningPathId ?? undefined,
+    createdAt: row.createdAt.toISOString(),
+  }));
+}
