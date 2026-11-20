@@ -211,6 +211,8 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                 <FormControl>
                   <AgeRangeSelect
                     value={field.value}
+                    ref={field.ref}
+                    onBlur={field.onBlur}
                     onChange={field.onChange}
                     placeholder={t.profile.ageRangePlaceholder}
                   />
@@ -229,6 +231,8 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                   <Combobox
                     options={COUNTRIES.map((c) => ({ label: c.name, value: c.name }))}
                     value={field.value}
+                    ref={field.ref}
+                    onBlur={field.onBlur}
                     onChange={(v) => {
                       form.setValue("country", v as string);
                       form.setValue("region", "");
@@ -253,6 +257,8 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                         value: r,
                       }))}
                       value={field.value}
+                      ref={field.ref}
+                      onBlur={field.onBlur}
                       onChange={(v) => form.setValue("region", v as string)}
                     />
                   </FormControl>
