@@ -1,0 +1,164 @@
+.dl-landing {
+  --dl-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --dl-ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dl-beat: 80ms;
+  --dl-rise: 16px;
+  --dl-dur-rise: 560ms;
+  --dl-dur-print: 640ms;
+  --dl-dur-stamp: 420ms;
+  --dl-dur-press: 240ms;
+  --dl-dur-fade: 240ms;
+}
+
+@keyframes dl-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--dl-rise));
+  }
+}
+
+@keyframes dl-print {
+  from {
+    clip-path: inset(-50% 100% -50% 0);
+  }
+  to {
+    clip-path: inset(-50%);
+  }
+}
+
+@keyframes dl-rule {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes dl-sheet {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes dl-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.12) rotate(-3deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.985) rotate(0deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes dl-press {
+  35% {
+    transform: translate(2px, 2px);
+  }
+}
+
+.dl-landing :is([data-intro] [data-reveal], [data-reveal-state="shown"]),
+.dl-landing :is([data-intro] [data-reveal="eyebrow"], [data-reveal="eyebrow"][data-reveal-state="shown"])::before {
+  animation-delay: calc(var(--dl-step, 0) * var(--dl-beat));
+  animation-fill-mode: backwards;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dl-landing :is([data-intro] [data-reveal="rise"], [data-reveal="rise"][data-reveal-state="shown"]) {
+    animation-name: dl-rise;
+    animation-duration: var(--dl-dur-rise);
+    animation-timing-function: var(--dl-ease-soft);
+  }
+
+  .dl-landing :is([data-intro] [data-reveal="eyebrow"], [data-reveal="eyebrow"][data-reveal-state="shown"]) {
+    animation-name: dl-fade;
+    animation-duration: var(--dl-dur-rise);
+    animation-timing-function: var(--dl-ease-out);
+  }
+
+  .dl-landing :is([data-intro] [data-reveal="eyebrow"], [data-reveal="eyebrow"][data-reveal-state="shown"])::before {
+    animation-name: dl-rule;
+    animation-duration: var(--dl-dur-rise);
+    animation-timing-function: var(--dl-ease-out);
+  }
+
+  .dl-landing :is([data-intro] [data-reveal="print"], [data-reveal="print"][data-reveal-state="shown"]) {
+    animation-name: dl-print;
+    animation-duration: var(--dl-dur-print);
+    animation-timing-function: var(--dl-ease-soft);
+  }
+
+  .dl-landing :is([data-intro] [data-reveal="sheet"], [data-reveal="sheet"][data-reveal-state="shown"]) {
+    animation-name: dl-sheet;
+    animation-duration: var(--dl-dur-print);
+    animation-timing-function: var(--dl-ease-soft);
+  }
+
+  .dl-landing [data-intro] [data-reveal="stamp"] {
+    animation-name: dl-stamp;
+    animation-duration: var(--dl-dur-stamp);
+    animation-timing-function: var(--dl-ease-out);
+  }
+
+  .dl-landing [data-reveal-state="hidden"]:is([data-reveal="rise"], [data-reveal="eyebrow"]) {
+    opacity: 0;
+  }
+
+  .dl-landing [data-reveal-state="hidden"][data-reveal="rise"] {
+    transform: translateY(var(--dl-rise));
+  }
+
+  .dl-landing [data-reveal-state="hidden"][data-reveal="eyebrow"]::before {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .dl-landing [data-reveal-state="hidden"][data-reveal="print"] {
+    clip-path: inset(-50% 100% -50% 0);
+  }
+
+  .dl-landing [data-reveal-state="hidden"][data-reveal="sheet"] {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+  .dl-landing [data-intro] [data-reveal="press"] {
+    animation-name: dl-press;
+    animation-duration: var(--dl-dur-press);
+    animation-timing-function: var(--dl-ease-out);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dl-landing :is([data-intro] [data-reveal]:not([data-reveal="press"]), [data-reveal-state="shown"]) {
+    animation-name: dl-fade;
+    animation-duration: var(--dl-dur-fade);
+    animation-timing-function: var(--dl-ease-out);
+  }
+
+  .dl-landing [data-reveal-state="hidden"] {
+    opacity: 0;
+  }
+}
+
+@media print {
+  .dl-landing [data-reveal-state="hidden"],
+  .dl-landing [data-reveal-state="hidden"]::before {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+}
