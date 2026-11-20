@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { requireAdminApi } from "@/lib/api-auth"
 import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 
@@ -8,9 +8,8 @@ export async function PATCH(
 ) {
     const params = await props.params;
     try {
-
-        const session = await auth()
-        if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
+        const authz = await requireAdminApi()
+        if (!authz.ok) return authz.response
 
         const existingChapter = await prisma.chapter.findFirst({
             where: { id: params.chapterId, moduleId: params.moduleId },
