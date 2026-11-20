@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { NextResponse } from "next/server";
 import { uploadFile, deleteFile } from "@/lib/s3";
 import { prisma } from "@/lib/db";
@@ -20,10 +20,8 @@ function extractVideoId(url: string) {
 
 export async function POST(req: Request) {
     try {
-        const session = await auth();
-        if (!session?.user) {
-            return new NextResponse("Unauthorized", { status: 401 });
-        }
+        const authz = await requireAdminApi();
+        if (!authz.ok) return authz.response;
 
         const { youtubeUrl, chapterId } = await req.json();
 
