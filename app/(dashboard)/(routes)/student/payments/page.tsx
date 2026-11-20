@@ -30,13 +30,13 @@ export default async function PaymentsPage() {
               <CreditCard className="h-6 w-6 md:h-8 md:w-8 text-primary dark:text-white/90" />
             </div>
             <div>
-              <h2
+              <h1
                 className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl text-balance
                 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
                 dark:from-white dark:to-white/70 font-['Open_Sans']"
               >
                 {t.payments.historyTitle}
-              </h2>
+              </h1>
               <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans'] text-pretty">
                 {t.payments.historySubtitle}
               </p>

@@ -201,13 +201,13 @@ export default async function Forum() {
             <MessageSquare className="h-6 w-6 md:h-8 md:w-8 text-accent dark:text-white/90" />
           </div>
           <div>
-            <h2
+            <h1
               className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl 
               bg-gradient-to-r from-accent to-primary dark:from-white dark:to-white/50 bg-clip-text text-transparent
               font-['Open_Sans']"
             >
               {t.forum.title}
-            </h2>
+            </h1>
             <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans']">
               {t.forum.subtitle}
             </p>

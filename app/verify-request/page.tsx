@@ -26,14 +26,14 @@ function VerifyRequestContent() {
         >
           <Mail className="w-12 h-12 text-[var(--terracota-500)]" />
         </motion.div>
-        <motion.h2
+        <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
           className="text-2xl font-semibold text-foreground mb-2"
         >
           {t.auth.checkEmail}
-        </motion.h2>
+        </motion.h1>
         <motion.p
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -65,9 +65,9 @@ export default function VerifyRequest() {
           <div className="mb-4 flex justify-center">
             <Loader2 className="w-12 h-12 text-[var(--terracota-500)] animate-spin" />
           </div>
-          <h2 className="text-2xl font-semibold text-foreground mb-2">
+          <h1 className="text-2xl font-semibold text-foreground mb-2">
             {t.common.loading}
-          </h2>
+          </h1>
           <p className="text-muted-foreground">
             {t.auth.pleaseWait}
           </p>

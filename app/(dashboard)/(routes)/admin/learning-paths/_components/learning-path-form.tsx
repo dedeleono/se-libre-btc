@@ -177,7 +177,7 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
       <Card>
         <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <div>
-            <CardTitle>{isNew ? t.admin.newLearningPath : t.admin.learningPathDetails}</CardTitle>
+            <h1 data-slot="card-title" className="font-[var(--font-display)] text-xl uppercase leading-none tracking-normal">{isNew ? t.admin.newLearningPath : t.admin.learningPathDetails}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{t.admin.editPathDetails}</p>
           </div>
           {!isNew && (

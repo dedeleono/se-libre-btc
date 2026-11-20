@@ -374,6 +374,8 @@ const es = {
     publishedChaptersCount: (count: number) => `${count} ${count === 1 ? "capítulo publicado" : "capítulos publicados"}`,
   },
   admin: {
+    newCourseTitle: "Nuevo curso",
+    newCourseHelp: "¿Qué nombre le quieres dar a tu curso?",
     manageCatalog: "Crea, publica y administra el catálogo de aprendizaje Bitcoin.",
     newCourse: "Nuevo curso",
     noShortDescription: "Aún no hay descripción corta.",
@@ -1388,6 +1390,8 @@ const en: Messages = {
     publishedChaptersCount: (count: number) => `${count} published ${count === 1 ? "chapter" : "chapters"}`,
   },
   admin: {
+    newCourseTitle: "New course",
+    newCourseHelp: "What would you like to name your course?",
     manageCatalog: "Create, publish, and manage the Bitcoin learning catalog.",
     newCourse: "New course",
     noShortDescription: "No short description yet.",

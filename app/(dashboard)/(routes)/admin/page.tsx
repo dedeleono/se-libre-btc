@@ -36,12 +36,12 @@ export default async function Home() {
               <LayoutDashboardIcon className="h-5 w-5 md:h-8 md:w-8 text-success dark:text-white" />
             </div>
             <div>
-              <h2
+              <h1
                 className="text-2xl font-black tracking-tight sm:text-4xl
                 text-success dark:text-white/90 font-['Open_Sans'] text-balance"
               >
                 {t.nav.dashboard}
-              </h2>
+              </h1>
               <p className="text-muted-foreground/80 text-xs dark:text-white/50 font-['Open_Sans']">
                 {t.dashboard.realtimeUpdates}
               </p>

@@ -36,9 +36,9 @@ const CalendarPage: FC = () => {
             <CalendarIcon className="h-6 w-6 md:h-8 md:w-8 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight text-balance">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-balance">
               Calendario de Actividades
-            </h2>
+            </h1>
             <p className="text-sm text-muted-foreground text-pretty">
               Gestiona y visualiza todas tus actividades programadas
             </p>
