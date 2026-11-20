@@ -10,7 +10,6 @@ This guide covers deployment for the Se Libre BTC course platform
 - Email SMTP credentials for admin campaigns and transactional email.
 - Auth secret and production app URL.
 - Optional Recurrente keys for future paid products.
-- Supabase credentials if Supabase-backed uploads or services are enabled.
 
 ## Required Validation
 
@@ -66,12 +65,6 @@ Storage (Backblaze B2 S3-compatible API):
 The code also accepts older `BACKBLAZE_*` and AWS-compatible variable names for compatibility, but the current local `.env` uses the `B2_*` names above.
 
 If direct browser uploads fail and fall back to server-side upload, configure CORS on the Backblaze bucket to allow `PUT` from the app domain and local development origin.
-
-Supabase, when used:
-
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
 
 Payments, when enabled:
 
