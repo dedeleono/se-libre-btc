@@ -1,3 +1,5 @@
+import type { ErrorCode } from "@/lib/error-codes";
+
 export const localeCookieName = "se_libre_locale";
 export const locales = ["es", "en"] as const;
 export const defaultLocale = "es";
@@ -913,6 +915,17 @@ const es = {
     googleSignInError: "No se pudo iniciar sesión con Google",
   },
   errors: {
+    pages: {
+      invitationInvalid: { title: "Este enlace de invitación no es válido", body: "Pide a quien te invitó que te envíe una invitación nueva." },
+      invitationExpired: { title: "Esta invitación expiró", body: "Pide a quien te invitó que te envíe una invitación nueva." },
+      invitationFailed: { title: "No se pudo verificar la invitación", body: "Abre otra vez el enlace de tu correo. Si vuelve a fallar, pide una invitación nueva." },
+      accountRoleMissing: { title: "Tu cuenta aún no tiene un rol", body: "Pide a un administrador que te asigne uno y vuelve a iniciar sesión." },
+      accountBlocked: { title: "Esta cuenta no puede entrar", body: "Si crees que es un error, contacta a un administrador." },
+    } satisfies Record<ErrorCode, { title: string; body: string }>,
+    genericBody: "Vuelve a iniciar sesión e inténtalo de nuevo.",
+    unauthorizedTitle: "No tienes acceso a esta página",
+    unauthorizedBody: "Esta sección es para otro tipo de cuenta. Vuelve a tu panel para continuar.",
+    goToDashboard: "Ir a mi panel",
     connectionTitle: "Error de conexión",
     connectionDescription: "Por favor, intenta recargar la página.",
     reloadPage: "Recargar página",
@@ -1909,6 +1922,17 @@ const en: Messages = {
     googleSignInError: "Failed to sign in with Google",
   },
   errors: {
+    pages: {
+      invitationInvalid: { title: "This invitation link isn't valid", body: "Ask the person who invited you to send a new invitation." },
+      invitationExpired: { title: "This invitation has expired", body: "Ask the person who invited you to send a new invitation." },
+      invitationFailed: { title: "Unable to verify the invitation", body: "Open the link from your email again. If it fails again, ask for a new invitation." },
+      accountRoleMissing: { title: "Your account doesn't have a role yet", body: "Ask an administrator to assign one, then sign in again." },
+      accountBlocked: { title: "This account can't sign in", body: "If you think this is a mistake, contact an administrator." },
+    },
+    genericBody: "Sign in again and try once more.",
+    unauthorizedTitle: "You don't have access to this page",
+    unauthorizedBody: "This section is for a different type of account. Go back to your dashboard to continue.",
+    goToDashboard: "Go to my dashboard",
     connectionTitle: "Connection error",
     connectionDescription: "Please try reloading the page.",
     reloadPage: "Reload page",

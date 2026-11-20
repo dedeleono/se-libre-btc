@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { errorPath } from "@/lib/error-codes";
 import { SupabaseNotifications } from "@/lib/supabase/notifications";
 
 
@@ -21,7 +22,7 @@ export async function GET(req: Request) {
         const token = url.searchParams.get("token");
 
         if (!token) {
-            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
+            return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationInvalid")}`);
         }
 
         const invitation = await prisma.pendingInvitation.findUnique({
@@ -34,14 +35,14 @@ export async function GET(req: Request) {
         });
 
         if (!invitation) {
-            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
+            return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationInvalid")}`);
         }
 
         if (invitation.expires < new Date()) {
             await prisma.pendingInvitation.delete({
                 where: { id: invitation.id }
             });
-            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invitation has expired`);
+            return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationExpired")}`);
         }
 
         const existingUser = await prisma.user.findUnique({
@@ -85,6 +86,6 @@ export async function GET(req: Request) {
 
     } catch (error) {
         console.error("[VERIFY_INVITATION]", error);
-        return NextResponse.redirect(`${getBaseUrl()}/error?message=Failed to verify invitation`);
+        return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationFailed")}`);
     }
 } 

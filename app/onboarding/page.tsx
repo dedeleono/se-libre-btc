@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Navbar } from "./_components/navbar";
 import { prisma } from "@/lib/db";
 import { UserRole } from "@prisma/client";
+import { errorPath } from "@/lib/error-codes";
 
 export default async function OnboardingPage(
   props: {
@@ -19,7 +20,7 @@ export default async function OnboardingPage(
   }
 
   if (!session.user?.role) {
-    redirect('/error?message=Invalid user role');
+    redirect(errorPath("accountRoleMissing"));
   }
 
   const user = await prisma.user.findUnique({
@@ -33,7 +34,7 @@ export default async function OnboardingPage(
   });
 
   if (!user || user.isBanned || user.isDeleted) {
-    redirect('/error?message=User not allowed');
+    redirect(errorPath("accountBlocked"));
   }
 
   if (user.onboardingCompleted) {
@@ -55,7 +56,7 @@ export default async function OnboardingPage(
     });
 
     if (!invitation) {
-      redirect('/error?message=Invalid invitation');
+      redirect(errorPath("invitationInvalid"));
     }
 
     pendingInvitation = {
