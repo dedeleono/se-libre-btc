@@ -1,7 +1,6 @@
 import { cache } from "react";
 
 import { prisma } from "@/lib/db";
-import { ChapterWithProgress } from "@/types/chapter";
 
 // Wrapped in React cache() so the layout and the chapter page (and the
 // per-chapter checks) share a single result per (userId, courseId) within one
@@ -61,33 +60,3 @@ export const hasCourseEnrollmentAccess = cache(
     return hasDirectAccess || Boolean(pathEnrollment) || Boolean(cohortEnrollment);
   }
 );
-
-export const isChapterAccessible = async (
-  chapter: ChapterWithProgress,
-  userId: string | null,
-  userRole: string | null
-): Promise<boolean> => {
-  if (!userId || !userRole) {
-    return false;
-  }
-
-  if (chapter.isIntro) {
-    return true;
-  }
-
-  if (userRole === "ADMIN") {
-    return true;
-  }
-
-  const courseId = chapter.module?.courseId;
-  if (!courseId) {
-    return false;
-  }
-
-  const hasEnrollmentAccess = await hasCourseEnrollmentAccess(userId, courseId);
-  if (!hasEnrollmentAccess) {
-    return false;
-  }
-
-  return true;
-};
