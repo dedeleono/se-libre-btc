@@ -1,5 +1,6 @@
--- Deny anon/authenticated REST access to application tables. Prisma connects as the table owner and bypasses RLS.
--- "Notification" stays readable for realtime until per-user realtime tokens exist.
+-- Deny the public Supabase API roles access to every application table.
+-- Prisma connects as the table owner, so it bypasses RLS (no FORCE) and the app is unaffected.
+-- The app no longer uses Supabase realtime, so "Notification" also leaves the realtime publication.
 ALTER TABLE "Account" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Attachment" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Category" ENABLE ROW LEVEL SECURITY;
@@ -21,6 +22,7 @@ ALTER TABLE "LearningPath" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "LearningPathCourse" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "LearningPathEnrollment" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "LiveSession" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "Notification" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Payment" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "PendingInvitation" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Quiz" ENABLE ROW LEVEL SECURITY;
@@ -32,3 +34,14 @@ ALTER TABLE "Session" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "StudentNote" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "User" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Verification" ENABLE ROW LEVEL SECURITY;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime' AND schemaname = 'public' AND tablename = 'Notification'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime DROP TABLE "Notification";
+  END IF;
+END
+$$;
