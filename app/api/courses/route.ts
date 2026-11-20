@@ -1,18 +1,12 @@
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { createCourse } from "@/actions/course";
 
 export async function POST(req: Request) {
     try {
-        const session = await auth();
-        if (!session?.user) {
-            return new NextResponse("Unauthorized", { status: 401 });
-        }
-
-        if (session.user.role !== "ADMIN") {
-            return new NextResponse("Forbidden", { status: 403 });
-        }
+        const authz = await requireAdminApi();
+        if (!authz.ok) return authz.response;
 
         const courseData = await req.json();
         const course = await createCourse(courseData);

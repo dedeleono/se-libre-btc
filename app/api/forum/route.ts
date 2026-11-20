@@ -1,21 +1,12 @@
 import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
-    });
-
-    if (!user || user.role !== "ADMIN") {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    const authz = await requireAdminApi();
+    if (!authz.ok) return authz.response;
 
     const { title, content, learningPathId, cohortId, courseId, meetingLink, meetingDate } = await req.json();
 
@@ -23,7 +14,7 @@ export async function POST(req: Request) {
       data: {
         title,
         content,
-        authorId: user.id,
+        authorId: authz.session.user.id,
         learningPathId,
         cohortId,
         courseId: courseId || null,

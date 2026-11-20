@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { requireAdminApi } from "@/lib/api-auth"
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import * as z from "zod"
@@ -11,11 +11,10 @@ export async function POST(req: Request, props: { params: Promise<{courseId: str
     const params = await props.params;
     try{
 
-        const session = await auth()
-        const {title} = createModuleSchema.parse(await req.json())
+        const authz = await requireAdminApi()
+        if (!authz.ok) return authz.response
 
-        if(!session?.user) return new NextResponse("Unauthorized", {status: 401})
-        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
+        const {title} = createModuleSchema.parse(await req.json())
 
         const lastModule = await prisma.courseModule.findFirst({
             where:{

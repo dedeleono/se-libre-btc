@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { requireAdminApi } from "@/lib/api-auth"
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { ChapterType } from "@prisma/client"
@@ -12,20 +12,14 @@ const createChapterSchema = z.object({
 export async function POST(req: Request, props: { params: Promise<{ moduleId: string }> }) {
     const params = await props.params;
     try {
-        const session = await auth()
-
-        if (!session?.user) {
-            return new NextResponse("Unauthorized", { status: 401 })
-        }
-        if (session.user.role !== "ADMIN") {
-            return new NextResponse("Forbidden", { status: 403 })
-        }
+        const authz = await requireAdminApi()
+        if (!authz.ok) return authz.response
 
         const { title, type } = createChapterSchema.parse(await req.json())
 
         const dbUser = await prisma.user.findUnique({
             where: {
-                email: session.user.email as string,
+                email: authz.session.user.email as string,
             },
         });
 

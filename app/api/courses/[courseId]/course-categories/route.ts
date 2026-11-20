@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+import { requireAdminApi } from "@/lib/api-auth"
 import * as z from "zod"
 
 const updateCourseCategoriesSchema = z.object({
@@ -11,14 +11,8 @@ const updateCourseCategoriesSchema = z.object({
 export async function PATCH(
     req: Request,
 ) {
-    const session = await auth()
-
-    if (!session?.user) {
-        return new NextResponse("Unauthorized", { status: 401 })
-    }
-    if (session.user.role !== "ADMIN") {
-        return new NextResponse("Forbidden", { status: 403 })
-    }
+    const authz = await requireAdminApi()
+    if (!authz.ok) return authz.response
 
     try {
         const { courseId, categoryIds } = updateCourseCategoriesSchema.parse(await req.json())
