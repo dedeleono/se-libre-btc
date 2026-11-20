@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 import { withFallbackSlug } from "@/lib/slug";
 
 export async function PATCH(req: Request, props: { params: Promise<{ cohortId: string }> }) {
   const params = await props.params;
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return new NextResponse("Unauthorized", { status: 401 });
-  }
+  const authz = await requireAdminApi();
+  if (!authz.ok) return authz.response;
 
   const body = await req.json();
   const current = await prisma.cohort.findUnique({ where: { id: params.cohortId } });
@@ -47,10 +45,8 @@ export async function PATCH(req: Request, props: { params: Promise<{ cohortId: s
 
 export async function DELETE(req: Request, props: { params: Promise<{ cohortId: string }> }) {
   const params = await props.params;
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return new NextResponse("Unauthorized", { status: 401 });
-  }
+  const authz = await requireAdminApi();
+  if (!authz.ok) return authz.response;
 
   await prisma.cohort.delete({ where: { id: params.cohortId } });
 
