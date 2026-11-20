@@ -1,10 +1,12 @@
 "use client";
 
+import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import { Lock, CheckCircle, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocale } from "@/lib/i18n";
+import type { ChapterLockReason } from "@/lib/chapter-access-rule";
 
 interface CourseSidebarItemProps {
   id: string;
@@ -17,7 +19,7 @@ interface CourseSidebarItemProps {
   endTime?: Date | null;
   currentUserRole?: string | null;
   isAccessible?: boolean;
-  customMessage?: string;
+  lockReason?: ChapterLockReason;
 }
 
 export const CourseSidebarItem = ({
@@ -29,19 +31,45 @@ export const CourseSidebarItem = ({
   type,
   currentUserRole,
   isAccessible,
-  customMessage
+  lockReason
 }: CourseSidebarItemProps) => {
   const { t } = useLocale();
   const pathname = usePathname();
   const router = useRouter();
   const isActive = pathname?.includes(id);
 
+  const chapterHref = `/courses/${courseId}/chapters/${id}`;
+
+  const enroll = () => {
+    toast.promise(axios.post(`/api/courses/${courseId}/enroll`), {
+      loading: t.course.enrolling,
+      success: () => {
+        router.push(chapterHref);
+        router.refresh();
+        return t.toasts.enrollmentComplete;
+      },
+      error: (error) =>
+        axios.isAxiosError(error) && error.response?.status === 402
+          ? t.toasts.enrollmentUnavailable
+          : t.toasts.enrollmentError,
+    });
+  };
+
   const onClick = () => {
     if (!isAccessible) {
-      toast.error(customMessage || t.course.completePreviousToast);
+      if (lockReason === "SIGN_IN_REQUIRED") {
+        toast.error(t.course.signInToAccess, { id: "chapter-locked" });
+        return;
+      }
+      toast.error(t.course.enrollToAccess, {
+        id: "chapter-locked",
+        duration: Infinity,
+        closeButton: true,
+        action: { label: t.course.enrollForFree, onClick: enroll },
+      });
       return;
     }
-    router.push(`/courses/${courseId}/chapters/${id}`);
+    router.push(chapterHref);
   };
 
   return (

@@ -9,7 +9,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { CourseSidebarItem } from "./course-sidebar-item";
-import { Course, CourseModule, Chapter, ChapterProgress } from "@prisma/client";
+import type { ChapterAccess } from "@/lib/chapter-access-rule";
+import { countChapters, type CourseNavTree } from "@/lib/course-nav-tree";
 import { cn } from "@/lib/utils";
 import GuateLibreLogo from "@/components/guate-libre-logo";
 import { Button } from "@/components/ui/button";
@@ -17,39 +18,22 @@ import { Progress } from "@/components/ui/progress";
 import { useLocale } from "@/lib/i18n";
 
 interface CourseSidebarProps {
-  course: Course & {
-    modules: (CourseModule & {
-      chapters: (Chapter & {
-        studentProgress: ChapterProgress[] | null;
-      })[];
-    })[];
-    attachments: {
-      id: string;
-      name: string;
-      url: string;
-    }[];
-  };
+  course: CourseNavTree;
+  isAuthenticated: boolean;
   currentUserRole?: string | null;
-  userSession: any;
-  chaptersAccessibility: Record<string, boolean>;
+  chapterAccess: Record<string, ChapterAccess>;
   progressCount: number;
-  customLockMessages?: Record<string, string>;
 }
 
 export const CourseSidebar = ({
   course,
+  isAuthenticated,
   currentUserRole,
-  userSession,
-  chaptersAccessibility,
+  chapterAccess,
   progressCount,
-  customLockMessages = {},
 }: CourseSidebarProps) => {
   const { t } = useLocale();
-  const isAuthenticated = !!userSession?.user;
-  const totalChapters = course.modules.reduce(
-    (total, module) => total + module.chapters.length,
-    0,
-  );
+  const totalChapters = countChapters(course);
   const progressValue =
     totalChapters > 0 ? Math.round((progressCount / totalChapters) * 100) : 0;
   const canReturnToDashboard = isAuthenticated && currentUserRole === "STUDENT";
@@ -101,7 +85,9 @@ export const CourseSidebar = ({
                 {module.title}
               </AccordionTrigger>
               <AccordionContent className="flex flex-col">
-                {module.chapters.map((chapter) => (
+                {module.chapters.map((chapter) => {
+                  const access = chapterAccess[chapter.id];
+                  return (
                   <div
                     key={chapter.id}
                     className="relative ml-6 border-l-2 border-foreground/20 pl-1"
@@ -109,16 +95,17 @@ export const CourseSidebar = ({
                     <CourseSidebarItem
                       id={chapter.id}
                       label={chapter.title}
-                      isCompleted={!!chapter.studentProgress?.[0]?.isCompleted}
+                      isCompleted={chapter.isCompleted}
                       courseId={course.id}
-                      isLocked={!chaptersAccessibility[chapter.id]}
+                      isLocked={access?.accessible !== true}
                       type={chapter.type}
                       currentUserRole={currentUserRole}
-                      isAccessible={chaptersAccessibility[chapter.id]}
-                      customMessage={customLockMessages[chapter.id]}
+                      isAccessible={access?.accessible === true}
+                      lockReason={access && !access.accessible ? access.reason : undefined}
                     />
                   </div>
-                ))}
+                  );
+                })}
               </AccordionContent>
             </AccordionItem>
           ))}
