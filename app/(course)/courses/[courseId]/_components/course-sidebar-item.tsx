@@ -58,10 +58,10 @@ export const CourseSidebarItem = ({
   const onClick = () => {
     if (!isAccessible) {
       if (lockReason === "SIGN_IN_REQUIRED") {
-        toast.error(t.course.signInToAccess, { id: "chapter-locked" });
+        toast(t.course.signInToAccess, { id: "chapter-locked" });
         return;
       }
-      toast.error(t.course.enrollToAccess, {
+      toast(t.course.enrollToAccess, {
         id: "chapter-locked",
         duration: Infinity,
         closeButton: true,
