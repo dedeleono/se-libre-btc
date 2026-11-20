@@ -16,7 +16,7 @@ export default async function PublicCoursesPage() {
   });
 
   return (
-    <main className="dl-app mx-auto max-w-[1160px] space-y-10 px-4 py-16 md:px-8">
+    <div className="dl-app mx-auto max-w-[1160px] space-y-10 px-4 py-16 md:px-8">
       <div className="max-w-3xl">
         <div className="page-eyebrow">Lecciones</div>
         <h1 className="page-title mt-4">{t.public.coursesTitle}</h1>
@@ -44,6 +44,6 @@ export default async function PublicCoursesPage() {
           );
         })}
       </div>
-    </main>
+    </div>
   );
 }

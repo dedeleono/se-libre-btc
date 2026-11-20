@@ -6,6 +6,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { MAIN_CONTENT_ID } from "@/components/layout/skip-link";
 
 const SIDEBAR_COOKIE_NAME = "dashboard_sidebar_collapsed";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
@@ -98,6 +99,7 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
       </aside>
 
       <main
+        id={MAIN_CONTENT_ID}
         className={cn(
           "dl-stamped flex h-full min-h-screen w-full max-w-full flex-col bg-muted pt-16 transition-[padding] duration-200 dark:bg-background",
           collapsed ? "lg:pl-20" : "lg:pl-60"

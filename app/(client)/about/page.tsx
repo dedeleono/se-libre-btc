@@ -24,7 +24,7 @@ export default function AboutPage() {
   const slogans = ["Aprende", "Practica", "Comparte", "Resiste", "Sé tu propio banco"];
 
   return (
-    <main className="dl-app overflow-hidden">
+    <div className="dl-app overflow-hidden">
       {/* HERO */}
       <section className="relative border-b-2 border-foreground">
         <div className="absolute inset-0 dl-stamped" />
@@ -178,6 +178,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

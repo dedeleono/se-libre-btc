@@ -13,6 +13,7 @@ export function isLocale(value: string | undefined | null): value is Locale {
 const es = {
   languageLabel: "Idioma",
   common: {
+    skipToContent: "Saltar al contenido",
     appName: "Se Libre",
     cancel: "Cancelar",
     save: "Guardar",
@@ -1026,6 +1027,7 @@ export type Messages = typeof es;
 const en: Messages = {
   languageLabel: "Language",
   common: {
+    skipToContent: "Skip to content",
     appName: "Se Libre",
     cancel: "Cancel",
     save: "Save",

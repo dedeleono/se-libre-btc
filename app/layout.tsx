@@ -6,7 +6,8 @@ import type { Metadata } from "next";
 import Providers from "./providers";
 import DatabaseErrorBoundary from "@/components/database-error-boundary";
 import ThemeProvider from "@/components/layout/ThemeToggle/theme-provider";
-import { getServerLocale } from "@/lib/i18n-server";
+import { SkipLink } from "@/components/layout/skip-link";
+import { getServerLocale, getServerMessages } from "@/lib/i18n-server";
 
 export const metadata: Metadata = {
   title: "Se Libre",
@@ -19,10 +20,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = getServerLocale();
+  const t = getServerMessages();
 
   return (
     <html lang={locale}>
       <body className="min-h-screen flex flex-col antialiased overflow-x-hidden w-full">
+        <SkipLink label={t.common.skipToContent} />
         <Providers initialLocale={locale}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <DatabaseErrorBoundary>

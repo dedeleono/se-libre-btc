@@ -71,7 +71,7 @@ export default async function CoursePreviewPage(
   const instructor = course.contributors[0]?.user;
 
   return (
-    <main className="min-h-screen bg-background">
+    <div className="bg-background">
       <section className="border-b bg-muted/30">
         <div className="container mx-auto grid gap-8 px-4 py-8 lg:grid-cols-[1fr_360px]">
           <div className="space-y-6">
@@ -240,6 +240,6 @@ export default async function CoursePreviewPage(
           </Card>
         </aside>
       </section>
-    </main>
+    </div>
   );
 }

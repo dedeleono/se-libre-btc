@@ -6,6 +6,7 @@ import { Navbar } from "./_components/navbar";
 import { prisma } from "@/lib/db";
 import { UserRole } from "@prisma/client";
 import { errorPath } from "@/lib/error-codes";
+import { MAIN_CONTENT_ID } from "@/components/layout/skip-link";
 
 export default async function OnboardingPage(
   props: {
@@ -81,7 +82,7 @@ export default async function OnboardingPage(
       <div className="h-[80px] fixed inset-y-0 w-full z-50">
         <Navbar userId={session?.user?.id} userRole={session?.user?.role} />
       </div>
-      <main className="grid flex-1 place-items-center p-4 min-h-screen">
+      <main id={MAIN_CONTENT_ID} className="grid flex-1 place-items-center p-4 min-h-screen">
         <div className="w-full min-h-screen max-w-3xl flex flex-col items-center justify-center">
           <OnboardingForm
             organizationId={session.user.id}
