@@ -3,15 +3,6 @@ import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 
-export async function GET() {
-  const liveSessions = await prisma.liveSession.findMany({
-    include: { cohort: true, course: true, learningPath: true },
-    orderBy: { startsAt: "asc" },
-  });
-
-  return NextResponse.json(liveSessions);
-}
-
 export async function POST(req: Request) {
   const authz = await requireAdminApi();
   if (!authz.ok) return authz.response;
