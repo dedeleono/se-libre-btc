@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { publicAuthorSelect } from "@/lib/public-author";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request, props: { params: Promise<{ postId: string }> }) {
@@ -83,7 +84,7 @@ export async function POST(req: Request, props: { params: Promise<{ postId: stri
         parentId: parentId || null,
       },
       include: {
-        author: true,
+        author: { select: publicAuthorSelect },
       },
     });
 
@@ -93,36 +94,3 @@ export async function POST(req: Request, props: { params: Promise<{ postId: stri
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-
-export async function GET(req: Request, props: { params: Promise<{ postId: string }> }) {
-  const params = await props.params;
-  try {
-    const session = await auth();
-    if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const comments = await prisma.forumReply.findMany({
-      where: {
-        postId: params.postId,
-        parentId: null, // Only get top-level comments
-      },
-      include: {
-        author: true,
-        replies: {
-          include: {
-            author: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    return NextResponse.json(comments);
-  } catch (error) {
-    console.error("[FORUM_COMMENTS_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
-  }
-} 
