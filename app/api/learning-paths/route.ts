@@ -9,7 +9,7 @@ export async function GET() {
     where: { isPublished: true },
     include: {
       courses: true,
-      enrollments: true,
+      enrollments: { select: { id: true } },
     },
     orderBy: { position: "asc" },
   });

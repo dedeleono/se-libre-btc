@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
+import { publicAuthorSelect } from "@/lib/public-author";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -54,16 +55,16 @@ export async function GET(req: Request) {
     if (user.role === "ADMIN") {
       forums = await prisma.forumPost.findMany({
         include: {
-          author: true,
+          author: { select: publicAuthorSelect },
           learningPath: true,
           cohort: true,
           course: true,
           comments: {
             include: {
-              author: true,
+              author: { select: publicAuthorSelect },
               replies: {
                 include: {
-                  author: true,
+                  author: { select: publicAuthorSelect },
                 },
               },
             },
@@ -89,16 +90,16 @@ export async function GET(req: Request) {
           ],
         },
         include: {
-          author: true,
+          author: { select: publicAuthorSelect },
           learningPath: true,
           cohort: true,
           course: true,
           comments: {
             include: {
-              author: true,
+              author: { select: publicAuthorSelect },
               replies: {
                 include: {
-                  author: true,
+                  author: { select: publicAuthorSelect },
                 },
               },
             },
