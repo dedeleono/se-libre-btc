@@ -4,6 +4,7 @@ import OnboardingForm from './_components/onboarding-form';
 import Image from 'next/image';
 import { Navbar } from "./_components/navbar";
 import { prisma } from "@/lib/db";
+import { checkInvitationClaim } from "@/lib/invitation-claim";
 import { UserRole } from "@prisma/client";
 
 export default async function OnboardingPage(
@@ -54,7 +55,7 @@ export default async function OnboardingPage(
       },
     });
 
-    if (!invitation) {
+    if (!invitation || !checkInvitationClaim(invitation, session.user.email, new Date()).ok) {
       redirect('/error?message=Invalid invitation');
     }
 
