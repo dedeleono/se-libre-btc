@@ -4,15 +4,6 @@ import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 import { withFallbackSlug } from "@/lib/slug";
 
-export async function GET() {
-  const cohorts = await prisma.cohort.findMany({
-    include: { course: true, learningPath: true, liveSessions: true },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return NextResponse.json(cohorts);
-}
-
 export async function POST(req: Request) {
   const authz = await requireAdminApi();
   if (!authz.ok) return authz.response;
