@@ -9,13 +9,14 @@ import ConfirmationStep from "@/components/forms/confirmation-step";
 import { motion } from "framer-motion";
 import { LucideIcon, User, GraduationCap, CreditCard, CheckCircle, XCircle } from "lucide-react";
 import { CheckoutFormData } from "@/types/checkout";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { StepperProviderRef } from "./stepper/context";
 import axios from "axios";
 import { useLocale } from "@/lib/i18n";
+import { useSession } from "@/lib/auth-client";
 
 interface CheckoutStep {
   id: string;
@@ -151,6 +152,18 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
 
   const stepperRef = useRef<any & StepperProviderRef>(null);
 
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session, isPending: isSessionPending } = useSession();
+  const isSignedIn = Boolean(session?.user);
+
+  useEffect(() => {
+    if (isSessionPending || isSignedIn) return;
+    const query = searchParams.toString();
+    const callbackUrl = query ? `${pathname}?${query}` : pathname;
+    router.replace(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  }, [isSessionPending, isSignedIn, pathname, router, searchParams]);
+
   const handleStepChange = (newStep: number) => {
     // Only allow moving to steps that have been completed or are next in sequence
     if (newStep <= currentStepIndex + 1) {
@@ -232,6 +245,8 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
       }
     }
   };
+
+  if (!isSignedIn) return null;
 
   return (
     <div className="min-h-[600px] max-w-4xl mx-auto md:p-8">
