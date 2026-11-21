@@ -1,33 +1,51 @@
 import { NextResponse } from 'next/server';
-import { PaymentProductType, UserRole } from '@prisma/client';
+import { z } from 'zod';
 
+import { auth } from '@/lib/auth';
+import { resolveCheckoutAmount } from '@/lib/checkout-amount';
 import { prisma } from '@/lib/db';
 
-interface CreatePaymentRequest {
-  customerEmail: string;
-  baseUrl: string;
-  amount: number;
-  productType: PaymentProductType;
-  courseId?: string;
-  learningPathId?: string;
-}
+const createPaymentSchema = z.discriminatedUnion('productType', [
+  z.object({ productType: z.literal('COURSE'), courseId: z.string().min(1) }),
+  z.object({ productType: z.literal('LEARNING_PATH'), learningPathId: z.string().min(1) }),
+]);
+
+const productSelect = { isPublished: true, isFree: true, price: true } as const;
 
 export async function POST(req: Request) {
   try {
-    const { customerEmail, baseUrl, amount, productType, courseId, learningPathId } = await req.json() as CreatePaymentRequest;
-
-    if (!customerEmail || !baseUrl || amount == null || !productType) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    let user = await prisma.user.findUnique({ where: { email: customerEmail } });
-    if (!user) {
-      user = await prisma.user.create({ data: { email: customerEmail, role: UserRole.STUDENT } });
+    const parsed = createPaymentSchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Invalid payment request' }, { status: 400 });
     }
+
+    const body = parsed.data;
+    const { productType } = body;
+    const courseId = body.productType === 'COURSE' ? body.courseId : undefined;
+    const learningPathId = body.productType === 'LEARNING_PATH' ? body.learningPathId : undefined;
+
+    const product = courseId
+      ? await prisma.course.findUnique({ where: { id: courseId }, select: productSelect })
+      : await prisma.learningPath.findUnique({ where: { id: learningPathId }, select: productSelect });
+
+    const resolved = resolveCheckoutAmount(
+      product && { ...product, price: product.price === null ? null : Number(product.price) }
+    );
+    if (!resolved.ok) {
+      return NextResponse.json({ error: 'Product not available' }, { status: resolved.status });
+    }
+
+    const { amount } = resolved;
+    const customerEmail = session.user.email;
 
     const payment = await prisma.payment.create({
       data: {
-        userId: user.id,
+        userId: session.user.id,
         amount,
         productType,
         courseId,
@@ -37,6 +55,7 @@ export async function POST(req: Request) {
       },
     });
 
+    const baseUrl = process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
     const successUrl = new URL('/onboarding', baseUrl).toString();
     const cancelUrl = new URL('/checkout/error', baseUrl).toString();
 
