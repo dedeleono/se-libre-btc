@@ -1,18 +1,16 @@
-import { auth } from "@/lib/auth"
+import { requireAdminApi } from "@/lib/api-auth"
 import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 
 export async function PATCH(req: Request, props: { params: Promise<{ courseId: string }> }) {
     const params = await props.params;
     try {
-
-        const session = await auth()
-        if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
+        const authz = await requireAdminApi()
+        if (!authz.ok) return authz.response
 
         const course = await prisma.course.findUnique({
             where: {
                 id: params.courseId,
-                // userId: session.user.id
             },
             include: {
                 courseCategory: {

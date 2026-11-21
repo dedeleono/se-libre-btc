@@ -11,13 +11,14 @@ import axios from "axios";
 import { toast } from "sonner";
 import { User } from "@prisma/client";
 import { UserAvatar } from "@/components/user-avatar";
+import type { PublicAuthor } from "@/lib/public-author";
 import { useLocale } from "@/lib/i18n";
 
 interface Discussion {
   id: string;
   content: string;
   createdAt: Date;
-  author: User;
+  author: PublicAuthor;
 }
 
 interface DiscussionSectionProps {
@@ -100,7 +101,6 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
             >
               <UserAvatar
                 userId={discussion.author.id}
-                email={discussion.author.email}
                 name={discussion.author.name}
                 image={discussion.author.image}
                 size={40}

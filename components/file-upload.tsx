@@ -75,7 +75,8 @@ export const S3FileUpload = forwardRef<S3FileUploadRef, S3FileUploadProps>(
           const presignedUrlResponse = await axios.post("/api/s3/presigned-url", {
             fileName: file.name,
             contentType: file.type,
-            fileType: type
+            fileType: type,
+            size: file.size
           });
           
           const { presignedUrl, fileUrl } = presignedUrlResponse.data;

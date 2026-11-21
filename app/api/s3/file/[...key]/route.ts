@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { fileResponseHeaders, isServableKey } from "@/lib/file-response";
 import { getFileObject, getStorageErrorMessage } from "@/lib/s3";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +14,10 @@ export async function GET(_req: Request, props: { params: Promise<{ key: string[
       return NextResponse.json({ error: "Missing file key" }, { status: 400 });
     }
 
+    if (!isServableKey(key)) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
     const object = await getFileObject(key);
 
     if (!object.Body) {
@@ -20,17 +25,7 @@ export async function GET(_req: Request, props: { params: Promise<{ key: string[
     }
 
     const body = object.Body.transformToWebStream() as ReadableStream<Uint8Array>;
-    const headers = new Headers();
-
-    if (object.ContentType) {
-      headers.set("Content-Type", object.ContentType);
-    }
-
-    if (object.ContentLength !== undefined) {
-      headers.set("Content-Length", String(object.ContentLength));
-    }
-
-    headers.set("Cache-Control", "public, max-age=31536000, immutable");
+    const headers = fileResponseHeaders({ contentType: object.ContentType, contentLength: object.ContentLength });
 
     return new NextResponse(body, { headers });
   } catch (error) {

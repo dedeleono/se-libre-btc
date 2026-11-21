@@ -39,13 +39,11 @@ This API supports the Se Libre BTC course platform with global `ADMIN` and `STUD
 
 ## Cohorts And Live Sessions
 
-- `GET /api/cohorts` - list cohorts.
 - `POST /api/cohorts` - create a cohort.
 - `PATCH /api/cohorts/[cohortId]` - update a cohort.
 - `DELETE /api/cohorts/[cohortId]` - delete a cohort.
 - `POST /api/cohorts/[cohortId]/enroll` - enroll in a cohort and linked course/path content.
 - `POST /api/cohorts/[cohortId]/live-sessions` - create a cohort live session.
-- `GET /api/live-sessions` - list live sessions.
 - `POST /api/live-sessions` - create a live session.
 - `PATCH /api/live-sessions/[liveSessionId]` - update a live session.
 - `DELETE /api/live-sessions/[liveSessionId]` - delete a live session.
@@ -69,7 +67,6 @@ Quiz failures never block progress. Chapter completion is recorded after an atte
 - `GET /api/forum` - list posts visible to the authenticated user.
 - `POST /api/forum` - create a scoped forum post.
 - `POST /api/forum/posts` - create a scoped post from the dashboard UI.
-- `GET /api/forum/[postId]/comments` - list comments.
 - `POST /api/forum/[postId]/comments` - add a comment when the user has access to the scoped course/path/cohort.
 
 Posts may be scoped by `courseId`, `learningPathId`, or `cohortId`.

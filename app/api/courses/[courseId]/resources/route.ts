@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -8,6 +9,10 @@ export async function GET(req: Request, props: { params: Promise<{ courseId: str
     const session = await auth();
     if (!session?.user) {
       return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    if (session.user.role !== "ADMIN" && !(await hasCourseEnrollmentAccess(session.user.id, params.courseId))) {
+      return new NextResponse("Forbidden", { status: 403 });
     }
 
     const course = await prisma.course.findUnique({

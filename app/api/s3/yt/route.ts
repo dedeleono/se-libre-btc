@@ -1,14 +1,12 @@
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { NextResponse } from "next/server";
 import ytdl from "ytdl-core";
 import {prisma} from "@/lib/db";
 
 export async function POST(req: Request) {
     try {
-        const session = await auth();
-        if (!session?.user) {
-            return new NextResponse("Unauthorized", { status: 401 });
-        }
+        const authz = await requireAdminApi();
+        if (!authz.ok) return authz.response;
 
         const { youtubeUrl, chapterId } = await req.json();
 
