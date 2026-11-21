@@ -174,8 +174,8 @@ export const ForumPosts = ({ posts, currentUser }: ForumPostsProps) => {
                   {canDelete && (
                     <div className="shrink-0">
                       <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0" aria-label={t.common.actions}>
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

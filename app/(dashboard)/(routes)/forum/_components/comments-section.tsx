@@ -206,6 +206,7 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
           onClick={() => setShowCommentBox(true)}
           className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
           size="icon"
+          aria-label={t.forum.writeAComment}
         >
           <MessageCircle className="h-6 w-6" />
         </Button>

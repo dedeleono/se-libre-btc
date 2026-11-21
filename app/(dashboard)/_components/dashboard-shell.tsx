@@ -5,6 +5,7 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { MAIN_CONTENT_ID } from "@/components/layout/skip-link";
 
@@ -31,6 +32,8 @@ function isEditableTarget(target: EventTarget | null) {
 
 export function DashboardShell({ navbar, sidebar, children }: DashboardShellProps) {
   const [collapsed, setCollapsed] = React.useState(getInitialCollapsed);
+  const { t } = useLocale();
+  const sidebarToggleLabel = collapsed ? t.common.expandSidebar : t.common.collapseSidebar;
 
   const toggleCollapsed = React.useCallback(() => {
     setCollapsed((current) => {
@@ -82,7 +85,7 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
               size="icon"
               onClick={toggleCollapsed}
               className="absolute right-2 top-3 z-10 h-8 w-8 bg-background/90"
-              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={sidebarToggleLabel}
             >
               {collapsed ? (
                 <PanelLeftOpen className="h-4 w-4" />
@@ -92,7 +95,7 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
-            {collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            {sidebarToggleLabel}
           </TooltipContent>
         </Tooltip>
         {sidebar}

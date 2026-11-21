@@ -101,7 +101,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                           variant={"outline"}
                           className="rounded-full px-3 py-1 text-primary-foreground bg-primary font-semibold text-xs"
                         >
-                          Quiz
+                          {t.admin.quiz}
                         </Badge>
                       )}
                       {chapter.type === ChapterType.RESOURCE && (
@@ -123,7 +123,7 @@ export const ChapterList = ({ items, onReorder, onEdit }: ChapterListProps) => {
                         type="button"
                         onClick={() => onEdit(chapter.id)}
                         className="-m-[11px] inline-flex items-center justify-center p-[11px] transition-colors hover:opacity-75 active:scale-[0.96]"
-                        aria-label="Edit chapter"
+                        aria-label={t.admin.editChapter(chapter.title)}
                       >
                         <Pencil className="w-4 h-4 cursor-pointer" />
                       </button>

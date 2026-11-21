@@ -67,6 +67,7 @@ const HeaderMenu = () => {
                 variant="ghost"
                 size="icon"
                 className="text-foreground"
+                aria-label={t.common.openMenu}
               >
                 <Menu className="h-5 w-5" />
               </Button>

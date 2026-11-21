@@ -11,12 +11,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 
 export function CalendarDateRangePicker({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) {
+  const { t } = useLocale();
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: addDays(new Date(), -20),
     to: new Date(),
@@ -45,7 +47,7 @@ export function CalendarDateRangePicker({
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a date</span>
+              <span>{t.common.pickDate}</span>
             )}
           </Button>
         </PopoverTrigger>

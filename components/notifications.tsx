@@ -428,10 +428,11 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
     return (
       <Suspense fallback={null}>
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
             <Button 
               variant="ghost" 
               size="icon" 
+              aria-label={t.notifications.title}
               className={cn(
                 "relative rounded-full transition-all duration-200",
                 "hover:bg-primary/10 hover:text-primary",

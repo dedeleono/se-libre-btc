@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { CalendarIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getServerMessages } from "@/lib/i18n-server";
 
 // Mock data import (or fetch in getStaticProps)
 import calendarData from "./_data/calendars.json";
@@ -26,6 +27,7 @@ interface CalendarData {
 
 const CalendarPage: FC = () => {
   const data: CalendarData = calendarData;
+  const t = getServerMessages();
 
   return (
     <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8">
@@ -37,10 +39,10 @@ const CalendarPage: FC = () => {
           </div>
           <div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-balance">
-              Calendario de Actividades
+              {t.dashboard.calendarTitle}
             </h1>
             <p className="text-sm text-muted-foreground text-pretty">
-              Gestiona y visualiza todas tus actividades programadas
+              {t.dashboard.calendarSubtitle}
             </p>
           </div>
         </div>
@@ -58,7 +60,7 @@ const CalendarPage: FC = () => {
               <div className="flex justify-between items-center space-x-3 w-full">
                 <span className="md:text-lg text-sm font-medium text-start">{program}</span>
                 <span className="md:text-sm text-xs text-muted-foreground">
-                  {entries.length} Talleres
+                  {t.dashboard.workshopCount(entries.length)}
                 </span>
               </div>
             </AccordionTrigger>

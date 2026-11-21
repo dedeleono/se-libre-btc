@@ -14,7 +14,7 @@
     "react/jsx-no-literals": ["warn", {
       "noStrings": false,
       "ignoreProps": true,
-      "allowedStrings": ["·", "—", "–", "/", "|", "%", "$", ":", "(", ")", "×", "+", "-", "*", "#", "…", "&nbsp;"]
+      "allowedStrings": ["·", "—", "–", "/", "|", "%", "$", ":", "(", ")", "×", "+", "-", "*", "#", "…", "•", "✦", "&nbsp;"]
     }],
     "no-restricted-syntax": ["warn", {
       "selector": "JSXAttribute[name.name=/^(aria-label|alt|title|placeholder)$/] > Literal[value=/^(?!http)(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ]{3})/]",
