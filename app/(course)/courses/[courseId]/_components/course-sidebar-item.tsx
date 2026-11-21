@@ -6,6 +6,7 @@ import { Lock, CheckCircle, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocale } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
 import type { ChapterLockReason } from "@/lib/chapter-access-rule";
 
 interface CourseSidebarItemProps {
@@ -41,6 +42,7 @@ export const CourseSidebarItem = ({
   const chapterHref = `/courses/${courseId}/chapters/${id}`;
 
   const enroll = () => {
+    toast.dismiss("chapter-locked");
     toast.promise(axios.post(`/api/courses/${courseId}/enroll`), {
       loading: t.course.enrolling,
       success: () => {
@@ -65,7 +67,11 @@ export const CourseSidebarItem = ({
         id: "chapter-locked",
         duration: Infinity,
         closeButton: true,
-        action: { label: t.course.enrollForFree, onClick: enroll },
+        action: (
+          <Button type="button" size="sm" className="ml-auto shrink-0" onClick={enroll}>
+            {t.course.enrollForFree}
+          </Button>
+        ),
       });
       return;
     }
