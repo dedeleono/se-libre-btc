@@ -1,12 +1,6 @@
-import * as countryRegionData from "country-region-data";
+import { allCountries } from "country-region-data";
 
-// country-region-data may export the array directly, under `.default`, or as
-// `allCountries` depending on the build/bundler. Normalize defensively.
-const raw: any[] =
-  (Array.isArray(countryRegionData as any) && (countryRegionData as any)) ||
-  (countryRegionData as any).default ||
-  (countryRegionData as any).allCountries ||
-  [];
+const raw: any[] = allCountries;
 
 export interface CountryOption {
   /** Display name, e.g. "United States". Used as both label and stored value. */
