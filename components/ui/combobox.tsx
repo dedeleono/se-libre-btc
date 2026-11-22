@@ -30,6 +30,7 @@ type ComboBoxProps = Pick<
   multiple?: boolean; // Indicate if multiple selections are allowed
   /** React 19 ref-as-prop: lands on the trigger button so `form.setFocus` can reach it. */
   ref?: React.Ref<HTMLButtonElement>;
+  triggerClassName?: string;
 };
 
 const Combobox = ({
@@ -43,6 +44,7 @@ const Combobox = ({
   "aria-invalid": ariaInvalid,
   onBlur,
   disabled,
+  triggerClassName,
 }: ComboBoxProps) => {
   const { t } = useLocale();
   const [open, setOpen] = React.useState(false);
@@ -92,10 +94,10 @@ const Combobox = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn("w-full justify-between", triggerClassName)}
         >
           {getLabel()}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden="true" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">

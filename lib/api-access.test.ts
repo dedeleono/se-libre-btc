@@ -11,6 +11,7 @@ const METHODS: readonly Method[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 // A new route.ts fails this test until it is listed here with a deliberate level.
 const API_ACCESS: Record<string, Partial<Record<Method, Access>>> = {
   "admin/invitations/route.ts": { POST: "ADMIN" },
+  "admin/reports/course/route.ts": { GET: "ADMIN" },
   "auth/[...all]/route.ts": { GET: "PUBLIC", POST: "PUBLIC", PUT: "PUBLIC", PATCH: "PUBLIC", DELETE: "PUBLIC" },
   "auth/logout/route.ts": { GET: "PUBLIC", POST: "PUBLIC" },
   "auth/post-login/route.ts": { GET: "PUBLIC" },
