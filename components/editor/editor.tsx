@@ -13,7 +13,6 @@ import { CharacterLimitPlugin } from "@lexical/react/LexicalCharacterLimitPlugin
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin";
-import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
@@ -30,7 +29,6 @@ import { CAN_USE_DOM } from "@lexical/utils";
 import * as React from "react";
 import { useEffect, useState } from "react";
 
-import { createWebsocketProvider } from "@/components/editor/collaboration";
 import { useSettings } from "@/context/SettingsContext";
 import { useSharedHistoryContext } from "@/context/SharedHistoryContext";
 import ActionsPlugin from "@/components/editor/plugins/ActionsPlugin";
@@ -73,14 +71,9 @@ import TableCellResizer from "@/components/editor/plugins/TableCellResizer";
 import TableHoverActionsPlugin from "@/components/editor/plugins/TableHoverActionsPlugin";
 import TableOfContentsPlugin from "@/components/editor/plugins/TableOfContentsPlugin";
 import ToolbarPlugin from "@/components/editor/plugins/ToolbarPlugin";
-import TreeViewPlugin from "@/components/editor/plugins/TreeViewPlugin";
 import TwitterPlugin from "@/components/editor/plugins/TwitterPlugin";
 import YouTubePlugin from "@/components/editor/plugins/YouTubePlugin";
 import ContentEditable from "@/components/editor-ui/ContentEditable";
-
-const skipCollaborationInit =
-  // @ts-expect-error
-  typeof window !== 'undefined' && window.parent != null && window.parent.frames.right === window;
 
 export default function Editor(): JSX.Element {
   const { historyState } = useSharedHistoryContext();
@@ -88,14 +81,12 @@ export default function Editor(): JSX.Element {
     settings: {
       isCodeHighlighted,
       isCodeShiki,
-      isCollab,
       isAutocomplete,
       isMaxLength,
       isCharLimit,
       hasLinkAttributes,
       isCharLimitUtf8,
       isRichText,
-      showTreeView,
       showTableOfContents,
       shouldUseLexicalContextMenu,
       shouldPreserveNewLinesInMarkdown,
@@ -108,11 +99,9 @@ export default function Editor(): JSX.Element {
     },
   } = useSettings();
   const isEditable = useLexicalEditable();
-  const placeholder = isCollab
-    ? "Enter some collaborative rich text..."
-    : isRichText
-      ? "Enter some rich text..."
-      : "Enter some plain text...";
+  const placeholder = isRichText
+    ? "Enter some rich text..."
+    : "Enter some plain text...";
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
   const [isSmallWidthViewport, setIsSmallWidthViewport] =
@@ -164,9 +153,7 @@ export default function Editor(): JSX.Element {
         />
       )}
       <div
-        className={`editor-container ${showTreeView ? "tree-view" : ""} ${
-          !isRichText ? "plain-text" : ""
-        }`}
+        className={`editor-container ${!isRichText ? "plain-text" : ""}`}
       >
         {isMaxLength && <MaxLengthPlugin maxLength={30} />}
         <DragDropPaste />
@@ -183,20 +170,10 @@ export default function Editor(): JSX.Element {
         <SpeechToTextPlugin />
         <AutoLinkPlugin />
         <DateTimePlugin />
-        <CommentPlugin
-          providerFactory={isCollab ? createWebsocketProvider : undefined}
-        />
+        <CommentPlugin />
         {isRichText ? (
           <>
-            {isCollab ? (
-              <CollaborationPlugin
-                id="main"
-                providerFactory={createWebsocketProvider}
-                shouldBootstrap={!skipCollaborationInit}
-              />
-            ) : (
-              <HistoryPlugin externalHistoryState={historyState} />
-            )}
+            <HistoryPlugin externalHistoryState={historyState} />
             <RichTextPlugin
               contentEditable={
                 <div className="editor-scroller">
@@ -287,7 +264,6 @@ export default function Editor(): JSX.Element {
           shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
         />
       </div>
-      {showTreeView && <TreeViewPlugin />}
     </>
   );
 }

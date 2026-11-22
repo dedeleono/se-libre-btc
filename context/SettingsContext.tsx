@@ -10,65 +10,28 @@ import type {SettingName} from '@/types/editor-settings';
 import type {JSX} from 'react';
 
 import * as React from 'react';
-import {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
+import {createContext, ReactNode, useContext} from 'react';
 
-import {DEFAULT_SETTINGS, INITIAL_SETTINGS} from '@/types/editor-settings';
+import {INITIAL_SETTINGS} from '@/types/editor-settings';
 
+// The editor's feature settings are fixed configuration: nothing in the app changes them
+// at runtime (the playground's settings panel was removed).
 type SettingsContextShape = {
-  setOption: (name: SettingName, value: boolean) => void;
   settings: Record<SettingName, boolean>;
 };
 
-const Context: React.Context<SettingsContextShape> = createContext({
-  setOption: (name: SettingName, value: boolean) => {
-    return;
-  },
-  settings: INITIAL_SETTINGS,
-});
+const contextValue: SettingsContextShape = {settings: INITIAL_SETTINGS};
+
+const Context: React.Context<SettingsContextShape> = createContext(contextValue);
 
 export const SettingsContext = ({
   children,
 }: {
   children: ReactNode;
 }): JSX.Element => {
-  const [settings, setSettings] = useState(INITIAL_SETTINGS);
-
-  const setOption = useCallback((setting: SettingName, value: boolean) => {
-    setSettings((options) => ({
-      ...options,
-      [setting]: value,
-    }));
-    setURLParam(setting, value);
-  }, []);
-
-  const contextValue = useMemo(() => {
-    return {setOption, settings};
-  }, [setOption, settings]);
-
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 };
 
 export const useSettings = (): SettingsContextShape => {
   return useContext(Context);
 };
-
-function setURLParam(param: SettingName, value: null | boolean) {
-  if (typeof window === 'undefined') return;
-  
-  const url = new URL(window.location.href);
-  const params = new URLSearchParams(url.search);
-  if (value !== DEFAULT_SETTINGS[param]) {
-    params.set(param, String(value));
-  } else {
-    params.delete(param);
-  }
-  url.search = params.toString();
-  window.history.pushState(null, '', url.toString());
-}

@@ -452,10 +452,6 @@ th,
   border-top-right-radius: 0;
 }
 
-.editor-shell .editor-container.tree-view {
-  border-radius: 0;
-}
-
 .editor-shell .editor-container.plain-text {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
@@ -475,11 +471,6 @@ th,
   position: relative;
 }
 
-.test-recorder-output {
-  margin: 20px auto 20px auto;
-  width: 100%;
-}
-
 pre {
   line-height: 1.1;
   background: #222;
@@ -491,20 +482,6 @@ pre {
   max-height: 180px;
 }
 
-.tree-view-output {
-  display: block;
-  background: #222;
-  color: #fff;
-  padding: 0;
-  font-size: 12px;
-  margin: 1px auto 10px auto;
-  max-height: 250px;
-  position: relative;
-  overflow: hidden;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
 pre::-webkit-scrollbar {
   background: transparent;
   width: 10px;
@@ -512,122 +489,6 @@ pre::-webkit-scrollbar {
 
 pre::-webkit-scrollbar-thumb {
   background: #999;
-}
-
-.editor-dev-button {
-  position: relative;
-  display: block;
-  width: 40px;
-  height: 40px;
-  font-size: 12px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.3);
-  background-color: #444;
-}
-
-.editor-dev-button::after {
-  content: "";
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  bottom: 10px;
-  left: 10px;
-  display: block;
-  background-size: contain;
-  filter: invert(1);
-}
-
-.editor-dev-button:hover {
-  background-color: #555;
-}
-
-.editor-dev-button.active {
-  background-color: rgb(233, 35, 35);
-}
-
-.test-recorder-toolbar {
-  display: flex;
-}
-
-.test-recorder-button {
-  position: relative;
-  display: block;
-  width: 32px;
-  height: 32px;
-  font-size: 10px;
-  padding: 6px 6px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.4);
-  background-color: #222;
-  transition: box-shadow 50ms ease-out;
-}
-
-.test-recorder-button:active {
-  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-.test-recorder-button+.test-recorder-button {
-  margin-left: 4px;
-}
-
-.test-recorder-button::after {
-  content: "";
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  bottom: 8px;
-  left: 8px;
-  display: block;
-  background-size: contain;
-  filter: invert(1);
-}
-
-#options-button {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-}
-
-#test-recorder-button {
-  position: fixed;
-  left: 70px;
-  bottom: 20px;
-}
-
-#paste-log-button {
-  position: fixed;
-  left: 120px;
-  bottom: 20px;
-}
-
-#test-recorder-button::after {
-  background-image: url(/images/icons/journal-code.svg);
-}
-
-#paste-log-button::after {
-  background-image: url(/images/icons/clipboard.svg);
-}
-
-#test-recorder-button-snapshot {
-  margin-right: auto;
-}
-
-#test-recorder-button-snapshot::after {
-  background-image: url(/images/icons/camera.svg);
-}
-
-#test-recorder-button-copy::after {
-  background-image: url(/images/icons/clipboard.svg);
-}
-
-#test-recorder-button-download::after {
-  background-image: url(/images/icons/download.svg);
 }
 
 #typeahead-menu {
@@ -1199,14 +1060,6 @@ i.prettier-error {
   background-image: url(/images/icons/code.svg);
 }
 
-.switches {
-  z-index: 6;
-  position: fixed;
-  left: 10px;
-  bottom: 70px;
-  animation: slide-in 0.4s ease;
-}
-
 @keyframes slide-in {
   0% {
     opacity: 0;
@@ -1219,69 +1072,12 @@ i.prettier-error {
   }
 }
 
-.switch {
-  display: block;
-  color: #444;
-  margin: 5px 0;
-  background-color: rgba(238, 238, 238, 0.7);
-  padding: 5px 10px;
-  border-radius: 10px;
-}
-
 #rich-text-switch {
   right: 0;
 }
 
 #character-count-switch {
   right: 130px;
-}
-
-.switch label {
-  margin-right: 5px;
-  line-height: 24px;
-  width: 100px;
-  font-size: 14px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.switch button {
-  background-color: rgb(206, 208, 212);
-  height: 24px;
-  box-sizing: border-box;
-  border-radius: 12px;
-  width: 44px;
-  display: inline-block;
-  vertical-align: middle;
-  position: relative;
-  outline: none;
-  cursor: pointer;
-  transition: background-color 0.1s;
-  border: 2px solid transparent;
-}
-
-.switch button:focus-visible {
-  border-color: blue;
-}
-
-.switch button span {
-  top: 0px;
-  left: 0px;
-  display: block;
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 12px;
-  background-color: white;
-  transition: transform 0.2s;
-}
-
-.switch button[aria-checked="true"] {
-  background-color: rgb(24, 119, 242);
-}
-
-.switch button[aria-checked="true"] span {
-  transform: translateX(20px);
 }
 
 .editor-shell span.editor-image {
@@ -1307,11 +1103,6 @@ i.prettier-error {
 
 .editor-shell .editor-image img.focused.draggable:active {
   cursor: grabbing;
-}
-
-.editor-shell .editor-image .image-caption-container .tree-view-output {
-  margin: 0;
-  border-radius: 0;
 }
 
 .editor-shell .editor-image .image-caption-container {
@@ -1461,11 +1252,6 @@ i.prettier-error {
   right: 0;
 }
 
-.actions.tree-view {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
 .actions i {
   background-size: contain;
   display: inline-block;
@@ -1587,46 +1373,6 @@ button.action-button:disabled {
   100% {
     background-color: #ffdcdc;
   }
-}
-
-.debug-timetravel-panel {
-  overflow: hidden;
-  padding: 0 0 10px 0;
-  margin: auto;
-  display: flex;
-}
-
-.debug-timetravel-panel-slider {
-  padding: 0;
-  flex: 8;
-}
-
-.debug-timetravel-panel-button {
-  padding: 0;
-  border: 0;
-  background: none;
-  flex: 1;
-  color: #fff;
-  font-size: 12px;
-}
-
-.debug-timetravel-panel-button:hover {
-  text-decoration: underline;
-}
-
-.debug-timetravel-button {
-  border: 0;
-  padding: 0;
-  font-size: 12px;
-  top: 10px;
-  right: 15px;
-  position: absolute;
-  background: none;
-  color: #fff;
-}
-
-.debug-timetravel-button:hover {
-  text-decoration: underline;
 }
 
 .connecting {
@@ -2747,16 +2493,6 @@ hr.selected {
   white-space: nowrap;
   display: inline-block;
   pointer-events: none;
-}
-
-/* Hide the settings button */
-#options-button {
-  display: none !important;
-}
-
-/* Also hide any other dev buttons that might be present */
-.editor-dev-button {
-  display: none !important;
 }
 
 /* Fix for list bullets and numbers visibility */

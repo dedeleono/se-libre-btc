@@ -81,7 +81,6 @@ const API_ACCESS: Record<string, Partial<Record<Method, Access>>> = {
   "s3/asset-upload/route.ts": { POST: "AUTHED" },
   "s3/file/[...key]/route.ts": { GET: "PUBLIC" },
   "s3/presigned-url/route.ts": { POST: "ADMIN" },
-  "s3/youtube-download/route.ts": { POST: "ADMIN" },
   "s3/yt/route.ts": { POST: "ADMIN" },
   "users/[userId]/soft-delete/route.ts": { PATCH: "ADMIN" },
   "users/me/route.ts": { PATCH: "OWNER" },
