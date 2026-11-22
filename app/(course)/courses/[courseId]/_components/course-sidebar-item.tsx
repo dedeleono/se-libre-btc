@@ -95,18 +95,18 @@ export const CourseSidebarItem = ({
         )}
       >
         {!isAccessible ? (
-          <Lock className="h-5 w-5" />
+          <Lock className="h-5 w-5 shrink-0" />
         ) : isCompleted ? (
-          <CheckCircle className="h-5 w-5 text-[var(--quetzal-500)]" />
+          <CheckCircle className="h-5 w-5 shrink-0 text-[var(--quetzal-500)]" />
         ) : (
-          <PlayCircle className="h-5 w-5" />
+          <PlayCircle className="h-5 w-5 shrink-0" />
         )}
         <span>{label}</span>
       </button>
       {!isAccessible && isLockHelpOpen && (
         <div
           id={panelId}
-          className="mb-2 mr-3 flex flex-col items-start gap-3 rounded-[2px] border-2 border-[var(--maiz-500)] bg-[var(--maiz-100)] p-3 text-sm text-foreground"
+          className="mb-2 mr-3 flex flex-col items-start gap-3 rounded-[2px] border-2 border-[var(--maiz-500)] bg-[var(--maiz-100)] p-3 text-sm text-[var(--volcan-900)]"
         >
           <p id={messageId} className="text-pretty">
             {needsSignIn
