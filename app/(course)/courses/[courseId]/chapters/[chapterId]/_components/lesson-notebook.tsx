@@ -177,7 +177,7 @@ export function LessonNotebook({ courseId, chapterId }: LessonNotebookProps) {
   }[status];
 
   return (
-    <section aria-labelledby="lesson-notes-title" className="flex flex-col gap-3">
+    <section aria-labelledby="lesson-notes-title" className="lesson-notebook flex flex-col gap-3">
       <h2
         id="lesson-notes-title"
         className="flex items-center gap-x-2 font-[family-name:var(--font-body)] text-sm font-bold uppercase leading-normal tracking-[0.08em]"

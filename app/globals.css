@@ -2900,3 +2900,34 @@ hr.selected {
 .dark .lesson-content img { outline-color: rgb(255 255 255 / 0.1); }
 .lesson-content iframe { display: block; width: 100%; max-width: 100%; height: auto; aspect-ratio: 16 / 9; border: 0; }
 .lesson-content hr { margin: 2em 0; border: 0; border-top: 1px solid hsl(var(--foreground) / 0.2); }
+
+/* Lesson notebook: the Lexical playground editor themed with app tokens (light and dark). */
+.lesson-notebook .editor-wrapper { border-radius: 2px; background: hsl(var(--card)); }
+.lesson-notebook .editor-shell { margin: 0; color: hsl(var(--foreground)); font-weight: 400; line-height: 1.5; }
+.lesson-notebook .editor-shell .toolbar {
+  height: auto;
+  min-height: 44px;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid hsl(var(--foreground) / 0.2);
+  border-radius: 0;
+  background: hsl(var(--card));
+}
+.lesson-notebook .editor-shell .editor-container { border-radius: 0; background: hsl(var(--card)); }
+.lesson-notebook .ContentEditable__root { font-size: 1rem; color: hsl(var(--foreground)); }
+.lesson-notebook .ContentEditable__placeholder { font-size: 1rem; color: hsl(var(--muted-foreground)); }
+.lesson-notebook .ContentEditable__root ::selection { background-color: hsl(var(--primary) / 0.35); }
+.lesson-notebook .toolbar button.toolbar-item { border-radius: 2px; color: hsl(var(--foreground)); }
+.lesson-notebook .toolbar button.toolbar-item.active { background-color: hsl(var(--primary) / 0.15); }
+.lesson-notebook .toolbar .toolbar-item:hover:not([disabled]) { background-color: hsl(var(--secondary)); }
+.lesson-notebook .toolbar .toolbar-item .text,
+.lesson-notebook .font-size-input { color: hsl(var(--muted-foreground)); background: transparent; }
+.lesson-notebook .toolbar .divider { background-color: hsl(var(--foreground) / 0.2); }
+.lesson-notebook .action-button { border-radius: 2px; background-color: hsl(var(--secondary)); color: hsl(var(--foreground)); }
+.lesson-notebook .action-button:hover { background-color: hsl(var(--muted)); }
+.lesson-notebook button.action-button:disabled { background-color: hsl(var(--secondary)); opacity: 0.45; }
+.lesson-notebook :is(.toolbar button.toolbar-item, .action-button):focus-visible {
+  outline: 2px solid hsl(var(--foreground));
+  outline-offset: -2px;
+}
+.dark .lesson-notebook :is(.toolbar i, .toolbar .icon, .actions i, .add-icon, .minus-icon) { filter: invert(1); }
