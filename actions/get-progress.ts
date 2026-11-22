@@ -1,3 +1,4 @@
+import { progressPercent } from "@/lib/course-progress";
 import { prisma } from "@/lib/db";
 
 export const getProgress = async (userId: string, courseId: string): Promise<number> => {
@@ -26,11 +27,7 @@ export const getProgress = async (userId: string, courseId: string): Promise<num
             }
         });
 
-        if (publishedChapters.length === 0) {
-            return 0;
-        }
-
-        return (validCompletedChapters / publishedChapters.length) * 100;
+        return progressPercent(validCompletedChapters, publishedChapters.length);
         
     } catch (error) {
         console.log("[GET_PROGRESS]", error);
