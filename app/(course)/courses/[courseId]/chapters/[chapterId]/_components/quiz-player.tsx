@@ -119,8 +119,8 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
       });
       const submitted = response.data as QuizSubmitResult;
       hasSubmitted.current = true;
+      // The result panel is the confirmation: a polite status region that takes focus. A toast would cover it.
       setResult(submitted);
-      toast.success(t.course.quizSubmitted);
       // Finishing a quiz can complete the whole course. Prompt the student to
       // their certificate / Maverick page instead of stranding them here.
       if (submitted.courseCompleted) {
