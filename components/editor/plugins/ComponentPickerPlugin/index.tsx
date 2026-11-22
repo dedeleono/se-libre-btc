@@ -425,7 +425,7 @@ export default function ComponentPickerMenuPlugin(): JSX.Element {
           anchorElementRef.current && options.length
             ? ReactDOM.createPortal(
                 <div className="typeahead-popover component-picker-menu">
-                  <ul>
+                  <ul role="listbox" aria-label={t.editor.toolbar.insertMenu}>
                     {options.map((option, i: number) => (
                       <ComponentPickerMenuItem
                         index={i}
