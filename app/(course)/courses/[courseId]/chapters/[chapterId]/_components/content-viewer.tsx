@@ -2,12 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import { Lock, Clock, CreditCard, Loader2, FileText, ChevronRight, Loader } from "lucide-react";
+import { Loader2, FileText } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ResourcesCard } from "./resources-card";
@@ -23,8 +21,13 @@ import { useLocale } from "@/lib/i18n";
 
 const WalletSimulator = dynamic(() => import("@/components/wallet-simulator"), {
   ssr: false,
-  loading: () => <div className="p-6 text-sm text-muted-foreground">Cargando simulador…</div>,
+  loading: () => <SimulatorLoading />,
 });
+
+function SimulatorLoading() {
+  const { t } = useLocale();
+  return <div className="p-6 text-sm text-muted-foreground">{t.course.loadingSimulator}</div>;
+}
 
 // The Lexical-based Editor (~15 @lexical/* packages) is only used for the
 // authenticated notes feature. Load it on demand so it stays out of the
@@ -46,10 +49,7 @@ interface ContentViewerProps {
   courseId: string;
   chapterId: string;
   nextChapterId?: string;
-  isLocked: boolean;
-  lockType?: "time" | "subscription" | "intro";
-  startTime?: Date | null;
-  endTime?: Date | null;
+  lockType?: "intro";
   completeOnEnd: boolean;
   progress?: number;
   description?: string;
@@ -63,66 +63,6 @@ interface ContentViewerProps {
   hasWalletSimulator?: boolean;
 }
 
-interface LockScreenProps {
-  type: "time" | "subscription" | "intro";
-  startTime?: Date | null;
-  endTime?: Date | null;
-  courseId: string;
-}
-
-const LockScreen = ({ type, startTime, endTime, courseId }: LockScreenProps) => {
-  const { t } = useLocale();
-
-  return (
-    <div className="flex h-[calc(100vh-14rem)] items-center justify-center">
-      <Card className="relative mx-auto max-w-md space-y-6 p-8 text-center">
-        {type === "intro" && (
-          <>
-            <div className="mx-auto w-fit border-2 border-foreground bg-primary p-4 text-primary-foreground">
-              <Lock className="h-12 w-12" />
-            </div>
-            <h2 className="text-3xl">{t.course.sampleContentTitle}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t.course.sampleContentDescription}
-            </p>
-          </>
-        )}
-
-        {type === "time" && (
-          <>
-            <div className="mx-auto w-fit border-2 border-foreground bg-[var(--maiz-500)] p-4 text-[var(--volcan-900)]">
-              <Clock className="h-12 w-12" />
-            </div>
-            <h2 className="text-3xl">{t.course.timeRestricted}</h2>
-            <p className="text-sm text-muted-foreground">
-              {!startTime 
-                ? t.course.lessonUnavailable
-                : t.course.lessonAvailableOn(new Date(startTime).toLocaleDateString())
-              }
-              {endTime && t.course.untilDate(new Date(endTime).toLocaleDateString())}
-            </p>
-          </>
-        )}
-
-        {type === "subscription" && (
-          <>
-            <div className="mx-auto w-fit border-2 border-foreground bg-secondary p-4">
-              <CreditCard className="h-12 w-12" />
-            </div>
-            <h2 className="text-3xl">{t.course.lockedContent}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t.course.enrollToAccess}
-            </p>
-            <Button asChild className="w-full">
-              <Link href={`/courses/preview/${courseId}`}>{t.course.viewCourse}</Link>
-            </Button>
-          </>
-        )}
-      </Card>
-    </div>
-  );
-};
-
 export const ContentViewer = ({
   videoUrl,
   pdfUrl,
@@ -132,10 +72,7 @@ export const ContentViewer = ({
   courseId,
   chapterId,
   nextChapterId,
-  isLocked,
   lockType,
-  startTime,
-  endTime,
   completeOnEnd,
   progress = 0,
   description,
@@ -160,7 +97,6 @@ export const ContentViewer = ({
     const hasCookie = document.cookie.split('; ').some(cookie => 
       cookie.startsWith(`intro_chapter_${chapterId}=`)
     );
-    console.log('hasCookie', hasCookie);
     setIsPreviewMode(lockType === "intro" && hasCookie);
   }, [lockType, chapterId]);
 
@@ -234,52 +170,31 @@ export const ContentViewer = ({
     setActiveTab(tab);
   };
 
-  if (isLocked && (lockType === "time" || lockType === "subscription")) {
-    return <LockScreen type={lockType} startTime={startTime} endTime={endTime} courseId={courseId} />;
-  }
-
   return (
     <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-y-4 p-4">
-      <Card className="p-6">
-        <div className="flex justify-between items-start">
-          <div className="space-y-0">
-            <div className="flex items-center gap-2">
-              <Label className="pl-5 pt-5 font-[var(--font-display)] text-4xl uppercase leading-none">
-                {title}
-              </Label>
-              {isPreviewMode && (
-                <Badge
-                  variant="secondary"
-                  className="bg-secondary text-foreground"
-                >
-                  {t.course.preview}
-                </Badge>
-              )}
-            </div>
-            {description && description.trim() && (
-            <div className="text-sm font-semibold text-muted-foreground">
-                <Preview value={description} />
-              </div>
+      <Card className="p-4 sm:p-6">
+        <header className="flex min-w-0 flex-col gap-4">
+          <div className="flex min-w-0 flex-wrap items-start gap-x-3 gap-y-2">
+            <h1 className="min-w-0 flex-1 basis-full text-balance text-[clamp(1.75rem,1.25rem+2vw,2.25rem)] leading-[1.05] [overflow-wrap:anywhere] sm:basis-0">
+              {title}
+            </h1>
+            {isPreviewMode && (
+              <Badge variant="secondary" className="bg-secondary text-foreground">
+                {t.course.preview}
+              </Badge>
             )}
           </div>
-          {isLoading && isAuthenticated && !isPreviewMode && (
-            <div
-              className="flex items-center justify-center border-2 border-foreground bg-secondary p-2 text-foreground"
-            >
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              <p className="text-sm">{t.course.updatingProgress}</p>
+          {description?.trim() && <Preview value={description} className="lesson-content" />}
+          {progress > 0 && isAuthenticated && !isPreviewMode && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-sm font-bold text-muted-foreground">
+                <span>{t.course.courseProgress}</span>
+                <span className="tabular-nums">{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-2" />
             </div>
           )}
-        </div>
-        {progress > 0 && isAuthenticated && !isPreviewMode && (
-          <div className="mt-0 space-y-1">
-            <div className="flex justify-between text-sm font-bold text-muted-foreground">
-              <span>{t.course.courseProgress}</span>
-              <span className="tabular-nums">{progress}%</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-          </div>
-        )}
+        </header>
       </Card>
 
       {isAuthenticated && (
@@ -331,10 +246,7 @@ export const ContentViewer = ({
               {videoUrl && (
                 <div className="aspect-video">
                   <video
-                    className={cn(
-                      "w-full h-full",
-                      isLoading && "opacity-50 transition-opacity"
-                    )}
+                    className="w-full h-full"
                     src={videoUrl}
                     controls
                     onEnded={onVideoEnd}
@@ -346,30 +258,38 @@ export const ContentViewer = ({
                 <div className="aspect-video">
                   <iframe
                     src={youtubeUrl}
-                    className="w-full h-full"
+                    title={t.course.videoFrameTitle(title)}
+                    className="h-full w-full border-0"
                     allowFullScreen
-                    frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   />
                 </div>
               )}
 
               {pdfUrl && (
-                <div className="relative min-h-[500px] w-full bg-secondary">
-                  <div className="absolute inset-0">
-                    <iframe
-                      src={`${pdfUrl}#toolbar=0`}
-                      className="w-full h-full border-none"
-                    />
+                <>
+                  <div className="flex justify-end border-b-2 border-foreground p-3">
+                    <Button asChild variant="outline" size="sm" className="min-h-11">
+                      <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                        {t.course.openPdf}
+                      </a>
+                    </Button>
                   </div>
-                </div>
+                  <div className="relative min-h-[500px] w-full bg-secondary">
+                    <div className="absolute inset-0">
+                      <iframe
+                        src={`${pdfUrl}#toolbar=0`}
+                        title={t.course.pdfFrameTitle(title)}
+                        className="w-full h-full border-none"
+                      />
+                    </div>
+                  </div>
+                </>
               )}
 
               {richContent && (
-                <div className="p-6">
-                  <div className="prose max-w-none">
-                    <Preview value={richContent} />
-                  </div>
+                <div className="p-4 sm:p-6">
+                  <Preview value={richContent} className="lesson-content" />
                 </div>
               )}
 
@@ -402,39 +322,6 @@ export const ContentViewer = ({
                 </div>
               )}
 
-              {(videoUrl || youtubeUrl) && isLoading && (
-                <div
-                  className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-                >
-                  <div className="flex items-center space-x-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm font-bold">
-                      {t.course.loadingVideo}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {pdfUrl && isLoading && (
-                <div
-                  className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-                >
-                  <div className="flex items-center space-x-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm font-bold">
-                      {t.course.loadingDocument}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {richContent && isLoading && (
-                <div className="p-6 space-y-4">
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-4 w-5/6" />
-                </div>
-              )}
             </div>
           </Card>
 
@@ -544,7 +431,7 @@ export const ContentViewer = ({
               </Label>
               <div className="mt-2">
                 {notes ? (
-                  <div className="prose max-w-none">
+                  <div>
                     {typeof notes === 'string' && notes.startsWith('{"root":') ? (
                       <div className="text-sm">
                         {JSON.parse(notes).root?.children?.[0]?.children?.[0]?.text || t.common.noContent}

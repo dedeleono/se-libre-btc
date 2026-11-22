@@ -72,7 +72,7 @@ export const CourseSidebar = ({
           </Button>
         )}
         <div className="page-eyebrow">{t.admin.lesson}</div>
-        <h1 className="mt-3 text-3xl text-balance">{course.title}</h1>
+        <p className="dl-display mt-3 text-3xl text-balance">{course.title}</p>
         {isAuthenticated && totalChapters > 0 && (
           <div className="mt-5 flex flex-col gap-2">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
