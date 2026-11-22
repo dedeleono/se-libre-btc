@@ -10,6 +10,19 @@
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "ignoreRestSiblings": true }],
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
-    "@typescript-eslint/no-wrapper-object-types": "off"
-  }
+    "@typescript-eslint/no-wrapper-object-types": "off",
+    "react/jsx-no-literals": ["warn", {
+      "noStrings": false,
+      "ignoreProps": true,
+      "allowedStrings": ["·", "—", "–", "/", "|", "%", "$", ":", "(", ")", "×", "+", "-", "*", "#", "…", "•", "✦", "&nbsp;"]
+    }],
+    "no-restricted-syntax": ["warn", {
+      "selector": "JSXAttribute[name.name=/^(aria-label|alt|title|placeholder)$/] > Literal[value=/^(?!http)(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ]{3})/]",
+      "message": "User-facing attribute text must come from lib/i18n/messages.ts (t.*). Decorative images use alt=\"\"."
+    }]
+  },
+  "overrides": [{
+    "files": ["components/emails/**", "components/editor/**", "components/editor-ui/**"],
+    "rules": { "react/jsx-no-literals": "off", "no-restricted-syntax": "off" }
+  }]
 }

@@ -102,7 +102,7 @@ export function EmailSelector({ groups, onEmailsChange }: EmailSelectorProps) {
           {selectedEmails.length === 0 ? (
             <div className="flex items-center text-sm text-muted-foreground/60 dark:text-white/50">
               <Users className="h-4 w-4 mr-2" />
-              <span className="text-xs sm:text-sm">Seleccione los destinatarios del email</span>
+              <span className="text-xs sm:text-sm">{t.emailing.selectRecipients}</span>
             </div>
           ) : (
             selectedEmails.map((email) => (
@@ -128,8 +128,7 @@ export function EmailSelector({ groups, onEmailsChange }: EmailSelectorProps) {
             className="absolute -top-3 left-3 px-2 bg-background dark:bg-card 
             text-xs font-medium text-muted-foreground dark:text-white/50"
           >
-            {selectedEmails.length} destinatario
-            {selectedEmails.length !== 1 ? "s" : ""}
+            {t.emailing.recipientCount(selectedEmails.length)}
           </div>
         )}
       </div>
@@ -195,11 +194,11 @@ export function EmailSelector({ groups, onEmailsChange }: EmailSelectorProps) {
                   className="mx-2 rounded-lg flex items-center gap-2 bg-primary/5 hover:bg-primary/10 transition-colors"
                 >
                   <Mail className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-xs sm:text-sm">Agregar:</span> {inputValue}
+                  <span className="font-medium text-xs sm:text-sm">{t.emailing.addRecipient(inputValue)}</span>
                 </CommandItem>
               ) : (
                 <div className="text-center text-xs sm:text-sm text-muted-foreground mx-2">
-                  No se encontraron resultados
+                  {t.emailing.noStudentsFound}
                 </div>
               )}
             </CommandEmpty>
@@ -207,7 +206,7 @@ export function EmailSelector({ groups, onEmailsChange }: EmailSelectorProps) {
               <CommandGroup
                 heading={
                   <div className="text-xs font-medium text-muted-foreground px-2">
-                    Estudiantes encontrados
+                    {t.emailing.studentsFound}
                   </div>
                 }
               >

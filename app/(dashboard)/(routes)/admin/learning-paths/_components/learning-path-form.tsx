@@ -177,7 +177,7 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
       <Card>
         <CardHeader className="flex flex-row items-start justify-between space-y-0">
           <div>
-            <CardTitle>{isNew ? t.admin.newLearningPath : t.admin.learningPathDetails}</CardTitle>
+            <h1 data-slot="card-title" className="font-[var(--font-display)] text-xl uppercase leading-none tracking-normal">{isNew ? t.admin.newLearningPath : t.admin.learningPathDetails}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{t.admin.editPathDetails}</p>
           </div>
           {!isNew && (
@@ -256,13 +256,13 @@ export const LearningPathForm = ({ initialData, courses }: LearningPathFormProps
                     <p className="text-xs text-muted-foreground">{t.admin.position(index + 1)}</p>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" disabled={index === 0 || isSaving} onClick={() => reorderCourse(pathCourse.id, "up")}>
+                    <Button variant="ghost" size="icon" disabled={index === 0 || isSaving} onClick={() => reorderCourse(pathCourse.id, "up")} aria-label={t.admin.moveCourseUp(pathCourse.course.title)}>
                       <ArrowUp className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" disabled={index === sortedPathCourses.length - 1 || isSaving} onClick={() => reorderCourse(pathCourse.id, "down")}>
+                    <Button variant="ghost" size="icon" disabled={index === sortedPathCourses.length - 1 || isSaving} onClick={() => reorderCourse(pathCourse.id, "down")} aria-label={t.admin.moveCourseDown(pathCourse.course.title)}>
                       <ArrowDown className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" disabled={isSaving} onClick={() => removeCourse(pathCourse.courseId)}>
+                    <Button variant="ghost" size="icon" disabled={isSaving} onClick={() => removeCourse(pathCourse.courseId)} aria-label={t.admin.removeCourseFromPath(pathCourse.course.title)}>
                       <Trash className="h-4 w-4" />
                     </Button>
                   </div>

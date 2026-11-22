@@ -1,6 +1,7 @@
 'use client';
 import { IoMdSunny, IoMdMoon } from "react-icons/io";
 import { useTheme } from 'next-themes';
+import { useLocale } from "@/lib/i18n";
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -13,6 +14,7 @@ import { motion } from 'framer-motion';
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const { t } = useLocale();
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch
@@ -59,7 +61,7 @@ export default function ThemeToggle() {
           >
             <IoMdMoon className="h-5 w-5 text-[var(--terracota-500)]" />
           </motion.div>
-          <span className="sr-only">Toggle theme</span>
+          <span className="sr-only">{t.common.changeTheme}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
@@ -74,7 +76,7 @@ export default function ThemeToggle() {
             dark:focus:bg-white/5 transition-colors"
         >
           <IoMdSunny className="h-4 w-4 text-[var(--maiz-500)]" />
-          Light
+          {t.common.themeLight}
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => setTheme('dark')}
@@ -83,7 +85,7 @@ export default function ThemeToggle() {
             dark:focus:bg-white/5 transition-colors"
         >
           <IoMdMoon className="h-4 w-4 text-[var(--terracota-500)]" />
-          Dark
+          {t.common.themeDark}
         </DropdownMenuItem>
         <DropdownMenuItem 
           onClick={() => setTheme('system')}
@@ -100,7 +102,7 @@ export default function ThemeToggle() {
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
           </svg>
-          System
+          {t.common.themeSystem}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

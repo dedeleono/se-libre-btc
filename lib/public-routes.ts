@@ -3,6 +3,7 @@ export const publicRoutes = [
   "/about",
   "/contact",
   "/courses",
+  "/error",
   "/learning-paths",
   "/onboarding",
   "/sign-in",

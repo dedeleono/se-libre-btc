@@ -45,8 +45,8 @@ export default function ActionsDropdown({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button size="icon" variant="ghost">
+      <DropdownMenuTrigger asChild>
+        <Button size="icon" variant="ghost" aria-label={t.common.actions}>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
