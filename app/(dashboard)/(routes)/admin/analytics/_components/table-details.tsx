@@ -39,9 +39,9 @@ export function TableDetails({
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.key}>
-              <TableHead scope="row" className="text-sm font-normal normal-case tracking-normal">
+              <th scope="row" className="px-2 text-start align-middle text-sm font-normal normal-case tracking-normal">
                 {row.header}
-              </TableHead>
+              </th>
               {row.cells.map((cell, i) => (
                 <TableCell key={i} className="text-end tabular-nums">
                   {cell}

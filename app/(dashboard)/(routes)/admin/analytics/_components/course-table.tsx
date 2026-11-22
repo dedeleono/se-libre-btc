@@ -36,12 +36,12 @@ export function CourseTable({ report }: { report: PublicCourseReport }) {
           <TableBody>
             {report.byCourse.map((row) => (
               <TableRow key={row.key}>
-                <TableHead scope="row" className="min-w-48 py-2 text-sm font-normal normal-case tracking-normal whitespace-normal">
+                <th scope="row" className="min-w-48 py-2 whitespace-normal px-2 text-start align-middle text-sm font-normal normal-case tracking-normal">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link
                       href={`?${toSearchParams({ ...report.filters, courseId: row.key })}`}
                       scroll={false}
-                      className="font-medium underline-offset-4 hover:underline focus-visible:underline"
+                      className="rounded-[2px] font-medium underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                     >
                       {row.title}
                     </Link>
@@ -51,7 +51,7 @@ export function CourseTable({ report }: { report: PublicCourseReport }) {
                       </Badge>
                     )}
                   </div>
-                </TableHead>
+                </th>
                 <TableCell className="text-end tabular-nums">
                   <CellValue cell={row.students} threshold={report.threshold} />
                 </TableCell>

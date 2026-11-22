@@ -79,10 +79,10 @@ export function StudentsList({
                   const fullName = `${student.firstName || ""} ${student.lastName || ""}`.trim();
                   return (
                     <TableRow key={student.id}>
-                      <TableHead scope="row" className="min-w-48 py-2 text-sm font-normal normal-case tracking-normal">
+                      <th scope="row" className="min-w-48 py-2 px-2 text-start align-middle text-sm font-normal normal-case tracking-normal">
                         <p className="font-medium">{student.name || fullName || student.email}</p>
                         <p className="text-xs text-muted-foreground">{student.email}</p>
-                      </TableHead>
+                      </th>
                       <TableCell className="whitespace-nowrap">{age(student.ageRange)}</TableCell>
                       <TableCell>{shown(student.country)}</TableCell>
                       <TableCell>{shown(student.region)}</TableCell>
