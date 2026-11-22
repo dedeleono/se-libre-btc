@@ -4,9 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 const publicRoutes = [
   "/",
   "/about",
-  "/checkout",
-  "/checkout/error",
-  "/checkout/success",
   "/contact",
   "/courses",
   "/learning-paths",

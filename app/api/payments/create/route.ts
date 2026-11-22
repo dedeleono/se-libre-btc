@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import { auth } from '@/lib/auth';
 import { resolveCheckoutAmount } from '@/lib/checkout-amount';
+import { productPagePath } from '@/lib/checkout-return';
 import { prisma } from '@/lib/db';
 
 const createPaymentSchema = z.discriminatedUnion('productType', [
@@ -29,9 +30,13 @@ export async function POST(req: Request) {
     const courseId = body.productType === 'COURSE' ? body.courseId : undefined;
     const learningPathId = body.productType === 'LEARNING_PATH' ? body.learningPathId : undefined;
 
-    const product = courseId
+    const course = courseId
       ? await prisma.course.findUnique({ where: { id: courseId }, select: productSelect })
-      : await prisma.learningPath.findUnique({ where: { id: learningPathId }, select: productSelect });
+      : null;
+    const learningPath = learningPathId
+      ? await prisma.learningPath.findUnique({ where: { id: learningPathId }, select: { ...productSelect, slug: true } })
+      : null;
+    const product = course ?? learningPath;
 
     const resolved = resolveCheckoutAmount(
       product && { ...product, price: product.price === null ? null : Number(product.price) }
@@ -57,7 +62,10 @@ export async function POST(req: Request) {
 
     const baseUrl = process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
     const successUrl = new URL('/onboarding', baseUrl).toString();
-    const cancelUrl = new URL('/checkout/error', baseUrl).toString();
+    const cancelUrl = new URL(
+      productPagePath({ courseId: courseId ?? null, learningPathSlug: learningPath?.slug ?? null }),
+      baseUrl
+    ).toString();
 
     if (!process.env.NEXT_PUBLIC_RECURRENTE_API_URL) {
       return NextResponse.json({ paymentId: payment.id, successUrl, cancelUrl });
