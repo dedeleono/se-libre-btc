@@ -34,6 +34,7 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import * as React from 'react';
 import {createPortal} from 'react-dom';
 
+import {useLocale} from '@/lib/i18n';
 import {getThemeSelector} from '@/utilities/getThemeSelector';
 import {useDebounce} from '../CodeActionMenuPlugin/utils';
 
@@ -44,6 +45,7 @@ function TableHoverActionsContainer({
 }: {
   anchorElem: HTMLElement;
 }): JSX.Element | null {
+  const {t} = useLocale();
   const [editor, {getTheme}] = useLexicalComposerContext();
   const isEditable = useLexicalEditable();
   const [isShownRow, setShownRow] = useState<boolean>(false);
@@ -262,6 +264,9 @@ function TableHoverActionsContainer({
     <>
       {isShownRow && (
         <button
+          type="button"
+          aria-label={t.editor.table.addRow}
+          title={t.editor.table.addRow}
           className={`${getTheme()?.tableAddRows}`}
           style={{...position}}
           onClick={() => insertAction(true)}
@@ -269,6 +274,9 @@ function TableHoverActionsContainer({
       )}
       {isShownColumn && (
         <button
+          type="button"
+          aria-label={t.editor.table.addColumn}
+          title={t.editor.table.addColumn}
           className={`${getTheme()?.tableAddColumns}`}
           style={{...position}}
           onClick={() => insertAction(false)}
