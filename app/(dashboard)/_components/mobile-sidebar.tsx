@@ -1,14 +1,12 @@
-"use client";
-
 import { Menu } from "lucide-react";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { useLocale } from "@/lib/i18n";
+import { getServerMessages } from "@/lib/i18n-server";
 
 import { Sidebar } from "./sidebar";
 
 export const MobileSidebar = () => {
-  const { t } = useLocale();
+  const t = getServerMessages();
 
   return (
     <Sheet>
