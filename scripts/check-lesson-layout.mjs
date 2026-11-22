@@ -283,6 +283,75 @@ if (ONLY.has("notes")) {
     await context.close();
   }
 
+  // Editor chrome speaks the page's language (es): toolbar, every toolbar dropdown, the floating
+  // format bar, the "/" insert menu and the action buttons. Proper names (fonts, Excalidraw, GIF,
+  // code languages) and shortcut symbols are allowed; the old English labels are not.
+  {
+    const ENGLISH = /\b(Heading|Insert|Bold|Italic|Underline|Undo|Redo|Formatting|Align|Indent|Outdent|Lowercase|Uppercase|Capitalize|Strikethrough|Subscript|Superscript|Highlight|Clear|Table|Image|Poll|Equation|Columns|Layout|Sticky|Collapsible|Date|Today|Page Break|Horizontal Rule|Bullet(ed)? List|Numbered List|Check List|Quote|Code Block|Code|Embed|Font size|text color|bg color|Read-Only|Markdown mode|Convert From|Enter some|Paragraph|Divider|Comment|Copy|Delete|Remove|Add|Lock|Unlock|Shortcut)\b/;
+    const collect = (selector) =>
+      (page) => page.evaluate((sel) => [...document.querySelectorAll(sel)].flatMap((el) => [
+        el.innerText,
+        ...[el, ...el.querySelectorAll("[aria-label],[title],[placeholder]")].flatMap((n) => [n.getAttribute("aria-label"), n.getAttribute("title"), n.getAttribute("placeholder")]),
+      ]).filter(Boolean).flatMap((t) => t.split("\n")).map((t) => t.trim()).filter(Boolean), selector);
+    const clipShot = async (page, locator, name) => {
+      await page.waitForTimeout(400);
+      const b = await locator.boundingBox();
+      const vp = page.viewportSize();
+      if (!b || !vp) return;
+      const x = Math.max(0, b.x - 8), y = Math.max(0, b.y - 8);
+      await page.screenshot({ path: shot(name), clip: { x, y, width: Math.min(b.width + 16, vp.width - x), height: Math.min(b.height + 16, vp.height - y) } });
+    };
+    for (const theme of ["light", "dark"]) for (const width of [375, 1280]) {
+      const tag = `${theme}-${width}`;
+      const id = `editor-locale-${tag}`;
+      const { page, context } = await openNotes({ theme, width, notes: "<p>Texto de prueba</p>" });
+      await editor(page).waitFor({ timeout: READY_TIMEOUT });
+      const seen = new Set(await collect(".lesson-notebook .toolbar, .lesson-notebook .actions, .lesson-notebook .ContentEditable__placeholder")(page));
+      const triggers = page.locator(".lesson-notebook .toolbar button:has(i.chevron-down)");
+      const n = await triggers.count();
+      if (n < 4) fail(id, `expected at least 4 toolbar dropdowns, found ${n}`);
+      for (let i = 0; i < n; i++) {
+        const trigger = triggers.nth(i);
+        if (await trigger.isDisabled()) continue;
+        await trigger.evaluate((el) => { el.scrollIntoView({ block: "start", inline: "nearest" }); window.scrollBy(0, -96); });
+        await trigger.click();
+        const menu = page.locator(".dropdown").last();
+        if (!(await menu.isVisible().catch(() => false))) { await page.waitForTimeout(300); }
+        if (!(await menu.isVisible().catch(() => false))) { fail(id, `dropdown ${i} did not open`); continue; }
+        (await collect(".dropdown")(page)).forEach((t) => seen.add(t));
+        const label = (await trigger.getAttribute("aria-label")) ?? "";
+        if (/Insertar/.test(label)) await clipShot(page, menu, `toolbar-insert-menu-${tag}`);
+        if (/Estilo de p/.test(label)) await clipShot(page, menu, `toolbar-block-menu-${tag}`);
+        await page.keyboard.press("Escape");
+        await page.mouse.click(2, 2);
+      }
+      await editor(page).click();
+      await page.keyboard.press("End");
+      await page.keyboard.press("Enter");
+      await page.keyboard.type("/");
+      const picker = page.locator(".typeahead-popover");
+      if (await picker.isVisible({ timeout: 5000 }).catch(() => false) || await picker.waitFor({ timeout: 5000 }).then(() => true, () => false)) {
+        (await collect(".typeahead-popover")(page)).forEach((t) => seen.add(t));
+        await clipShot(page, picker, `editor-slash-menu-${tag}`);
+      } else fail(id, '"/" insert menu did not open');
+      await page.keyboard.press("Escape");
+      await page.keyboard.press("Backspace");
+      if (width === 1280) {
+        await editor(page).click();
+        await page.keyboard.press("ControlOrMeta+A");
+        const floating = page.locator(".floating-text-format-popup");
+        if (await floating.waitFor({ state: "visible", timeout: 5000 }).then(() => true, () => false)) {
+          (await collect(".floating-text-format-popup")(page)).forEach((t) => seen.add(t));
+          await clipShot(page, floating, `editor-format-bar-${tag}`);
+        } else fail(id, "floating format bar did not appear on selection");
+      }
+      const english = [...seen].filter((t) => ENGLISH.test(t));
+      if (english.length) fail(id, `English labels in the es editor: ${[...new Set(english)].slice(0, 12).join(" | ")}`);
+      if (seen.size < 40) fail(id, `collected only ${seen.size} labels; the scan did not reach the editor chrome`);
+      await context.close();
+    }
+  }
+
   // Evidence + per-theme checks: 375px and desktop, light and dark.
   for (const theme of ["light", "dark"]) for (const width of [375, 1280]) {
     const tag = `${theme}-${width}`;
@@ -291,6 +360,7 @@ if (ONLY.has("notes")) {
     await page.waitForTimeout(800);
     await page.screenshot({ path: shot(`notes-tab-${tag}`), fullPage: true });
     await notebook(page).screenshot({ path: shot(`notes-idle-${tag}`) });
+    await page.locator(".lesson-notebook .toolbar").screenshot({ path: shot(`toolbar-${tag}`) });
 
     const shell = await page.evaluate(() => {
       const bg = (s) => getComputedStyle(document.querySelector(s)).backgroundColor;
