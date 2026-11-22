@@ -12,6 +12,7 @@
 //                      with npm, outside this repo's dependencies.
 //   BROWSER_PATH       Chromium-based browser executable (optional; default: playwright's chromium)
 //   ONLY               comma-separated sections to run: reading,notes,admin (default: all)
+//   NAV_TIMEOUT        page navigation timeout in ms (default 180000; first loads compile the route)
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -21,6 +22,7 @@ import { pathToFileURL } from "node:url";
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const SCRATCH = join(tmpdir(), "se-libre-lesson-check");
 const SHOTS = process.env.SHOTS_DIR ?? join(SCRATCH, "shots");
+const NAV_TIMEOUT = Number(process.env.NAV_TIMEOUT ?? 180000);
 const ONLY = new Set((process.env.ONLY ?? "reading,notes,admin").split(","));
 mkdirSync(SHOTS, { recursive: true });
 
@@ -92,7 +94,7 @@ if (ONLY.has("reading")) {
     for (const mode of ["preview", "enrolled"]) for (const fixture of fixtures) for (const width of widths) {
       const id = `reading-${fixture}-${mode}-${theme}-${width}`;
       await page.setViewportSize({ width, height: 900 });
-      await page.goto(`${BASE}/lesson-fixture?fixture=${fixture}&mode=${mode}`, { waitUntil: "load", timeout: 180000 });
+      await page.goto(`${BASE}/lesson-fixture?fixture=${fixture}&mode=${mode}`, { waitUntil: "load", timeout: NAV_TIMEOUT });
       await page.waitForSelector(".lexical-preview p", { timeout: 30000 });
       if (mode === "enrolled") await page.waitForSelector(".editor-shell", { timeout: 60000 });
       await page.waitForTimeout(300);
@@ -160,7 +162,7 @@ const notebook = (page) => page.locator('section[aria-labelledby="lesson-notes-t
 
 async function openNotes(opts) {
   const s = await newPage(opts);
-  await s.page.goto(NOTES_URL, { waitUntil: "load", timeout: 180000 });
+  await s.page.goto(NOTES_URL, { waitUntil: "load", timeout: NAV_TIMEOUT });
   return s;
 }
 
@@ -234,7 +236,7 @@ if (ONLY.has("notes")) {
   {
     const { page, state, context } = await newPage({});
     state.get = { status: 500, body: {} };
-    await page.goto(NOTES_URL, { waitUntil: "load", timeout: 180000 });
+    await page.goto(NOTES_URL, { waitUntil: "load", timeout: NAV_TIMEOUT });
     await page.waitForTimeout(1500);
     if (await page.locator(".lesson-notebook .editor-shell").count()) fail("load-error", "editor rendered after a failed load");
     if (!(await page.getByText("No se pudieron cargar tus notas.").isVisible())) fail("load-error", "message missing");
@@ -339,7 +341,7 @@ if (ONLY.has("admin")) {
   for (const theme of ["light", "dark"]) for (const width of [375, 1280]) {
     const id = `admin-${theme}-${width}`;
     const { page, context } = await newPage({ theme, width });
-    await page.goto(`${BASE}/lesson-fixture/admin?fixture=table-url`, { waitUntil: "load", timeout: 180000 });
+    await page.goto(`${BASE}/lesson-fixture/admin?fixture=table-url`, { waitUntil: "load", timeout: NAV_TIMEOUT });
     await page.waitForSelector(".lexical-preview p", { timeout: 30000 });
     await page.waitForTimeout(300);
     await page.screenshot({ path: shot(`admin-preview-${theme}-${width}`), fullPage: true });
