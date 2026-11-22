@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { TooltipProps } from "recharts";
@@ -119,9 +120,16 @@ function MetricChart({
   const ticks = niceTicks(Math.max(...data.flatMap((row) => metrics.map((metric) => row[metric]))), {
     integer: yAxis.integer,
   });
+  // recharts keeps the keyboard tooltip up after focus moves on; hide it until the chart is used again.
+  const [tooltipHidden, setTooltipHidden] = useState(false);
 
   return (
-    <div className={`h-56 sm:h-60 [&_.recharts-cartesian-axis-tick-value]:tabular-nums ${CHART_FOCUS}`}>
+    <div
+      className={`h-56 sm:h-60 [&_.recharts-cartesian-axis-tick-value]:tabular-nums ${CHART_FOCUS}`}
+      onBlur={() => setTooltipHidden(true)}
+      onFocus={() => setTooltipHidden(false)}
+      onMouseMove={() => setTooltipHidden(false)}
+    >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
@@ -148,6 +156,7 @@ function MetricChart({
             {...AXIS_STYLE}
           />
           <Tooltip
+            active={tooltipHidden ? false : undefined}
             cursor={{ fill: "hsl(var(--muted) / 0.6)" }}
             isAnimationActive={false}
             content={<OverviewTooltip metrics={metrics} />}
