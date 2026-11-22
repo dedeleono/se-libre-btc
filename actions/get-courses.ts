@@ -1,6 +1,6 @@
 import { Category, Course } from "@prisma/client";
 
-import { getProgress } from "@/actions/get-progress";
+import { progressPercent } from "@/lib/course-progress";
 import { prisma } from "@/lib/db";
 
 type CourseWithProgressWithCategory = Course & {
@@ -48,7 +48,21 @@ export const getCourses = async ({ userId, categoryId, title }: GetCourses): Pro
             }
         });
 
-        return Promise.all(courses.map(async (course) => {
+        const enrolledChapterIds = userId
+            ? courses
+                .filter((course) => course.enrollments.length > 0)
+                .flatMap((course) => course.modules.flatMap((module) => module.chapters.map((chapter) => chapter.id)))
+            : [];
+
+        const completed = enrolledChapterIds.length > 0
+            ? await prisma.chapterProgress.findMany({
+                where: { userId, isCompleted: true, chapterId: { in: enrolledChapterIds } },
+                select: { chapterId: true },
+            })
+            : [];
+        const completedChapterIds = new Set(completed.map((row) => row.chapterId));
+
+        return courses.map((course) => {
             const chapters = course.modules.flatMap((module) => module.chapters);
             const category = course.courseCategory[0]?.category ?? null;
             const isEnrolled = course.enrollments.length > 0;
@@ -58,9 +72,11 @@ export const getCourses = async ({ userId, categoryId, title }: GetCourses): Pro
                 category,
                 chapters,
                 isEnrolled,
-                progress: userId && isEnrolled ? await getProgress(userId, course.id) : null,
+                progress: userId && isEnrolled
+                    ? progressPercent(chapters.filter((chapter) => completedChapterIds.has(chapter.id)).length, chapters.length)
+                    : null,
             };
-        }));
+        });
     } catch (error) {
         console.log("[GET_COURSES]", error);
         return [];

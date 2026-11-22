@@ -62,7 +62,7 @@ const ChapterPage = async (
             </EnrollmentButton>
           ) : (
             <Button asChild>
-              <Link href={`/courses/preview/${params.courseId}`}>{t.course.viewCourse}</Link>
+              <Link href={`/courses/preview/${params.courseId}`}>{t.public.viewCourse}</Link>
             </Button>
           )}
         </div>
@@ -121,7 +121,6 @@ const ChapterPage = async (
           youtubeUrl={chapter.youtubeUrl}
           title={chapter.title}
           courseId={params.courseId}
-          isLocked={false}
           lockType="intro"
           completeOnEnd={false}
           description={chapter.description as string}
@@ -165,7 +164,6 @@ const ChapterPage = async (
           title={chapter.title}
           courseId={params.courseId}
           nextChapterId={nextChapterId}
-          isLocked={false}
           completeOnEnd={!isCompleted}
           description={chapter.description as string}
           attachments={chapter.attachments}

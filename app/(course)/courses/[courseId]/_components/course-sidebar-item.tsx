@@ -128,7 +128,7 @@ export const CourseSidebarItem = ({
           ) : !isCourseFree ? (
             <Button asChild size="sm">
               <Link ref={actionRef} href={`/courses/preview/${courseId}`} aria-describedby={messageId}>
-                {t.course.viewCourse}
+                {t.public.viewCourse}
               </Link>
             </Button>
           ) : (

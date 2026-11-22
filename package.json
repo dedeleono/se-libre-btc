@@ -7,7 +7,10 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest run"
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "verify": "yarn typecheck && yarn lint && yarn test",
+    "vercel-build": "yarn test && yarn build"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -67,8 +70,6 @@
     "@scure/bip39": "^2.2.0",
     "@scure/btc-signer": "^2.2.0",
     "@solana/spl-token": "^0.4.13",
-    "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.49.1",
     "@tanstack/react-query": "^5.63.0",
     "@tanstack/react-table": "^8.20.6",
     "@tanstack/react-virtual": "^3.13.0",
@@ -115,6 +116,7 @@
     "react-resizable-panels": "^3.0.4",
     "react-toastify": "^10.0.5",
     "recharts": "^2.12.7",
+    "server-only": "0.0.1",
     "sonner": "^1.7.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
