@@ -1,14 +1,8 @@
 import { prisma } from "@/lib/db";
-import { OVERVIEW_TIME_ZONE, bucketByMonth, overviewWindow } from "@/lib/overview-buckets";
+import { bucketByMonth, overviewWindow } from "@/lib/overview-buckets";
+import { toOverviewRows, type OverviewRow } from "@/lib/overview-chart";
 
-export type OverviewData = {
-  name: string;
-  revenue: number;
-  students: number;
-  courses: number;
-};
-
-export async function getOverviewData(): Promise<OverviewData[]> {
+export async function getOverviewData(): Promise<OverviewRow[]> {
   const now = new Date();
   const { start, end, monthStarts } = overviewWindow(now);
 
@@ -38,12 +32,7 @@ export async function getOverviewData(): Promise<OverviewData[]> {
     const newStudents = bucketByMonth(students.map((user) => ({ date: user.createdAt, value: 1 })), now);
     const newCourses = bucketByMonth(courses.map((course) => ({ date: course.createdAt, value: 1 })), now);
 
-    return monthStarts.map((monthStart, i) => ({
-      name: monthStart.toLocaleString("default", { month: "short", timeZone: OVERVIEW_TIME_ZONE }),
-      revenue: revenueCents[i] / 100,
-      students: newStudents[i],
-      courses: newCourses[i],
-    }));
+    return toOverviewRows({ monthStarts, revenueCents, students: newStudents, courses: newCourses });
   } catch (error) {
     console.error("[GET_OVERVIEW_DATA]", error);
     return [];
