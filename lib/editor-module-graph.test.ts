@@ -106,6 +106,19 @@ describe("editor module graph", () => {
     }
   });
 
+  it("never sends editor content to localhost or the network from ActionsPlugin", () => {
+    // The playground's commenting-validation server calls POSTed the lesson to localhost:1235.
+    for (const file of files) {
+      expect(readFileSync(file, "utf8"), path.relative(ROOT, file)).not.toMatch(/localhost:/);
+    }
+    const actions = readFileSync(
+      path.join(ROOT, "components/editor/plugins/ActionsPlugin/index.tsx"),
+      "utf8",
+    );
+    expect(actions).not.toMatch(/\bfetch\(|XMLHttpRequest|sendBeacon|WebSocket/);
+    expect(actions).toMatch(/editor\.setEditable\(/); // the read-only lock itself stays
+  });
+
   it("imports yjs only from the comments feature", () => {
     expect(importersOf("yjs")).toEqual([
       "components/editor/commenting/index.ts",
