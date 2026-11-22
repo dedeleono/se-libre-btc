@@ -114,7 +114,7 @@ function MetricChart({
   const { locale, t } = useLocale();
 
   return (
-    <div className={`h-56 sm:h-60 ${CHART_FOCUS}`}>
+    <div className={`h-56 sm:h-60 [&_.recharts-cartesian-axis-tick-value]:tabular-nums ${CHART_FOCUS}`}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
@@ -250,7 +250,7 @@ export function Overview({ data }: { data: OverviewRow[] }) {
             data={data}
             metrics={["revenue"]}
             title={t.dashboard.revenueByMonth}
-            maxBarSize={28}
+            maxBarSize={24}
             yAxis={{ width: 64, tickFormatter: revenueTick }}
           />
         )}
