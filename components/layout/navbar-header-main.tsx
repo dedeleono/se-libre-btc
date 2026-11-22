@@ -29,8 +29,8 @@ const HeaderMenu = () => {
   return (
     <nav className="sticky top-0 z-50 w-full border-b-2 border-foreground bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="mx-auto flex h-20 max-w-[1160px] items-center justify-between px-4 md:px-8">
-        <Link href="/" className="flex items-center gap-2">
-          <Logo alt={t.common.appName} width={168} height={42} />
+        <Link href="/" className="flex min-w-0 items-center gap-2">
+          <Logo alt={t.common.appName} width={168} height={42} className="max-w-full" />
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
@@ -58,7 +58,7 @@ const HeaderMenu = () => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex shrink-0 items-center gap-2 md:hidden">
           <ThemeToggle />
           <LanguageToggle />
           <Sheet>
