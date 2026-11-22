@@ -60,7 +60,7 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
     <TooltipProvider delayDuration={150}>
       <div
         data-dashboard-sidebar={collapsed ? "collapsed" : "expanded"}
-        className="dl-app h-full w-full max-w-full overflow-x-hidden"
+        className="dl-app h-full"
       >
       <div
         className={cn(

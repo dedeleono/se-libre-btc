@@ -24,7 +24,7 @@ export default function RootLayout({
 
   return (
     <html lang={locale}>
-      <body className="min-h-screen flex flex-col antialiased overflow-x-hidden w-full">
+      <body className="min-h-screen flex flex-col antialiased">
         <SkipLink label={t.common.skipToContent} />
         <Providers initialLocale={locale}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
