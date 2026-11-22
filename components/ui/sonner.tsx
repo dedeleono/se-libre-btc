@@ -3,13 +3,17 @@
 import { useTheme } from "next-themes";
 import { Toaster as Sonner, ToasterProps } from "sonner";
 
+import { useLocale } from "@/lib/i18n";
+
 const Toaster = ({ position = "top-center", ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme();
+  const { t } = useLocale();
 
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
       position={position}
+      containerAriaLabel={t.toasts.region}
       richColors
       toastOptions={{
         className:

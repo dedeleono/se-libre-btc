@@ -901,6 +901,7 @@ const es = {
     processingError: "Error al procesar el pago. Por favor intenta nuevamente.",
   },
   toasts: {
+    region: "Notificaciones",
     courseDeleted: "Curso eliminado",
     courseDeleteError: "Error al eliminar curso",
     enrollmentComplete: "Inscripción completada",
@@ -1896,6 +1897,7 @@ const en: Messages = {
     processingError: "Error processing payment. Please try again.",
   },
   toasts: {
+    region: "Notifications",
     courseDeleted: "Course deleted",
     courseDeleteError: "Error deleting course",
     enrollmentComplete: "Enrollment complete",
