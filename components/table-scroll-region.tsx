@@ -44,7 +44,7 @@ export function TableScrollRegion({
           role={overflowing ? "region" : undefined}
           aria-label={overflowing ? label : undefined}
           tabIndex={overflowing ? 0 : undefined}
-          className="overflow-x-auto overscroll-x-contain rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="relative overflow-x-auto overscroll-x-contain rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <table className="w-full caption-bottom text-sm">{children}</table>
         </div>
