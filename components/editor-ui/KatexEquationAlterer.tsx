@@ -16,6 +16,7 @@ import {useCallback, useState} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
 import Button from './Button';
+import {useLocale} from '@/lib/i18n';
 import KatexRenderer from './KatexRenderer';
 
 type Props = {
@@ -27,6 +28,7 @@ export default function KatexEquationAlterer({
   onConfirm,
   initialEquation = '',
 }: Props): JSX.Element {
+  const {t} = useLocale();
   const [editor] = useLexicalComposerContext();
   const [equation, setEquation] = useState<string>(initialEquation);
   const [inline, setInline] = useState<boolean>(true);
@@ -42,10 +44,10 @@ export default function KatexEquationAlterer({
   return (
     <>
       <div className="KatexEquationAlterer_defaultRow">
-        Inline
+        {t.editor.equation.inline}
         <input type="checkbox" checked={inline} onChange={onCheckboxChange} />
       </div>
-      <div className="KatexEquationAlterer_defaultRow">Equation </div>
+      <div className="KatexEquationAlterer_defaultRow">{t.editor.equation.equation}</div>
       <div className="KatexEquationAlterer_centerRow">
         {inline ? (
           <input
@@ -65,7 +67,7 @@ export default function KatexEquationAlterer({
           />
         )}
       </div>
-      <div className="KatexEquationAlterer_defaultRow">Visualization </div>
+      <div className="KatexEquationAlterer_defaultRow">{t.editor.equation.preview}</div>
       <div className="KatexEquationAlterer_centerRow">
         <ErrorBoundary onError={(e) => editor._onError(e)} fallback={null}>
           <KatexRenderer
@@ -76,7 +78,7 @@ export default function KatexEquationAlterer({
         </ErrorBoundary>
       </div>
       <div className="KatexEquationAlterer_dialogActions">
-        <Button onClick={onClick}>Confirm</Button>
+        <Button onClick={onClick}>{t.editor.dialogs.confirm}</Button>
       </div>
     </>
   );

@@ -25,6 +25,7 @@ import {ReactPortal, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 
 import Button from './Button';
+import {useLocale} from '@/lib/i18n';
 import Modal from './Modal';
 
 export type ExcalidrawInitialElements = ExcalidrawInitialDataState['elements'];
@@ -80,6 +81,7 @@ export default function ExcalidrawModal({
   onDelete,
   onClose,
 }: Props): ReactPortal | null {
+  const {t} = useLocale();
   const excaliDrawModelRef = useRef<HTMLDivElement | null>(null);
   const [excalidrawAPI, setExcalidrawAPI] =
     useState<ExcalidrawImperativeAPI | null>(null);
@@ -174,25 +176,25 @@ export default function ExcalidrawModal({
   function ShowDiscardDialog(): JSX.Element {
     return (
       <Modal
-        title="Discard"
+        title={t.editor.excalidraw.discard}
         onClose={() => {
           setDiscardModalOpen(false);
         }}
         closeOnClickOutside={false}>
-        Are you sure you want to discard the changes?
+        {t.editor.excalidraw.confirmDiscard}
         <div className="ExcalidrawModal__discardModal">
           <Button
             onClick={() => {
               setDiscardModalOpen(false);
               onClose();
             }}>
-            Discard
+            {t.editor.excalidraw.discard}
           </Button>{' '}
           <Button
             onClick={() => {
               setDiscardModalOpen(false);
             }}>
-            Cancel
+            {t.editor.dialogs.cancel}
           </Button>
         </div>
       </Modal>
@@ -227,10 +229,10 @@ export default function ExcalidrawModal({
           />
           <div className="ExcalidrawModal__actions">
             <button className="action-button" onClick={discard}>
-              Discard
+              {t.editor.excalidraw.discard}
             </button>
             <button className="action-button" onClick={save}>
-              Save
+              {t.editor.excalidraw.save}
             </button>
           </div>
         </div>

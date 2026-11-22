@@ -24,6 +24,7 @@ import {useEffect, useLayoutEffect, useRef} from 'react';
 import {useSharedHistoryContext} from '@/context/SharedHistoryContext';
 import StickyEditorTheme from '@/components/editor/themes/StickyEditorTheme';
 import ContentEditable from '@/components/editor-ui/ContentEditable';
+import {useLocale} from '@/lib/i18n';
 import {$isStickyNode} from './StickyNode';
 
 type Positioning = {
@@ -60,6 +61,7 @@ export default function StickyComponent({
   x: number;
   y: number;
 }): JSX.Element {
+  const {t} = useLocale();
   const [editor] = useLexicalComposerContext();
   const stickyContainerRef = useRef<null | HTMLDivElement>(null);
   const positioningRef = useRef<Positioning>({
@@ -224,15 +226,15 @@ export default function StickyComponent({
         <button
           onClick={handleDelete}
           className="delete"
-          aria-label="Delete sticky note"
-          title="Delete">
+          aria-label={t.editor.sticky.delete}
+          title={t.editor.sticky.delete}>
           X
         </button>
         <button
           onClick={handleColorChange}
           className="color"
-          aria-label="Change sticky note color"
-          title="Color">
+          aria-label={t.editor.sticky.changeColor}
+          title={t.editor.sticky.changeColor}>
           <i className="bucket" />
         </button>
         <LexicalNestedComposer
@@ -242,7 +244,7 @@ export default function StickyComponent({
           <PlainTextPlugin
             contentEditable={
               <ContentEditable
-                placeholder="What's up?"
+                placeholder={t.editor.sticky.placeholder}
                 placeholderClassName="StickyNode__placeholder"
                 className="StickyNode__contentEditable"
               />

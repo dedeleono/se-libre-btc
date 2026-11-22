@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { formatDistanceToNow } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import { MessageCircle, Loader2, MessageSquare } from "lucide-react";
@@ -27,14 +27,22 @@ interface DiscussionSectionProps {
   currentUser: User;
 }
 
-export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionProps) {
+export function DiscussionSection({ chapterId }: DiscussionSectionProps) {
   const { t, locale } = useLocale();
-  const router = useRouter();
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const formWasOpenRef = useRef(false);
+
+  useEffect(() => {
+    if (showCommentBox) textareaRef.current?.focus();
+    else if (formWasOpenRef.current) openButtonRef.current?.focus();
+    formWasOpenRef.current = showCommentBox;
+  }, [showCommentBox]);
 
   const loadDiscussions = useCallback(async () => {
     try {
@@ -62,7 +70,7 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
       setShowCommentBox(false);
       toast.success(t.forum.discussionPosted);
       loadDiscussions();
-    } catch (error) {
+    } catch {
       toast.error(t.common.somethingWentWrong);
     } finally {
       setIsSubmitting(false);
@@ -74,7 +82,43 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
   }, [loadDiscussions]);
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
+      {showCommentBox ? (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="new-comment">{t.forum.yourComment}</Label>
+          <Textarea
+            id="new-comment"
+            ref={textareaRef}
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder={t.forum.commentPlaceholder}
+            className="min-h-[100px]"
+          />
+          <div className="flex flex-wrap gap-2">
+            <Button
+              className="min-h-11"
+              onClick={onSubmitComment}
+              disabled={!newComment.trim() || isSubmitting}
+            >
+              {t.forum.postReply}
+            </Button>
+            <Button variant="ghost" className="min-h-11" onClick={() => setShowCommentBox(false)}>
+              {t.common.cancel}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Button
+          ref={openButtonRef}
+          variant="outline"
+          className="min-h-11 self-start"
+          onClick={() => setShowCommentBox(true)}
+        >
+          <MessageCircle aria-hidden className="size-4" />
+          {t.forum.startComment}
+        </Button>
+      )}
+
       {/* Discussions List */}
       <div className="space-y-6">
         {isLoading ? (
@@ -84,7 +128,7 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
         ) : discussions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <MessageSquare className="h-6 w-6 text-primary" />
+              <MessageSquare aria-hidden className="h-6 w-6 text-primary" />
             </div>
             <h3 className="text-lg font-semibold mb-2 text-balance">{t.forum.noContentYet}</h3>
             <p className="text-sm text-muted-foreground max-w-sm text-pretty">
@@ -127,39 +171,6 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
         )}
       </div>
 
-      {/* Floating Comment Button */}
-      {!showCommentBox && (
-        <Button
-          onClick={() => setShowCommentBox(true)}
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
-          size="icon"
-        >
-          <MessageCircle className="h-6 w-6" />
-        </Button>
-      )}
-
-      {/* New Comment Form */}
-      {showCommentBox && (
-        <div className="space-y-4">
-          <Textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder={t.forum.commentPlaceholder}
-            className="min-h-[100px]"
-          />
-          <div className="flex gap-2">
-            <Button
-              onClick={onSubmitComment}
-              disabled={!newComment.trim() || isSubmitting}
-            >
-              {t.forum.postReply}
-            </Button>
-            <Button variant="ghost" onClick={() => setShowCommentBox(false)}>
-              {t.common.cancel}
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 } 

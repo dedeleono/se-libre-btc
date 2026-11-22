@@ -28,6 +28,7 @@ import * as React from 'react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 
 import Button from '@/components/editor-ui/Button';
+import {useLocale} from '@/lib/i18n';
 import joinClasses from '@/utilities/joinClasses';
 import {$isPollNode, createPollOption} from './PollNode';
 
@@ -53,6 +54,7 @@ function PollOptionComponent({
     onSelect?: () => void,
   ) => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const {clientID} = useCollaborationContext();
   const checkboxRef = useRef(null);
   const votesArray = option.votes;
@@ -86,7 +88,7 @@ function PollOptionComponent({
           style={{width: `${votes === 0 ? 0 : (votes / totalVotes) * 100}%`}}
         />
         <span className="PollNode__optionInputVotesCount">
-          {votes > 0 && (votes === 1 ? '1 vote' : `${votes} votes`)}
+          {votes > 0 && t.editor.poll.votes(votes)}
         </span>
         <input
           className="PollNode__optionInput"
@@ -107,7 +109,7 @@ function PollOptionComponent({
               },
             );
           }}
-          placeholder={`Option ${index + 1}`}
+          placeholder={t.editor.poll.option(index + 1)}
         />
       </div>
       <button
@@ -116,7 +118,7 @@ function PollOptionComponent({
           'PollNode__optionDelete',
           options.length < 3 && 'PollNode__optionDeleteDisabled',
         )}
-        aria-label="Remove"
+        aria-label={t.editor.poll.removeOption}
         onClick={() => {
           withPollNode((node) => {
             node.deleteOption(option);
@@ -136,6 +138,7 @@ export default function PollComponent({
   options: Options;
   question: string;
 }): JSX.Element {
+  const {t} = useLocale();
   const [editor] = useLexicalComposerContext();
   const totalVotes = useMemo(() => getTotalVotes(options), [options]);
   const [isSelected, setSelected, clearSelection] =
@@ -212,7 +215,7 @@ export default function PollComponent({
         })}
         <div className="PollNode__footer">
           <Button onClick={addOption} small={true}>
-            Add Option
+            {t.editor.poll.addOption}
           </Button>
         </div>
       </div>

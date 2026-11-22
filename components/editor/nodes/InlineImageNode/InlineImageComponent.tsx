@@ -35,6 +35,7 @@ import * as React from 'react';
 import {Suspense, useCallback, useEffect, useRef, useState} from 'react';
 
 import useModal from '@/hooks/useModal';
+import {useLocale} from '@/lib/i18n';
 import LinkPlugin from '@/components/editor/plugins/LinkPlugin';
 import Button from '@/components/editor-ui/Button';
 import ContentEditable from '@/components/editor-ui/ContentEditable';
@@ -103,6 +104,7 @@ export function UpdateInlineImageDialog({
   nodeKey: NodeKey;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const editorState = activeEditor.getEditorState();
   const node = editorState.read(
     () => $getNodeByKey(nodeKey) as InlineImageNode,
@@ -133,8 +135,8 @@ export function UpdateInlineImageDialog({
     <>
       <div style={{marginBottom: '1em'}}>
         <TextInput
-          label="Alt Text"
-          placeholder="Descriptive alternative text"
+          label={t.editor.image.altText}
+          placeholder={t.editor.image.altPlaceholder}
           onChange={setAltText}
           value={altText}
           data-test-id="image-modal-alt-text-input"
@@ -144,13 +146,13 @@ export function UpdateInlineImageDialog({
       <Select
         style={{marginBottom: '1em', width: '208px'}}
         value={position}
-        label="Position"
+        label={t.editor.image.position}
         name="position"
         id="position-select"
         onChange={handlePositionChange}>
-        <option value="left">Left</option>
-        <option value="right">Right</option>
-        <option value="full">Full Width</option>
+        <option value="left">{t.editor.image.left}</option>
+        <option value="right">{t.editor.image.right}</option>
+        <option value="full">{t.editor.image.fullWidth}</option>
       </Select>
 
       <div className="Input__wrapper">
@@ -160,14 +162,14 @@ export function UpdateInlineImageDialog({
           checked={showCaption}
           onChange={handleShowCaptionChange}
         />
-        <label htmlFor="caption">Show Caption</label>
+        <label htmlFor="caption">{t.editor.image.showCaption}</label>
       </div>
 
       <DialogActions>
         <Button
           data-test-id="image-modal-file-upload-btn"
           onClick={() => handleOnConfirm()}>
-          Confirm
+          {t.editor.dialogs.confirm}
         </Button>
       </DialogActions>
     </>
@@ -193,6 +195,7 @@ export default function InlineImageComponent({
   width: 'inherit' | number;
   position: Position;
 }): JSX.Element {
+  const {t} = useLocale();
   const [modal, showModal] = useModal();
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -332,7 +335,7 @@ export default function InlineImageComponent({
               className="image-edit-button"
               ref={buttonRef}
               onClick={() => {
-                showModal('Update Inline Image', (onClose) => (
+                showModal(t.editor.dialogs.updateInlineImage, (onClose) => (
                   <UpdateInlineImageDialog
                     activeEditor={editor}
                     nodeKey={nodeKey}
@@ -340,7 +343,7 @@ export default function InlineImageComponent({
                   />
                 ));
               }}>
-              Edit
+              {t.editor.dialogs.edit}
             </button>
           )}
           <LazyImage

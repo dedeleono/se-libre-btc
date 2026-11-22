@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { ChapterType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { ContentViewer } from "./_components/content-viewer";
+import { resolveFinalQuiz } from "@/lib/certificate-eligibility";
 import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 import { resolveChapterAccess } from "@/lib/chapter-access-rule";
 import { findChapter, findNextPublishedChapterId } from "@/lib/course-nav-tree";
@@ -89,6 +90,8 @@ const ChapterPage = async (
           title: true,
           description: true,
           allowRetries: true,
+          showCorrectAnswers: true,
+          passingScore: true,
           questions: {
             orderBy: { position: "asc" },
             select: {
@@ -96,6 +99,7 @@ const ChapterPage = async (
               prompt: true,
               type: true,
               metadata: true,
+              points: true,
               options: {
                 orderBy: { position: "asc" },
                 select: { id: true, content: true, isCorrect: true },
@@ -136,6 +140,11 @@ const ChapterPage = async (
     return <Banner label={t.course.quizNotConfigured} variant="warning" />;
   }
 
+  const isFinalExam =
+    chapter.type === ChapterType.QUIZ && chapter.quiz
+      ? (await resolveFinalQuiz(params.courseId)).finalQuiz?.id === chapter.quiz.id
+      : false;
+
   const nextChapterId = findNextPublishedChapterId(tree, chapter.id) ?? undefined;
   const isCompleted = navChapter.isCompleted;
 
@@ -151,7 +160,7 @@ const ChapterPage = async (
       )}
       {chapter.type === ChapterType.QUIZ ? (
         <QuizPlayer
-          quiz={toQuizForPlayer(chapter.quiz!)}
+          quiz={toQuizForPlayer(chapter.quiz!, { isFinalExam })}
           courseId={params.courseId}
           nextChapterId={nextChapterId}
         />

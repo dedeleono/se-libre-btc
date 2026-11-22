@@ -22,6 +22,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import useModal from '@/hooks/useModal';
+import {useLocale} from '@/lib/i18n';
+import type {Messages} from '@/lib/i18n/messages';
 import Button from '@/components/editor-ui/Button';
 import {DialogActions} from '@/components/editor-ui/Dialog';
 // import {INSERT_FIGMA_COMMAND} from '../FigmaPlugin';
@@ -30,7 +32,6 @@ import {INSERT_YOUTUBE_COMMAND} from '../YouTubePlugin';
 
 interface PlaygroundEmbedConfig extends EmbedConfig {
   // Human readable name of the embedded content e.g. Tweet or Google Map.
-  contentName: string;
 
   // Icon for display.
   icon?: JSX.Element;
@@ -46,7 +47,6 @@ interface PlaygroundEmbedConfig extends EmbedConfig {
 }
 
 export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
-  contentName: 'Youtube Video',
 
   exampleUrl: 'https://www.youtube.com/watch?v=jNQXAC9IVRw',
 
@@ -81,7 +81,6 @@ export const YoutubeEmbedConfig: PlaygroundEmbedConfig = {
 
 export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
   // e.g. Tweet or Google Map.
-  contentName: 'X(Tweet)',
 
   exampleUrl: 'https://x.com/jack/status/20',
 
@@ -117,7 +116,6 @@ export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
 };
 
 // export const FigmaEmbedConfig: PlaygroundEmbedConfig = {
-//   contentName: 'Figma Document',
 
 //   exampleUrl: 'https://www.figma.com/file/LKQ4FJ4bTnCSjedbRpk931/Sample-File',
 
@@ -148,6 +146,11 @@ export const TwitterEmbedConfig: PlaygroundEmbedConfig = {
 
 //   type: 'figma',
 // };
+
+export function embedName(t: Messages, type: string): string {
+  const names = t.editor.embeds;
+  return type in names ? names[type as keyof typeof names] : type;
+}
 
 export const EmbedConfigs = [
   TwitterEmbedConfig,
@@ -234,6 +237,7 @@ export function AutoEmbedDialog({
   embedConfig: PlaygroundEmbedConfig;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const [text, setText] = useState('');
   const [editor] = useLexicalComposerContext();
   const [embedResult, setEmbedResult] = useState<EmbedMatchResult | null>(null);
@@ -283,7 +287,7 @@ export function AutoEmbedDialog({
           disabled={!embedResult}
           onClick={onClick}
           data-test-id={`${embedConfig.type}-embed-modal-submit-btn`}>
-          Embed
+          {t.editor.dialogs.embed}
         </Button>
       </DialogActions>
     </div>
@@ -291,10 +295,11 @@ export function AutoEmbedDialog({
 }
 
 export default function AutoEmbedPlugin(): JSX.Element {
+  const {t} = useLocale();
   const [modal, showModal] = useModal();
 
   const openEmbedModal = (embedConfig: PlaygroundEmbedConfig) => {
-    showModal(`Embed ${embedConfig.contentName}`, (onClose) => (
+    showModal(t.editor.insert.embed(embedName(t, embedConfig.type)), (onClose) => (
       <AutoEmbedDialog embedConfig={embedConfig} onClose={onClose} />
     ));
   };
@@ -305,10 +310,10 @@ export default function AutoEmbedPlugin(): JSX.Element {
     dismissFn: () => void,
   ) => {
     return [
-      new AutoEmbedOption('Dismiss', {
+      new AutoEmbedOption(t.editor.dialogs.dismiss, {
         onSelect: dismissFn,
       }),
-      new AutoEmbedOption(`Embed ${activeEmbedConfig.contentName}`, {
+      new AutoEmbedOption(t.editor.insert.embed(embedName(t, activeEmbedConfig.type)), {
         onSelect: embedFn,
       }),
     ];

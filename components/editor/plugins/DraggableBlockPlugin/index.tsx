@@ -13,6 +13,7 @@ import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {DraggableBlockPlugin_EXPERIMENTAL} from '@lexical/react/LexicalDraggableBlockPlugin';
 import {$createParagraphNode, $getNearestNodeFromDOMNode} from 'lexical';
 import {useRef, useState} from 'react';
+import {useLocale} from '@/lib/i18n';
 
 const DRAGGABLE_BLOCK_MENU_CLASSNAME = 'draggable-block-menu';
 
@@ -25,6 +26,7 @@ export default function DraggableBlockPlugin({
 }: {
   anchorElem?: HTMLElement;
 }): JSX.Element {
+  const {t} = useLocale();
   const [editor] = useLexicalComposerContext();
   const menuRef = useRef<HTMLDivElement>(null);
   const targetLineRef = useRef<HTMLDivElement>(null);
@@ -61,7 +63,8 @@ export default function DraggableBlockPlugin({
       menuComponent={
         <div ref={menuRef} className="icon draggable-block-menu">
           <button
-            title="Click to add below"
+            title={t.editor.draggable.addBelow}
+            aria-label={t.editor.draggable.addBelow}
             className="icon icon-plus"
             onClick={insertBlock}
           />

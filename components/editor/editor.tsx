@@ -29,6 +29,7 @@ import { CAN_USE_DOM } from "@lexical/utils";
 import * as React from "react";
 import { useEffect, useState } from "react";
 
+import { useLocale } from "@/lib/i18n";
 import { useSettings } from "@/context/SettingsContext";
 import { useSharedHistoryContext } from "@/context/SharedHistoryContext";
 import ActionsPlugin from "@/components/editor/plugins/ActionsPlugin";
@@ -99,9 +100,8 @@ export default function Editor(): JSX.Element {
     },
   } = useSettings();
   const isEditable = useLexicalEditable();
-  const placeholder = isRichText
-    ? "Enter some rich text..."
-    : "Enter some plain text...";
+  const { t } = useLocale();
+  const placeholder = t.editor.placeholder;
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
   const [isSmallWidthViewport, setIsSmallWidthViewport] =

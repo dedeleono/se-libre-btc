@@ -29,6 +29,7 @@ import {Dispatch, useCallback, useEffect, useRef, useState} from 'react';
 import * as React from 'react';
 import {createPortal} from 'react-dom';
 
+import {useLocale} from '@/lib/i18n';
 import {getDOMRangeRect} from '@/utilities/getDOMRangeRect';
 import {getSelectedNode} from '@/utilities/getSelectedNode';
 import {setFloatingElemPosition} from '@/utilities/setFloatingElemPosition';
@@ -65,6 +66,8 @@ function TextFormatFloatingToolbar({
   isUnderline: boolean;
   setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element {
+  const {t} = useLocale();
+  const tb = t.editor.toolbar;
   const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
 
   const insertLink = useCallback(() => {
@@ -201,8 +204,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
             }}
             className={'popup-item spaced ' + (isBold ? 'active' : '')}
-            title="Bold"
-            aria-label="Format text as bold">
+            title={tb.bold}
+            aria-label={tb.bold}>
             <i className="format bold" />
           </button>
           <button
@@ -211,8 +214,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
             }}
             className={'popup-item spaced ' + (isItalic ? 'active' : '')}
-            title="Italic"
-            aria-label="Format text as italics">
+            title={tb.italic}
+            aria-label={tb.italic}>
             <i className="format italic" />
           </button>
           <button
@@ -221,8 +224,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
             }}
             className={'popup-item spaced ' + (isUnderline ? 'active' : '')}
-            title="Underline"
-            aria-label="Format text to underlined">
+            title={tb.underline}
+            aria-label={tb.underline}>
             <i className="format underline" />
           </button>
           <button
@@ -231,8 +234,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
             }}
             className={'popup-item spaced ' + (isStrikethrough ? 'active' : '')}
-            title="Strikethrough"
-            aria-label="Format text with a strikethrough">
+            title={tb.strikethrough}
+            aria-label={tb.strikethrough}>
             <i className="format strikethrough" />
           </button>
           <button
@@ -241,8 +244,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
             }}
             className={'popup-item spaced ' + (isSubscript ? 'active' : '')}
-            title="Subscript"
-            aria-label="Format Subscript">
+            title={tb.subscript}
+            aria-label={tb.subscript}>
             <i className="format subscript" />
           </button>
           <button
@@ -251,8 +254,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
             }}
             className={'popup-item spaced ' + (isSuperscript ? 'active' : '')}
-            title="Superscript"
-            aria-label="Format Superscript">
+            title={tb.superscript}
+            aria-label={tb.superscript}>
             <i className="format superscript" />
           </button>
           <button
@@ -261,8 +264,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'uppercase');
             }}
             className={'popup-item spaced ' + (isUppercase ? 'active' : '')}
-            title="Uppercase"
-            aria-label="Format text to uppercase">
+            title={tb.uppercase}
+            aria-label={tb.uppercase}>
             <i className="format uppercase" />
           </button>
           <button
@@ -271,8 +274,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'lowercase');
             }}
             className={'popup-item spaced ' + (isLowercase ? 'active' : '')}
-            title="Lowercase"
-            aria-label="Format text to lowercase">
+            title={tb.lowercase}
+            aria-label={tb.lowercase}>
             <i className="format lowercase" />
           </button>
           <button
@@ -281,8 +284,8 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'capitalize');
             }}
             className={'popup-item spaced ' + (isCapitalize ? 'active' : '')}
-            title="Capitalize"
-            aria-label="Format text to capitalize">
+            title={tb.capitalize}
+            aria-label={tb.capitalize}>
             <i className="format capitalize" />
           </button>
           <button
@@ -291,16 +294,16 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
             }}
             className={'popup-item spaced ' + (isCode ? 'active' : '')}
-            title="Insert code block"
-            aria-label="Insert code block">
+            title={tb.insertCodeBlock}
+            aria-label={tb.insertCodeBlock}>
             <i className="format code" />
           </button>
           <button
             type="button"
             onClick={insertLink}
             className={'popup-item spaced ' + (isLink ? 'active' : '')}
-            title="Insert link"
-            aria-label="Insert link">
+            title={tb.insertLink}
+            aria-label={tb.insertLink}>
             <i className="format link" />
           </button>
         </>
@@ -309,8 +312,8 @@ function TextFormatFloatingToolbar({
         type="button"
         onClick={insertComment}
         className={'popup-item spaced insert-comment'}
-        title="Insert comment"
-        aria-label="Insert comment">
+        title={tb.insertComment}
+        aria-label={tb.insertComment}>
         <i className="format add-comment" />
       </button>
     </div>

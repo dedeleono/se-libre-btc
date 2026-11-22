@@ -10,7 +10,8 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "verify": "yarn typecheck && yarn lint && yarn test",
-    "vercel-build": "prisma generate && vitest run && next build"
+    "vercel-build": "prisma generate && vitest run && next build",
+    "check:lesson-layout": "node scripts/check-lesson-layout.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.645.0",

@@ -24,6 +24,7 @@ import {
 import {useCallback, useEffect, useState} from 'react';
 
 import useModal from '@/hooks/useModal';
+import {useLocale} from '@/lib/i18n';
 import Button from '@/components/editor-ui/Button';
 import {PLAYGROUND_TRANSFORMERS} from '../MarkdownTransformers';
 import {
@@ -38,6 +39,7 @@ export default function ActionsPlugin({
   isRichText: boolean;
   shouldPreserveNewLinesInMarkdown: boolean;
 }): JSX.Element {
+  const {t} = useLocale();
   const [editor] = useLexicalComposerContext();
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const [isSpeechToText, setIsSpeechToText] = useState(false);
@@ -122,12 +124,12 @@ export default function ActionsPlugin({
         className="action-button clear"
         disabled={isEditorEmpty}
         onClick={() => {
-          showModal('Clear editor', (onClose) => (
+          showModal(t.editor.actions.clear, (onClose) => (
             <ShowClearDialog editor={editor} onClose={onClose} />
           ));
         }}
-        title="Clear"
-        aria-label="Clear editor contents">
+        title={t.editor.actions.clear}
+        aria-label={t.editor.actions.clear}>
         <i className="clear" />
       </button>
       <button
@@ -135,15 +137,15 @@ export default function ActionsPlugin({
         onClick={() => {
           editor.setEditable(!editor.isEditable());
         }}
-        title="Read-Only Mode"
-        aria-label={`${!isEditable ? 'Unlock' : 'Lock'} read-only mode`}>
+        title={!isEditable ? t.editor.actions.unlockReadOnly : t.editor.actions.lockReadOnly}
+        aria-label={!isEditable ? t.editor.actions.unlockReadOnly : t.editor.actions.lockReadOnly}>
         <i className={!isEditable ? 'unlock' : 'lock'} />
       </button>
       <button
         className="action-button"
         onClick={handleMarkdownToggle}
-        title="Convert From Markdown"
-        aria-label="Convert from markdown">
+        title={t.editor.actions.convertFromMarkdown}
+        aria-label={t.editor.actions.convertFromMarkdown}>
         <i className="markdown" />
       </button>
       {modal}
@@ -158,9 +160,10 @@ function ShowClearDialog({
   editor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   return (
     <>
-      Are you sure you want to clear the editor?
+      {t.editor.actions.confirmClear}
       <div className="Modal__content">
         <Button
           onClick={() => {
@@ -168,14 +171,14 @@ function ShowClearDialog({
             editor.focus();
             onClose();
           }}>
-          Clear
+          {t.editor.actions.clear}
         </Button>{' '}
         <Button
           onClick={() => {
             editor.focus();
             onClose();
           }}>
-          Cancel
+          {t.editor.dialogs.cancel}
         </Button>
       </div>
     </>

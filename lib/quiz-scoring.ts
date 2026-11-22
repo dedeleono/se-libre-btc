@@ -1,9 +1,15 @@
 import type { QuizQuestionType } from "@prisma/client";
 
+// 100 means every question was answered correctly. `scoreAttempt` is the only code that produces it.
+export const PERFECT_SCORE = 100;
+
+const HIGHEST_IMPERFECT_SCORE = 99.9;
+
 export type ScorableQuestion = {
   id: string;
   type: QuizQuestionType;
   metadata: unknown;
+  points: number;
   options: { id: string; isCorrect: boolean }[];
 };
 
@@ -19,8 +25,27 @@ export type ScoredAttempt = {
   scorePercent: number;
   correctCount: number;
   totalCount: number;
+  earnedPoints: number;
+  totalPoints: number;
   answers: GradedAnswer[];
 };
+
+export type QuizGrading =
+  | { kind: "SELF_CHECK"; passingScore: 0 }
+  | { kind: "GRADED"; passingScore: number }
+  | { kind: "FINAL_EXAM"; passingScore: typeof PERFECT_SCORE };
+
+// The final exam always needs 100, whatever passingScore is stored. A non-final quiz at 0 is a self-check.
+export function quizGrading(quiz: { isFinalExam: boolean; passingScore: number }): QuizGrading {
+  if (quiz.isFinalExam) return { kind: "FINAL_EXAM", passingScore: PERFECT_SCORE };
+  return quiz.passingScore > 0
+    ? { kind: "GRADED", passingScore: quiz.passingScore }
+    : { kind: "SELF_CHECK", passingScore: 0 };
+}
+
+export function isPassing(grading: QuizGrading, scorePercent: number): boolean {
+  return scorePercent >= grading.passingScore;
+}
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -73,11 +98,16 @@ export function scoreAttempt(questions: ScorableQuestion[], submitted: Submitted
 
   const correctCount = answers.filter((answer) => answer.isCorrect).length;
   const totalCount = questions.length;
+  const totalPoints = questions.reduce((sum, question) => sum + question.points, 0);
+  const earnedPoints = questions.reduce((sum, question, index) => sum + (answers[index].isCorrect ? question.points : 0), 0);
+  const allCorrect = totalCount > 0 && correctCount === totalCount;
 
-  return {
-    scorePercent: Math.round((correctCount / (totalCount || 1)) * 1000) / 10,
-    correctCount,
-    totalCount,
-    answers,
-  };
+  // Plain rounding turns 2100 of 2101 points (99.95…) into 100. Cap anything short of all-correct at 99.9.
+  const scorePercent = allCorrect
+    ? PERFECT_SCORE
+    : totalPoints > 0
+      ? Math.min(HIGHEST_IMPERFECT_SCORE, Math.round((earnedPoints / totalPoints) * 1000) / 10)
+      : 0;
+
+  return { scorePercent, correctCount, totalCount, earnedPoints, totalPoints, answers };
 }

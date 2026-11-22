@@ -74,6 +74,7 @@ import {
   useCommentStore,
 } from '@/components/editor/commenting';
 import useModal from '@/hooks/useModal';
+import {useLocale} from '@/lib/i18n';
 import CommentEditorTheme from '@/components/editor/themes/CommentEditorTheme';
 import Button from '@/components/editor-ui/Button';
 import ContentEditable from '@/components/editor-ui/ContentEditable';
@@ -155,7 +156,7 @@ function PlainTextEditor({
   onEscape,
   onChange,
   editorRef,
-  placeholder = 'Type a comment...',
+  placeholder,
 }: {
   autoFocus?: boolean;
   className?: string;
@@ -164,6 +165,7 @@ function PlainTextEditor({
   onEscape: (e: KeyboardEvent) => boolean;
   placeholder?: string;
 }) {
+  const {t} = useLocale();
   const initialConfig = {
     namespace: 'Commenting',
     nodes: [],
@@ -178,7 +180,7 @@ function PlainTextEditor({
       <div className="CommentPlugin_CommentInputBox_EditorContainer">
         <PlainTextPlugin
           contentEditable={
-            <ContentEditable placeholder={placeholder} className={className} />
+            <ContentEditable placeholder={placeholder ?? t.editor.comments.typeComment} className={className} />
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
@@ -222,6 +224,7 @@ function CommentInputBox({
     selection?: RangeSelection | null,
   ) => void;
 }) {
+  const {t} = useLocale();
   const [content, setContent] = useState('');
   const [canSubmit, setCanSubmit] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -357,13 +360,13 @@ function CommentInputBox({
         <Button
           onClick={cancelAddComment}
           className="CommentPlugin_CommentInputBox_Button">
-          Cancel
+          {t.editor.dialogs.cancel}
         </Button>
         <Button
           onClick={submitComment}
           disabled={!canSubmit}
           className="CommentPlugin_CommentInputBox_Button primary">
-          Comment
+          {t.editor.comments.comment}
         </Button>
       </div>
     </div>
@@ -439,22 +442,25 @@ function ShowDeleteCommentOrThreadDialog({
   onClose: () => void;
   thread?: Thread;
 }): JSX.Element {
+  const {t} = useLocale();
   return (
     <>
-      Are you sure you want to delete this {commentOrThread.type}?
+      {commentOrThread.type === 'thread'
+        ? t.editor.comments.confirmDeleteThread
+        : t.editor.comments.confirmDeleteComment}
       <div className="Modal__content">
         <Button
           onClick={() => {
             deleteCommentOrThread(commentOrThread, thread);
             onClose();
           }}>
-          Delete
+          {t.editor.comments.delete}
         </Button>{' '}
         <Button
           onClick={() => {
             onClose();
           }}>
-          Cancel
+          {t.editor.dialogs.cancel}
         </Button>
       </div>
     </>
@@ -480,6 +486,7 @@ function CommentsPanelListComment({
     (comment.timeStamp - (performance.timeOrigin + performance.now())) / 1000,
   );
   const minutes = Math.round(seconds / 60);
+  const {t} = useLocale();
   const [modal, showModal] = useModal();
 
   return (
@@ -489,20 +496,20 @@ function CommentsPanelListComment({
           {comment.author}
         </span>
         <span className="CommentPlugin_CommentsPanel_List_Comment_Time">
-          · {seconds > -10 ? 'Just now' : rtf.format(minutes, 'minute')}
+          · {seconds > -10 ? t.editor.comments.justNow : rtf.format(minutes, 'minute')}
         </span>
       </div>
       <p
         className={
           comment.deleted ? 'CommentPlugin_CommentsPanel_DeletedComment' : ''
         }>
-        {comment.content}
+        {comment.deleted ? t.editor.comments.deleted : comment.content}
       </p>
       {!comment.deleted && (
         <>
           <Button
             onClick={() => {
-              showModal('Delete Comment', (onClose) => (
+              showModal(t.editor.comments.deleteComment, (onClose) => (
                 <ShowDeleteCommentOrThreadDialog
                   commentOrThread={comment}
                   deleteCommentOrThread={deleteComment}
@@ -544,16 +551,17 @@ function CommentsPanelList({
   ) => void;
 }): JSX.Element {
   const [editor] = useLexicalComposerContext();
+  const {t, locale} = useLocale();
   const [counter, setCounter] = useState(0);
   const [modal, showModal] = useModal();
   const rtf = useMemo(
     () =>
-      new Intl.RelativeTimeFormat('en', {
+      new Intl.RelativeTimeFormat(locale, {
         localeMatcher: 'best fit',
         numeric: 'auto',
         style: 'short',
       }),
-    [],
+    [locale],
   );
 
   useEffect(() => {
@@ -617,7 +625,7 @@ function CommentsPanelList({
                 {/* INTRODUCE DELETE THREAD HERE*/}
                 <Button
                   onClick={() => {
-                    showModal('Delete Thread', (onClose) => (
+                    showModal(t.editor.comments.deleteThread, (onClose) => (
                       <ShowDeleteCommentOrThreadDialog
                         commentOrThread={commentOrThread}
                         deleteCommentOrThread={deleteCommentOrThread}
@@ -645,7 +653,7 @@ function CommentsPanelList({
                 <CommentsComposer
                   submitAddComment={submitAddComment}
                   thread={commentOrThread}
-                  placeholder="Reply to comment..."
+                  placeholder={t.editor.comments.replyPlaceholder}
                 />
               </div>
             </li>
@@ -684,14 +692,15 @@ function CommentsPanel({
     thread?: Thread,
   ) => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const listRef = useRef<HTMLUListElement>(null);
   const isEmpty = comments.length === 0;
 
   return (
     <div className="CommentPlugin_CommentsPanel">
-      <h2 className="CommentPlugin_CommentsPanel_Heading">Comments</h2>
+      <h2 className="CommentPlugin_CommentsPanel_Heading">{t.editor.comments.title}</h2>
       {isEmpty ? (
-        <div className="CommentPlugin_CommentsPanel_Empty">No Comments</div>
+        <div className="CommentPlugin_CommentsPanel_Empty">{t.editor.comments.empty}</div>
       ) : (
         <CommentsPanelList
           activeIDs={activeIDs}
@@ -709,7 +718,8 @@ function CommentsPanel({
 function useCollabAuthorName(): string {
   const collabContext = useCollaborationContext();
   const {yjsDocMap, name} = collabContext;
-  return yjsDocMap.has('comments') ? name : 'Playground User';
+  const {t} = useLocale();
+  return yjsDocMap.has('comments') ? name : t.editor.comments.you;
 }
 
 export default function CommentPlugin({
@@ -717,6 +727,7 @@ export default function CommentPlugin({
 }: {
   providerFactory?: (id: string, yjsDocMap: Map<string, Doc>) => Provider;
 }): JSX.Element {
+  const {t} = useLocale();
   const collabContext = useCollaborationContext();
   const [editor] = useLexicalComposerContext();
   const commentStore = useMemo(() => new CommentStore(editor), [editor]);
@@ -977,7 +988,8 @@ export default function CommentPlugin({
             showComments ? 'active' : ''
           }`}
           onClick={() => setShowComments(!showComments)}
-          title={showComments ? 'Hide Comments' : 'Show Comments'}>
+          title={showComments ? t.editor.comments.hide : t.editor.comments.show}
+          aria-label={showComments ? t.editor.comments.hide : t.editor.comments.show}>
           <i className="comments" />
         </Button>,
         document.body,

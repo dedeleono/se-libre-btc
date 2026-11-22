@@ -12,6 +12,7 @@ import type {JSX} from 'react';
 import {calculateZoomLevel} from '@lexical/utils';
 import * as React from 'react';
 import {useRef} from 'react';
+import {useLocale} from '@/lib/i18n';
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -45,6 +46,7 @@ export default function ImageResizer({
   showCaption: boolean;
   captionsEnabled: boolean;
 }): JSX.Element {
+  const {t} = useLocale();
   const controlWrapperRef = useRef<HTMLDivElement>(null);
   const userSelect = useRef({
     priority: '',
@@ -261,7 +263,7 @@ export default function ImageResizer({
           onClick={() => {
             setShowCaption(!showCaption);
           }}>
-          Add Caption
+          {t.editor.image.addCaption}
         </button>
       )}
       <div

@@ -25,6 +25,7 @@ import {
   SerializedDecoratorBlockNode,
 } from '@lexical/react/LexicalDecoratorBlockNode';
 import * as React from 'react';
+import {useLocale} from '@/lib/i18n';
 import {useCallback, useEffect, useRef, useState} from 'react';
 
 const WIDGET_SCRIPT_URL = 'https://platform.twitter.com/widgets.js';
@@ -64,6 +65,7 @@ function TweetComponent({
   onLoad,
   tweetID,
 }: TweetComponentProps) {
+  const {t} = useLocale();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const previousTweetIDRef = useRef<string>('');
@@ -115,7 +117,7 @@ function TweetComponent({
       className={className}
       format={format}
       nodeKey={nodeKey}>
-      {isTweetLoading ? loadingComponent : null}
+      {isTweetLoading ? (loadingComponent ?? t.editor.tweetLoading) : null}
       <div
         style={{display: 'inline-block', width: '550px'}}
         ref={containerRef}
@@ -201,7 +203,6 @@ export class TweetNode extends DecoratorBlockNode {
       <TweetComponent
         className={className}
         format={this.__format}
-        loadingComponent="Loading..."
         nodeKey={this.getKey()}
         tweetID={this.__id}
       />
