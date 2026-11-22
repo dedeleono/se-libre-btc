@@ -151,7 +151,7 @@ const ChapterPage = async (
   return (
     <div className="flex flex-col h-full">
       {isCompleted && (
-        <div className="sticky top-0 w-full border-t-0">
+        <div className="sticky top-16 z-10 w-full border-t-0">
           <Banner
             label={t.course.lessonCompleted}
             variant="success"
