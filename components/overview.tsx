@@ -15,6 +15,7 @@ import {
 import { useLocale, type Locale, type Messages } from "@/lib/i18n";
 import {
   isAllZero,
+  niceTicks,
   overviewMonthLabel,
   revenueTick,
   type OverviewMetric,
@@ -50,6 +51,9 @@ const GROWTH_METRICS: OverviewMetric[] = ["students", "courses"];
 
 // CardContent is pl-2 so the y-axis ticks fit; text steps in to the card title's edge.
 const TEXT_INSET = "ps-4";
+
+// Global h1–h6 use the uppercase display face; these sit under the Open Sans card title.
+const SUBHEADING = "[font-family:inherit] text-sm font-medium normal-case leading-snug text-foreground";
 
 const AXIS_STYLE = {
   stroke: "hsl(var(--muted-foreground))",
@@ -109,9 +113,12 @@ function MetricChart({
   metrics: OverviewMetric[];
   title: string;
   maxBarSize: number;
-  yAxis: { width: number; tickFormatter?: (value: number) => string; allowDecimals?: boolean };
+  yAxis: { width: number; tickFormatter?: (value: number) => string; integer?: boolean };
 }) {
   const { locale, t } = useLocale();
+  const ticks = niceTicks(Math.max(...data.flatMap((row) => metrics.map((metric) => row[metric]))), {
+    integer: yAxis.integer,
+  });
 
   return (
     <div className={`h-56 sm:h-60 [&_.recharts-cartesian-axis-tick-value]:tabular-nums ${CHART_FOCUS}`}>
@@ -132,7 +139,14 @@ function MetricChart({
             minTickGap={8}
             {...AXIS_STYLE}
           />
-          <YAxis {...yAxis} {...AXIS_STYLE} />
+          <YAxis
+            width={yAxis.width}
+            tickFormatter={yAxis.tickFormatter}
+            ticks={ticks}
+            domain={[0, ticks[ticks.length - 1]]}
+            interval={0}
+            {...AXIS_STYLE}
+          />
           <Tooltip
             cursor={{ fill: "hsl(var(--muted) / 0.6)" }}
             isAnimationActive={false}
@@ -156,7 +170,7 @@ function MetricChart({
 }
 
 function EmptyChart({ children }: { children: string }) {
-  return <p className={`${TEXT_INSET} flex h-56 items-center text-sm text-muted-foreground sm:h-60`}>{children}</p>;
+  return <p className={`${TEXT_INSET} flex min-h-24 items-center text-sm text-muted-foreground`}>{children}</p>;
 }
 
 function OverviewTable({ data }: { data: OverviewRow[] }) {
@@ -235,12 +249,14 @@ export function Overview({ data }: { data: OverviewRow[] }) {
     );
   }
 
+  const growthEmpty = isAllZero(data, GROWTH_METRICS);
+
   return (
     <div className="space-y-8">
       <p className={`${TEXT_INSET} text-xs text-muted-foreground`}>{t.dashboard.overviewPeriod}</p>
 
       <section aria-labelledby="overview-revenue-title" className="space-y-3">
-        <h3 id="overview-revenue-title" className={`${TEXT_INSET} text-sm font-medium`}>
+        <h3 id="overview-revenue-title" className={`${TEXT_INSET} ${SUBHEADING}`}>
           {t.dashboard.revenueByMonth}
         </h3>
         {isAllZero(data, ["revenue"]) ? (
@@ -258,19 +274,21 @@ export function Overview({ data }: { data: OverviewRow[] }) {
 
       <section aria-labelledby="overview-growth-title" className="space-y-3">
         <div className={`${TEXT_INSET} flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2`}>
-          <h3 id="overview-growth-title" className="text-sm font-medium">
+          <h3 id="overview-growth-title" className={SUBHEADING}>
             {t.dashboard.growthByMonth}
           </h3>
-          <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-            {GROWTH_METRICS.map((metric) => (
-              <li key={metric} className="flex items-center gap-1.5">
-                <Swatch metric={metric} />
-                {SERIES[metric].label(t)}
-              </li>
-            ))}
-          </ul>
+          {!growthEmpty && (
+            <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              {GROWTH_METRICS.map((metric) => (
+                <li key={metric} className="flex items-center gap-1.5">
+                  <Swatch metric={metric} />
+                  {SERIES[metric].label(t)}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        {isAllZero(data, GROWTH_METRICS) ? (
+        {growthEmpty ? (
           <EmptyChart>{t.dashboard.noGrowthYet}</EmptyChart>
         ) : (
           <MetricChart
@@ -278,7 +296,7 @@ export function Overview({ data }: { data: OverviewRow[] }) {
             metrics={GROWTH_METRICS}
             title={t.dashboard.growthByMonth}
             maxBarSize={14}
-            yAxis={{ width: 32, allowDecimals: false }}
+            yAxis={{ width: 32, integer: true }}
           />
         )}
       </section>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { overviewWindow } from "./overview-buckets";
-import { isAllZero, overviewMonthLabel, revenueTick, toOverviewRows } from "./overview-chart";
+import { isAllZero, niceTicks, overviewMonthLabel, revenueTick, toOverviewRows } from "./overview-chart";
 
 const NOVEMBER = "2026-11-01T06:00:00.000Z";
 
@@ -27,6 +27,23 @@ describe("revenueTick", () => {
     expect(revenueTick(950)).toBe("Q 950");
     expect(revenueTick(1500)).toBe("Q 1.5K");
     expect(revenueTick(12000)).toBe("Q 12K");
+  });
+});
+
+describe("niceTicks", () => {
+  it("steps by 1, 2 or 5 times a power of ten and covers the maximum", () => {
+    expect(niceTicks(12500.75)).toEqual([0, 5000, 10000, 15000]);
+    expect(niceTicks(1234.56)).toEqual([0, 500, 1000, 1500]);
+    expect(niceTicks(52)).toEqual([0, 20, 40, 60]);
+  });
+
+  it("keeps whole-number steps for counts", () => {
+    expect(niceTicks(3, { integer: true })).toEqual([0, 1, 2, 3]);
+    expect(niceTicks(1, { integer: true })).toEqual([0, 1]);
+  });
+
+  it("ends exactly on a round maximum", () => {
+    expect(niceTicks(20000)).toEqual([0, 5000, 10000, 15000, 20000]);
   });
 });
 
