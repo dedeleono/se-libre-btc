@@ -98,9 +98,7 @@ export default async function GuidesPage() {
               </div>
               <div>
                 <h1
-                  className="text-2xl font-black tracking-tight sm:text-4xl
-                  bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
-                  dark:from-white dark:to-white/70 font-['Open_Sans']"
+                  className="text-3xl text-balance text-foreground md:text-4xl"
                 >
                   {t.dashboard.guidesTitle}
                 </h1>

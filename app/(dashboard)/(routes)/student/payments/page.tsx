@@ -31,9 +31,7 @@ export default async function PaymentsPage() {
             </div>
             <div>
               <h1
-                className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl text-balance
-                bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
-                dark:from-white dark:to-white/70 font-['Open_Sans']"
+                className="text-3xl text-balance text-foreground md:text-4xl"
               >
                 {t.payments.historyTitle}
               </h1>

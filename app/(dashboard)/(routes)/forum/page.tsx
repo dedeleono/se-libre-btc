@@ -202,9 +202,7 @@ export default async function Forum() {
           </div>
           <div>
             <h1
-              className="text-2xl md:text-3xl font-black tracking-tight md:text-4xl 
-              bg-gradient-to-r from-accent to-primary dark:from-white dark:to-white/50 bg-clip-text text-transparent
-              font-['Open_Sans']"
+              className="text-3xl text-balance text-foreground md:text-4xl"
             >
               {t.forum.title}
             </h1>

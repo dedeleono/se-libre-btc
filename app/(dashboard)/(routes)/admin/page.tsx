@@ -37,8 +37,7 @@ export default async function Home() {
             </div>
             <div>
               <h1
-                className="text-2xl font-black tracking-tight sm:text-4xl
-                text-success dark:text-white/90 font-['Open_Sans'] text-balance"
+                className="text-3xl text-balance text-foreground md:text-4xl"
               >
                 {t.nav.dashboard}
               </h1>
