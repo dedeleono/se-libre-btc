@@ -7,8 +7,8 @@ import { getProgress } from "@/actions/get-progress";
 import { resolveFinalQuiz } from "@/lib/certificate-eligibility";
 import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 import { decideChapterWrite } from "@/lib/chapter-write-policy";
-import { shouldRevealAnswers, toAnswerKey } from "@/lib/quiz-dto";
-import { scoreAttempt } from "@/lib/quiz-scoring";
+import { shouldRevealAnswers, toAnswerKey, type QuizSubmitResult } from "@/lib/quiz-dto";
+import { isPassing, quizGrading, scoreAttempt } from "@/lib/quiz-scoring";
 
 const bodySchema = z.object({
   answers: z
@@ -42,6 +42,7 @@ export async function POST(req: Request, props: { params: Promise<{ quizId: stri
       id: true,
       allowRetries: true,
       showCorrectAnswers: true,
+      passingScore: true,
       chapterId: true,
       chapter: {
         select: { type: true, isPublished: true, isIntro: true, module: { select: { courseId: true } } },
@@ -53,6 +54,7 @@ export async function POST(req: Request, props: { params: Promise<{ quizId: stri
           type: true,
           metadata: true,
           explanation: true,
+          points: true,
           options: { select: { id: true, isCorrect: true } },
         },
       },
@@ -90,7 +92,10 @@ export async function POST(req: Request, props: { params: Promise<{ quizId: stri
     return new NextResponse("Retries are not allowed for this quiz", { status: 400 });
   }
 
+  const isFinalExam = finalQuiz?.id === quiz.id;
+  const grading = quizGrading({ isFinalExam, passingScore: quiz.passingScore });
   const scored = scoreAttempt(quiz.questions, parsed.data.answers);
+  const passed = isPassing(grading, scored.scorePercent);
 
   const attempt = await prisma.$transaction(async (tx) => {
     const createdAttempt = await tx.quizAttempt.create({
@@ -99,7 +104,7 @@ export async function POST(req: Request, props: { params: Promise<{ quizId: stri
         userId: userId,
         status: "COMPLETED",
         scorePercent: scored.scorePercent,
-        passed: true,
+        passed,
         completedAt: new Date(),
         answers: { create: scored.answers },
       },
@@ -143,16 +148,20 @@ export async function POST(req: Request, props: { params: Promise<{ quizId: stri
 
   const reveal = shouldRevealAnswers({
     showCorrectAnswers: quiz.showCorrectAnswers,
-    isFinalExam: finalQuiz?.id === quiz.id,
+    isFinalExam,
     scorePercent: scored.scorePercent,
   });
 
   return NextResponse.json({
     attemptId: attempt.id,
     scorePercent: scored.scorePercent,
+    earnedPoints: scored.earnedPoints,
+    totalPoints: scored.totalPoints,
+    passed,
+    grading,
     courseId,
     courseCompleted,
     showCorrectAnswers: reveal,
     answerKey: reveal ? toAnswerKey(quiz.questions) : [],
-  });
+  } satisfies QuizSubmitResult);
 }

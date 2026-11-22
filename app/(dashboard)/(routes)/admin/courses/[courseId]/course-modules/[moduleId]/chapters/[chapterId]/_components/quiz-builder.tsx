@@ -22,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -49,6 +49,7 @@ type QuestionDraft = {
   prompt: string;
   type: QuizQuestionType;
   explanation: string;
+  points: string;
   allowMultipleAnswers: boolean;
   correctAnswer: string;
   acceptedAnswers: string;
@@ -98,11 +99,18 @@ const createDraft = (): QuestionDraft => ({
   prompt: "",
   type: "MULTIPLE_CHOICE",
   explanation: "",
+  points: "1",
   allowMultipleAnswers: false,
   correctAnswer: "",
   acceptedAnswers: "",
   caseSensitive: false,
 });
+
+// Form fields hold text so they can be empty while typing. These parse them at submit.
+const parseWholeNumber = (value: string, min: number, max: number) => {
+  const parsed = Number(value);
+  return value.trim() !== "" && Number.isInteger(parsed) && parsed >= min && parsed <= max ? parsed : null;
+};
 
 const createDefaultOptions = () => ["", "", "", ""];
 
@@ -162,18 +170,24 @@ export const QuizBuilder = ({
     allowRetries: quiz?.allowRetries ?? true,
     showCorrectAnswers: quiz?.showCorrectAnswers ?? true,
     isFinalExam: quiz?.isFinalExam ?? false,
+    passingScore: String(quiz?.passingScore ?? 0),
   });
+  const [passingScoreError, setPassingScoreError] = useState<string | null>(null);
+  const passingScoreRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<QuestionDraft>(createDraft);
   const [options, setOptions] = useState(createDefaultOptions);
   const [correctOptionIndexes, setCorrectOptionIndexes] = useState<number[]>([0]);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [pointsError, setPointsError] = useState<string | null>(null);
+  const pointsRef = useRef<HTMLInputElement>(null);
 
   const sortedQuestions = useMemo(
     () => [...(quiz?.questions || [])].sort((a, b) => a.position - b.position),
     [quiz?.questions]
   );
 
+  const totalPoints = sortedQuestions.reduce((sum, item) => sum + item.points, 0);
   const isEditingQuestion = Boolean(editingQuestionId);
   const localizedQuestionTypes = [
     {
@@ -207,6 +221,7 @@ export const QuizBuilder = ({
     setCorrectOptionIndexes([0]);
     setEditingQuestionId(null);
     setFormError(null);
+    setPointsError(null);
   };
 
   const ensureQuiz = async () => {
@@ -215,7 +230,7 @@ export const QuizBuilder = ({
     const response = await axios.post(`/api/chapters/${chapterId}/quiz`, {
       title: chapterTitle,
       description: chapterDescription || null,
-      passingScore: 0,
+      passingScore: parseWholeNumber(settings.passingScore, 0, 100) ?? 0,
       allowRetries: settings.allowRetries,
       showCorrectAnswers: settings.showCorrectAnswers,
       isFinalExam: settings.isFinalExam,
@@ -225,12 +240,21 @@ export const QuizBuilder = ({
   };
 
   const saveSettings = async () => {
+    // The final exam's input is disabled and shows 100; its stored value is kept, and the server ignores it.
+    const passingScore = parseWholeNumber(settings.passingScore, 0, 100);
+    if (passingScore === null && !settings.isFinalExam) {
+      setPassingScoreError(t.admin.passingScoreRange);
+      passingScoreRef.current?.focus();
+      return;
+    }
+    setPassingScoreError(null);
+
     try {
       setIsSaving(true);
       const payload = {
         title: chapterTitle,
         description: chapterDescription || null,
-        passingScore: 0,
+        passingScore: passingScore ?? quiz?.passingScore ?? 0,
         allowRetries: settings.allowRetries,
         showCorrectAnswers: settings.showCorrectAnswers,
         isFinalExam: settings.isFinalExam,
@@ -242,19 +266,18 @@ export const QuizBuilder = ({
         await axios.post(`/api/chapters/${chapterId}/quiz`, payload);
       }
 
-      toast.success("Self-check settings saved");
+      toast.success(t.admin.quizRulesSaved);
       router.refresh();
     } catch {
-      toast.error("Could not save self-check settings");
+      toast.error(t.admin.quizRulesSaveError);
     } finally {
       setIsSaving(false);
     }
   };
 
-  const buildQuestionPayload = () => {
+  const buildQuestionPayload = (points: number) => {
     const prompt = draft.prompt.trim();
     const explanation = draft.explanation.trim();
-    const points = 1;
 
     if (!prompt) {
       return { error: "Add a question prompt before saving." };
@@ -343,7 +366,16 @@ export const QuizBuilder = ({
   const saveQuestion = async (event?: FormEvent) => {
     event?.preventDefault();
 
-    const result = buildQuestionPayload();
+    const points = parseWholeNumber(draft.points, 1, 100);
+    if (points === null) {
+      setFormError(null);
+      setPointsError(t.admin.questionPointsRange);
+      pointsRef.current?.focus();
+      return;
+    }
+    setPointsError(null);
+
+    const result = buildQuestionPayload(points);
     if ("error" in result) {
       setFormError(result.error || t.admin.reviewQuestionBeforeSaving);
       return;
@@ -381,6 +413,7 @@ export const QuizBuilder = ({
       prompt: item.prompt,
       type: item.type,
       explanation: item.explanation || "",
+      points: String(item.points),
       allowMultipleAnswers:
         item.type === "MULTIPLE_CHOICE" &&
         (metadata.multipleAnswers || sortedOptions.filter((option) => option.isCorrect).length > 1),
@@ -406,6 +439,7 @@ export const QuizBuilder = ({
     }
 
     setFormError(null);
+    setPointsError(null);
   };
 
   const deleteQuestion = async (questionId: string) => {
@@ -487,11 +521,11 @@ export const QuizBuilder = ({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <FileQuestion className="h-4 w-4 text-primary" />
-              <h3 className="font-medium">{t.admin.selfCheckBehavior}</h3>
+              <h3 className="font-medium">{t.admin.quizRules}</h3>
             </div>
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
               <Badge variant="secondary" className="tabular-nums">{t.admin.questionsCount(sortedQuestions.length)}</Badge>
-              <Badge variant="secondary">{t.admin.equalWeight}</Badge>
+              <Badge variant="secondary" className="tabular-nums">{t.admin.totalPoints(totalPoints)}</Badge>
               <Badge variant={quiz ? "default" : "outline"}>{quiz ? t.admin.configured : t.common.draft}</Badge>
             </div>
           </div>
@@ -512,6 +546,37 @@ export const QuizBuilder = ({
               onCheckedChange={(checked) => setSettings((current) => ({ ...current, isFinalExam: checked }))}
             />
           </label>
+
+          <div className="space-y-2 rounded-md border bg-background p-4 lg:col-span-2">
+            <Label htmlFor="quizPassingScore">{t.admin.passingScore}</Label>
+            <Input
+              ref={passingScoreRef}
+              id="quizPassingScore"
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={100}
+              step={1}
+              value={settings.isFinalExam ? "100" : settings.passingScore}
+              disabled={settings.isFinalExam}
+              onChange={(event) => setSettings((current) => ({ ...current, passingScore: event.target.value }))}
+              aria-invalid={passingScoreError && !settings.isFinalExam ? true : undefined}
+              aria-describedby={
+                passingScoreError && !settings.isFinalExam
+                  ? "quizPassingScoreError quizPassingScoreHelp"
+                  : "quizPassingScoreHelp"
+              }
+              className="w-28 text-base tabular-nums sm:text-sm"
+            />
+            {passingScoreError && !settings.isFinalExam && (
+              <p id="quizPassingScoreError" className="text-xs font-medium text-destructive">
+                {passingScoreError}
+              </p>
+            )}
+            <p id="quizPassingScoreHelp" className="text-xs text-muted-foreground">
+              {settings.isFinalExam ? t.admin.passingScoreFinalExam : t.admin.passingScoreHelp}
+            </p>
+          </div>
 
           <label className="flex min-h-20 items-center justify-between gap-4 rounded-md border bg-background p-4">
             <div>
@@ -537,7 +602,7 @@ export const QuizBuilder = ({
         </div>
       </div>
 
-      <form onSubmit={saveQuestion} className="rounded-md border bg-card shadow-sm">
+      <form noValidate onSubmit={saveQuestion} className="rounded-md border bg-card shadow-sm">
         <div className="flex flex-col gap-3 border-b p-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -770,6 +835,32 @@ export const QuizBuilder = ({
           )}
 
           <div className="space-y-2">
+            <Label htmlFor="questionPoints">{t.admin.questionPointsLabel}</Label>
+            <Input
+              id="questionPoints"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={100}
+              step={1}
+              ref={pointsRef}
+              value={draft.points}
+              onChange={(event) => setDraft((current) => ({ ...current, points: event.target.value }))}
+              aria-invalid={pointsError ? true : undefined}
+              aria-describedby={pointsError ? "questionPointsError questionPointsHelp" : "questionPointsHelp"}
+              className="w-28 text-base tabular-nums sm:text-sm"
+            />
+            {pointsError && (
+              <p id="questionPointsError" className="text-xs font-medium text-destructive">
+                {pointsError}
+              </p>
+            )}
+            <p id="questionPointsHelp" className="text-xs text-muted-foreground">
+              {t.admin.questionPointsHelp}
+            </p>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="questionExplanation">{t.admin.explanation}</Label>
             <Textarea
               id="questionExplanation"
@@ -836,6 +927,9 @@ export const QuizBuilder = ({
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="outline">{localizedTypeLabels[item.type]}</Badge>
+                            <Badge variant="secondary" className="tabular-nums">
+                              {t.admin.pointsBadge(item.points)}
+                            </Badge>
                             {item.type === "MULTIPLE_CHOICE" && (
                               <Badge variant="secondary">
                                 {metadata.multipleAnswers ||

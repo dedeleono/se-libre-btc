@@ -1,10 +1,15 @@
 import type { QuizQuestionType } from "@prisma/client";
 
+import { PERFECT_SCORE, quizGrading, type QuizGrading } from "./quiz-scoring";
+
+export { PERFECT_SCORE };
+
 export type QuizQuestionForPlayer = {
   id: string;
   prompt: string;
   type: QuizQuestionType;
   allowsMultiple: boolean;
+  points: number;
   options: { id: string; content: string }[];
 };
 
@@ -13,6 +18,9 @@ export type QuizForPlayer = {
   title: string;
   description: string | null;
   allowRetries: boolean;
+  showCorrectAnswers: boolean;
+  grading: QuizGrading;
+  totalPoints: number;
   questions: QuizQuestionForPlayer[];
 };
 
@@ -23,11 +31,25 @@ export type QuizAnswerKey = {
   explanation: string | null;
 };
 
+export type QuizSubmitResult = {
+  attemptId: string;
+  scorePercent: number;
+  earnedPoints: number;
+  totalPoints: number;
+  passed: boolean;
+  grading: QuizGrading;
+  courseId: string;
+  courseCompleted: boolean;
+  showCorrectAnswers: boolean;
+  answerKey: QuizAnswerKey[];
+};
+
 type QuestionSource = {
   id: string;
   prompt: string;
   type: QuizQuestionType;
   metadata: unknown;
+  points: number;
   options: { id: string; content: string; isCorrect: boolean }[];
 };
 
@@ -42,23 +64,32 @@ function allowsMultiple(question: QuestionSource): boolean {
   return question.options.filter((option) => option.isCorrect).length > 1;
 }
 
-export function toQuizForPlayer(quiz: {
-  id: string;
-  title: string;
-  description: string | null;
-  allowRetries: boolean;
-  questions: QuestionSource[];
-}): QuizForPlayer {
+export function toQuizForPlayer(
+  quiz: {
+    id: string;
+    title: string;
+    description: string | null;
+    allowRetries: boolean;
+    showCorrectAnswers: boolean;
+    passingScore: number;
+    questions: QuestionSource[];
+  },
+  context: { isFinalExam: boolean }
+): QuizForPlayer {
   return {
     id: quiz.id,
     title: quiz.title,
     description: quiz.description,
     allowRetries: quiz.allowRetries,
+    showCorrectAnswers: quiz.showCorrectAnswers,
+    grading: quizGrading({ isFinalExam: context.isFinalExam, passingScore: quiz.passingScore }),
+    totalPoints: quiz.questions.reduce((sum, question) => sum + question.points, 0),
     questions: quiz.questions.map((question) => ({
       id: question.id,
       prompt: question.prompt,
       type: question.type,
       allowsMultiple: allowsMultiple(question),
+      points: question.points,
       options: question.options.map((option) => ({ id: option.id, content: option.content })),
     })),
   };
@@ -82,8 +113,6 @@ export function toAnswerKey(
     explanation: question.explanation,
   }));
 }
-
-export const PERFECT_SCORE = 100;
 
 export function shouldRevealAnswers(input: {
   showCorrectAnswers: boolean;

@@ -9,6 +9,7 @@ const question = (overrides: Partial<QuestionInput> & Pick<QuestionInput, "id">)
   prompt: `Prompt ${overrides.id}`,
   type: "MULTIPLE_CHOICE",
   metadata: null,
+  points: 1,
   options: [],
   ...overrides,
 });
@@ -18,10 +19,14 @@ const quiz = (questions: QuestionInput[]): QuizInput => ({
   title: "Examen final",
   description: "Responde todo",
   allowRetries: true,
+  showCorrectAnswers: true,
+  passingScore: 0,
   questions,
 });
 
-const allowsMultiple = (q: QuestionInput) => toQuizForPlayer(quiz([q])).questions[0].allowsMultiple;
+const notFinal = { isFinalExam: false };
+
+const allowsMultiple = (q: QuestionInput) => toQuizForPlayer(quiz([q]), notFinal).questions[0].allowsMultiple;
 
 describe("toQuizForPlayer", () => {
   it("leaves the answer key out of the serialized DTO", () => {
@@ -42,7 +47,7 @@ describe("toQuizForPlayer", () => {
       questions: source.questions.map((q) => ({ ...q, explanation: "Because" })),
     };
 
-    const json = JSON.stringify(toQuizForPlayer(sourceWithExtras));
+    const json = JSON.stringify(toQuizForPlayer(sourceWithExtras, notFinal));
 
     for (const key of ["isCorrect", "metadata", "correctAnswer", "acceptedAnswers", "explanation"]) {
       expect(json).not.toContain(`"${key}"`);
@@ -64,26 +69,53 @@ describe("toQuizForPlayer", () => {
       ]),
       allowRetries: false,
       description: null,
-    });
+    }, notFinal);
 
     expect(result).toEqual({
       id: "quiz-1",
       title: "Examen final",
       description: null,
       allowRetries: false,
+      showCorrectAnswers: true,
+      grading: { kind: "SELF_CHECK", passingScore: 0 },
+      totalPoints: 2,
       questions: [
         {
           id: "q1",
           prompt: "¿Qué es BTC?",
           type: "MULTIPLE_CHOICE",
           allowsMultiple: false,
+          points: 1,
           options: [
             { id: "o2", content: "Dinero" },
             { id: "o1", content: "Nada" },
           ],
         },
-        { id: "q2", prompt: "Creador", type: "FILL_IN_THE_BLANK", allowsMultiple: false, options: [] },
+        { id: "q2", prompt: "Creador", type: "FILL_IN_THE_BLANK", allowsMultiple: false, points: 1, options: [] },
       ],
+    });
+  });
+
+  it("carries each question's points and the quiz's total points", () => {
+    const result = toQuizForPlayer(quiz([question({ id: "q1", points: 2 }), question({ id: "q2", points: 3 })]), notFinal);
+    expect(result.questions.map((q) => q.points)).toEqual([2, 3]);
+    expect(result.totalPoints).toBe(5);
+  });
+
+  it("carries the grading and whether answers can be shown", () => {
+    const graded = toQuizForPlayer({ ...quiz([]), passingScore: 70, showCorrectAnswers: false }, notFinal);
+    expect(graded.grading).toEqual({ kind: "GRADED", passingScore: 70 });
+    expect(graded.showCorrectAnswers).toBe(false);
+  });
+
+  it("grades the final exam at 100 whatever passingScore is stored", () => {
+    expect(toQuizForPlayer({ ...quiz([]), passingScore: 0 }, { isFinalExam: true }).grading).toEqual({
+      kind: "FINAL_EXAM",
+      passingScore: 100,
+    });
+    expect(toQuizForPlayer({ ...quiz([]), passingScore: 70 }, { isFinalExam: true }).grading).toEqual({
+      kind: "FINAL_EXAM",
+      passingScore: 100,
     });
   });
 
