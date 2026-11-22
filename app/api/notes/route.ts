@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { content, chapterId, courseId } = body;
 
-    if (!content || !chapterId || !courseId) {
+    if (typeof content !== "string" || !chapterId || !courseId) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
