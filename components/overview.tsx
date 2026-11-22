@@ -13,15 +13,15 @@ import {
 } from "recharts";
 import { Card } from "@/components/ui/card";
 import { formatPrice } from "@/lib/utils";
-import type { OverviewData } from "@/actions/get-overview-data";
 import { useLocale } from "@/lib/i18n";
+import { overviewMonthLabel, type OverviewRow } from "@/lib/overview-chart";
 
 interface OverviewProps {
-  data: OverviewData[];
+  data: OverviewRow[];
 }
 
 export function Overview({ data }: OverviewProps) {
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
 
   if (!data.length) {
     return (
@@ -58,7 +58,8 @@ export function Overview({ data }: OverviewProps) {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <XAxis
-            dataKey="name"
+            dataKey="monthStart"
+            tickFormatter={(iso: string) => overviewMonthLabel(iso, locale, "short")}
             stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
