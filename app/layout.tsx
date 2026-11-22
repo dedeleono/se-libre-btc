@@ -10,8 +10,8 @@ import { SkipLink } from "@/components/layout/skip-link";
 import { getServerLocale, getServerMessages } from "@/lib/i18n-server";
 
 export const metadata: Metadata = {
-  title: "Se Libre",
-  description: "Se Libre - Se dueño de tu futuro",
+  title: "Dinero Libre",
+  description: "Dinero Libre - Sé dueño de tu futuro",
 };
 
 export default function RootLayout({

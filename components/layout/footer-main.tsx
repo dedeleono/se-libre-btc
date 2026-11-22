@@ -101,7 +101,7 @@ const Footer = () => {
         {/* Copyright Section */}
         <div className="flex items-center justify-center border-t-2 border-foreground py-4">
           <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
-            {t.public.copyright}
+            {t.public.copyright(new Date().getFullYear())}
           </p>
         </div>
       </div>

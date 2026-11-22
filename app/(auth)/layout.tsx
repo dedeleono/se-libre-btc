@@ -37,7 +37,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
       <main id={MAIN_CONTENT_ID} className="flex min-h-screen items-center p-4 lg:p-10">
         <div className="mx-auto flex w-full max-w-[420px] flex-col justify-center space-y-6">
           <Link href="/" className="w-fit">
-            <Logo alt="Dinero Libre" width={210} height={52} />
+            <Logo alt={t.common.appName} width={210} height={52} />
           </Link>
 
           {children}
