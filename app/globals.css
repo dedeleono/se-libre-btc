@@ -127,6 +127,13 @@
         radial-gradient(circle at 42% 88%, rgba(120,90,60,0.06) 1px, transparent 2px);
       background-size: 21px 21px, 27px 27px, 33px 33px;
     }
+    /* Safari < 16 has no clip. While html has no overflow of its own, body's overflow moves to
+       the viewport, so hidden here never makes body a scroll container and sticky keeps working. */
+    @supports not (overflow-x: clip) {
+      body {
+        overflow-x: hidden;
+      }
+    }
     main {
       min-width: 0;
     }

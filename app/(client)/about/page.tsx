@@ -24,7 +24,7 @@ export default async function AboutPage() {
   const slogans = ["Aprende", "Practica", "Comparte", "Resiste", "Sé tu propio banco"];
 
   return (
-    <div className="dl-app overflow-hidden">
+    <div className="dl-app overflow-clip">
       {/* HERO */}
       <section className="relative border-b-2 border-foreground">
         <div className="absolute inset-0 dl-stamped" />
