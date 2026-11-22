@@ -174,7 +174,7 @@ const NotificationContent = memo(({
   <Card className="shadow-lg border-0 rounded-xl overflow-hidden">
     <CardHeader className="border-b bg-gradient-to-r from-background to-muted/30 px-6 py-4 space-y-1">
       <div className="flex items-center justify-between">
-        <CardTitle className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 font-['Open_Sans']">
+        <CardTitle className="text-foreground">
           {t.notifications.title}
         </CardTitle>
         {unreadCount > 0 && (
