@@ -60,6 +60,12 @@ describe("decideCohortEnroll", () => {
   it("accepts a cohort with no linked content", () => {
     expect(decideCohortEnroll({ ...openCohort, content: [] }, "STUDENT")).toEqual({ ok: true });
   });
+  it("sells the last seat once when two requests are serialized by the cohort lock", () => {
+    const lastSeat = { ...openCohort, capacity: 1, takenSeats: 0 };
+    expect(decideCohortEnroll(lastSeat, "STUDENT")).toEqual({ ok: true });
+    expect(decideCohortEnroll({ ...lastSeat, takenSeats: 1 }, "STUDENT")).toEqual({ ok: false, status: 409 });
+    expect(decideCohortEnroll({ ...lastSeat, takenSeats: 1, holdsSeat: true }, "STUDENT")).toEqual({ ok: true });
+  });
   it("lets an admin join a full draft cohort", () => {
     expect(decideCohortEnroll({ ...openCohort, status: "DRAFT", takenSeats: 10 }, "ADMIN")).toEqual({ ok: true });
   });
