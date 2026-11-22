@@ -215,7 +215,7 @@ describe("weighted score", () => {
   });
 
   it("never rounds a wrong answer up to 100 (2100 of 2101 points)", () => {
-    // 21 questions at 100 points, all right, plus one 1-point question wrong: 2100 / 2101 = 99.952…
+    // 21 questions worth 100 each, all right, plus one question worth 1, wrong: 2100 / 2101 = 99.952…
     const questions = weightedQuiz([...Array<number>(21).fill(100), 1]);
     const scored = scoreAttempt(questions, answerOnly(questions, (i) => i < 21));
     expect(scored).toMatchObject({ scorePercent: 99.9, earnedPoints: 2100, totalPoints: 2101 });

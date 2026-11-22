@@ -787,8 +787,8 @@ const es = {
     certificateLockedTitle: "Certificado bloqueado",
     certificateLockedScoreDescription: (score: number | null) =>
       score === null
-        ? "Para obtener tu certificado, aprueba el quiz final con 100% (100 puntos)."
-        : `Tu mejor nota en el quiz final es ${score}%. Necesitas 100% (100 puntos) para obtener tu certificado.`,
+        ? "Para obtener tu certificado, obtén 100% en el quiz final: todas las respuestas correctas."
+        : `Tu mejor nota en el quiz final es ${score}%. Necesitas 100% (todas las respuestas correctas) para obtener tu certificado.`,
     retryFinalQuiz: "Reintentar quiz final",
     nameLabel: "Nombre en el certificado",
     namePlaceholder: "Tu nombre completo",
@@ -1831,8 +1831,8 @@ const en: Messages = {
     certificateLockedTitle: "Certificate locked",
     certificateLockedScoreDescription: (score: number | null) =>
       score === null
-        ? "To get your certificate, pass the final quiz with 100% (100 points)."
-        : `Your best final quiz score is ${score}%. You need 100% (100 points) to get your certificate.`,
+        ? "To get your certificate, score 100% on the final quiz: every answer correct."
+        : `Your best final quiz score is ${score}%. You need 100% (every answer correct) to get your certificate.`,
     retryFinalQuiz: "Retry final quiz",
     nameLabel: "Name on certificate",
     namePlaceholder: "Your full name",
