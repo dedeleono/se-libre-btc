@@ -12,6 +12,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Grip, Pencil } from "lucide-react";
+import { useLocale } from "@/lib/i18n";
 
 interface ModulesListProps {
   items: CourseModule[];
@@ -20,6 +21,7 @@ interface ModulesListProps {
 }
 
 export const ModulesList = ({ items, onReorder, onEdit }: ModulesListProps) => {
+  const { t } = useLocale();
   const [isMounted, setIsMounted] = useState(false);
   const [modules, setModules] = useState(items);
 
@@ -84,7 +86,7 @@ export const ModulesList = ({ items, onReorder, onEdit }: ModulesListProps) => {
                         type="button"
                         onClick={() => onEdit(module.id)}
                         className="-m-[11px] inline-flex items-center justify-center p-[11px] transition-colors hover:opacity-75 active:scale-[0.96]"
-                        aria-label="Edit module"
+                        aria-label={t.admin.editModule(module.title)}
                       >
                         <Pencil className="w-4 h-4 cursor-pointer" />
                       </button>

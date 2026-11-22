@@ -201,7 +201,7 @@ export const CohortForm = ({ initialData, courses, learningPaths }: CohortFormPr
 
       <Card>
         <CardHeader>
-          <CardTitle>{isNew ? t.admin.newCohort : t.admin.cohortDetails}</CardTitle>
+          <h1 data-slot="card-title" className="font-[var(--font-display)] text-xl uppercase leading-none tracking-normal">{isNew ? t.admin.newCohort : t.admin.cohortDetails}</h1>
           <p className="text-sm text-muted-foreground">{t.admin.configureCohort}</p>
         </CardHeader>
         <CardContent className="grid gap-4">

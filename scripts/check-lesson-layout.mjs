@@ -277,9 +277,15 @@ if (ONLY.has("notes")) {
     const current = page.locator('nav a[aria-current="page"]');
     if ((await current.count()) !== 1 || !(await current.getAttribute("href"))?.endsWith("/chapters/ch-1")) fail("sidebar", "aria-current link wrong");
     if ((await page.locator('nav a[href$="/chapters/ch-2"]').count()) !== 1) fail("sidebar", "accessible lesson is not a link");
-    const locked = page.locator('nav button[aria-disabled="true"]');
-    if ((await locked.count()) !== 1 || !(await locked.textContent()).includes("Bloqueada")) fail("sidebar", "locked lesson lacks aria-disabled/Bloqueada");
+    const locked = page.locator('nav button[aria-expanded]');
+    if ((await locked.count()) !== 1 || !(await locked.textContent()).includes("Bloqueada")) fail("sidebar", "locked lesson is not a disclosure button named with Bloqueada");
     if ((await locked.locator("svg").count()) !== 1) fail("sidebar", "locked lesson has no lock icon");
+    await locked.focus();
+    await page.keyboard.press("Enter");
+    if ((await locked.getAttribute("aria-expanded")) !== "true") fail("sidebar", "Enter did not open the locked-lesson help");
+    const helpAction = page.locator("nav").getByRole("button", { name: /Inscr/ });
+    if (!(await page.evaluate(() => document.activeElement?.textContent ?? "")).match(/Inscr/)) fail("sidebar", "focus did not move to the enroll action");
+    if ((await helpAction.count()) !== 1) fail("sidebar", "locked-lesson help has no enroll action");
     await context.close();
   }
 

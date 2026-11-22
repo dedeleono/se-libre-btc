@@ -139,7 +139,7 @@ export const ChapterContentForm = ({
               <div className="text-center">
                 <File className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
                 <p className="text-muted-foreground text-sm">
-                  No hay contenido agregado
+                  {t.admin.noContentAdded}
                 </p>
               </div>
             </div>
@@ -195,7 +195,7 @@ export const ChapterContentForm = ({
                 className="flex items-center cursor-pointer"
               >
                 <Video className="h-4 w-4 mr-2 text-muted-foreground" />
-                Video
+                {t.admin.contentTypeVideo}
               </Label>
             </div>
             <div
@@ -209,7 +209,7 @@ export const ChapterContentForm = ({
               <RadioGroupItem value="youtube" id="youtube" />
               <Label htmlFor="youtube" className="flex items-center cursor-pointer">
                 <Video className="h-4 w-4 mr-2 text-muted-foreground" />
-                YouTube
+                {t.admin.contentTypeYoutube}
               </Label>
             </div>
             <div
@@ -223,7 +223,7 @@ export const ChapterContentForm = ({
               <RadioGroupItem value="pdf" id="pdf" />
               <Label htmlFor="pdf" className="flex items-center cursor-pointer">
                 <File className="h-4 w-4 mr-2 text-muted-foreground" />
-                PDF
+                {t.admin.contentTypePdf}
               </Label>
             </div>
             <div
@@ -240,7 +240,7 @@ export const ChapterContentForm = ({
                 className="flex items-center cursor-pointer"
               >
                 <FileText className="h-4 w-4 mr-2 text-muted-foreground" />
-                Text
+                {t.admin.contentTypeText}
               </Label>
             </div>
           </RadioGroup>
@@ -339,17 +339,17 @@ export const ChapterContentForm = ({
                     variant="outline"
                     onClick={toggleEdit}
                   >
-                    Cancel
+                    {t.common.cancel}
                   </Button>
                   <Button
                     onClick={() => onSubmit({ richContent: richContent })}
                     type="button"
                   >
-                    Save changes
+                    {t.admin.saveChanges}
                   </Button>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Use the editor above to create formatted content for your lesson
+                  {t.admin.richTextHint}
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -366,9 +366,10 @@ export const ChapterContentForm = ({
                 className="mt-4 space-y-4"
               >
                 <div className="space-y-2">
-                  <Label>YouTube URL</Label>
+                  <Label htmlFor="youtube-url">{t.admin.youtubeUrl}</Label>
                   <div className="flex gap-x-2">
                     <Input
+                      id="youtube-url"
                       type="text"
                       placeholder="https://youtube.com/watch?v=..."
                       value={youtubeUrl}
@@ -403,7 +404,7 @@ export const ChapterContentForm = ({
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Asegúrate de tener permisos para usar este video
+                    {t.admin.youtubePermissionHint}
                   </p>
                 </div>
               </motion.div>

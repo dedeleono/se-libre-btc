@@ -16,9 +16,9 @@ export default async function LearningPathsPage() {
   });
 
   return (
-    <main className="dl-app mx-auto max-w-[1160px] space-y-10 px-4 py-16 md:px-8">
+    <div className="dl-app mx-auto max-w-[1160px] space-y-10 px-4 py-16 md:px-8">
       <div className="max-w-3xl">
-        <div className="page-eyebrow">Rutas</div>
+        <div className="page-eyebrow">{t.public.learningPathsEyebrow}</div>
         <h1 className="page-title mt-4">{t.public.learningPathsTitle}</h1>
         <p className="mt-4 max-w-xl text-lg font-semibold text-muted-foreground">{t.public.pathsSubtitle}</p>
       </div>
@@ -40,6 +40,6 @@ export default async function LearningPathsPage() {
           </article>
         ))}
       </div>
-    </main>
+    </div>
   );
 }

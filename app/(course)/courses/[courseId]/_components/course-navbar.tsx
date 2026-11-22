@@ -1,28 +1,18 @@
 import { NavbarRoutes } from "@/components/navbar-routes";
-import { Chapter, Course, CourseModule, ChapterProgress } from "@prisma/client";
+import type { ChapterAccess } from "@/lib/chapter-access-rule";
+import type { CourseNavTree } from "@/lib/course-nav-tree";
 import { CourseMobileSidebar } from "./course-mobile-sidebar";
 
 interface CourseNavbarProps {
-  course: Course & {
-    modules: (CourseModule & {
-      chapters: (Chapter & {
-        studentProgress: ChapterProgress[] | null;
-      })[];
-    })[];
-    attachments: {
-      id: string;
-      name: string;
-      url: string;
-    }[];
-  };
+  course: CourseNavTree;
   progressCount: number;
-  chaptersAccessibility: Record<string, boolean>;
+  chapterAccess: Record<string, ChapterAccess>;
 }
 
-export const CourseNavbar = ({ course, progressCount, chaptersAccessibility }: CourseNavbarProps) => {
+export const CourseNavbar = ({ course, progressCount, chapterAccess }: CourseNavbarProps) => {
   return (
     <div className="flex h-full items-center border-b-2 border-foreground bg-background px-4">
-      <CourseMobileSidebar course={course} progressCount={progressCount} chaptersAccessibility={chaptersAccessibility}/>
+      <CourseMobileSidebar course={course} progressCount={progressCount} chapterAccess={chapterAccess}/>
       <NavbarRoutes />
     </div>
   );

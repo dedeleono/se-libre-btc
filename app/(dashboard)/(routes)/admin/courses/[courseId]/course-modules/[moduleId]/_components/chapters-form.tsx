@@ -153,7 +153,7 @@ export const ChaptersForm = ({ initialData, courseId, moduleId }: ChaptersFormPr
                           <SelectItem value={ChapterType.LESSON}>
                             {t.admin.lesson}
                           </SelectItem>
-                          <SelectItem value={ChapterType.QUIZ}>Quiz</SelectItem>
+                          <SelectItem value={ChapterType.QUIZ}>{t.admin.quiz}</SelectItem>
                           <SelectItem value={ChapterType.RESOURCE}>
                             {t.admin.resource}
                           </SelectItem>

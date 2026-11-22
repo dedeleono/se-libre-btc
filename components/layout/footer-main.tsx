@@ -16,8 +16,7 @@ const Footer = () => {
           <div className="md:col-span-6 space-y-6">
             <Logo width={210} height={48} />
             <p className="max-w-md text-sm font-semibold text-muted-foreground">
-              Financial education with a warm, practical, sovereignty-first
-              learning platform.
+              {t.public.footerTagline}
             </p>
           </div>
 
@@ -55,7 +54,7 @@ const Footer = () => {
                 className="group flex items-center text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:text-foreground"
               >
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-2">
-                  Instagram
+                  {t.public.socialInstagram}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -77,7 +76,7 @@ const Footer = () => {
                 className="group flex items-center text-sm font-bold uppercase tracking-[0.08em] text-muted-foreground transition-all duration-300 hover:text-foreground"
               >
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-2">
-                  TikTok
+                  {t.public.socialTiktok}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +100,7 @@ const Footer = () => {
         {/* Copyright Section */}
         <div className="flex items-center justify-center border-t-2 border-foreground py-4">
           <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
-            {t.public.copyright}
+            {t.public.copyright(new Date().getFullYear())}
           </p>
         </div>
       </div>

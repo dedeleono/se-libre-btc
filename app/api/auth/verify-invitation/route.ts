@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { errorPath } from "@/lib/error-codes";
 import { decideInvitationRedemption } from "@/lib/invitation-redemption";
 import { createUserSignupNotification } from "@/lib/notifications";
 
@@ -22,7 +23,7 @@ export async function GET(req: Request) {
         const token = url.searchParams.get("token");
 
         if (!token) {
-            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
+            return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationInvalid")}`);
         }
 
         const invitation = await prisma.pendingInvitation.findUnique({
@@ -35,7 +36,7 @@ export async function GET(req: Request) {
         });
 
         if (!invitation) {
-            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
+            return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationInvalid")}`);
         }
 
         const redemption = decideInvitationRedemption(invitation, new Date());
@@ -45,9 +46,9 @@ export async function GET(req: Request) {
             });
             if (redemption.reason === "not_student") {
                 console.warn("[VERIFY_INVITATION] rejected non-student invitation", { invitationId: invitation.id, role: invitation.role });
-                return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
+                return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationInvalid")}`);
             }
-            return NextResponse.redirect(`${getBaseUrl()}/error?message=Invitation has expired`);
+            return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationExpired")}`);
         }
 
         const existingUser = await prisma.user.findUnique({
@@ -90,6 +91,6 @@ export async function GET(req: Request) {
 
     } catch (error) {
         console.error("[VERIFY_INVITATION]", error);
-        return NextResponse.redirect(`${getBaseUrl()}/error?message=Failed to verify invitation`);
+        return NextResponse.redirect(`${getBaseUrl()}${errorPath("invitationFailed")}`);
     }
 } 

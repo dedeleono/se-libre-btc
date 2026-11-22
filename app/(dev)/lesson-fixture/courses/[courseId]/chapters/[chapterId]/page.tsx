@@ -15,9 +15,9 @@ export default async function LessonNotesFixturePage(props: { params: Promise<{ 
   return (
     <div className="dl-app flex min-h-screen w-full max-w-full overflow-x-hidden">
       <nav aria-label="Lecciones" className="hidden w-80 shrink-0 border-r-2 border-foreground bg-card p-4 md:block">
-        <CourseSidebarItem id="ch-1" label="Lección 1" courseId={courseId} isLocked={false} isAccessible isCompleted type="TEXT" />
-        <CourseSidebarItem id="ch-2" label="Lección 2" courseId={courseId} isLocked={false} isAccessible type="TEXT" />
-        <CourseSidebarItem id="ch-3" label="Lección 3" courseId={courseId} isLocked isAccessible={false} type="TEXT" />
+        <CourseSidebarItem id="ch-1" label="Lección 1" courseId={courseId} isCourseFree isLocked={false} isAccessible isCompleted type="TEXT" />
+        <CourseSidebarItem id="ch-2" label="Lección 2" courseId={courseId} isCourseFree isLocked={false} isAccessible type="TEXT" />
+        <CourseSidebarItem id="ch-3" label="Lección 3" courseId={courseId} isCourseFree isLocked isAccessible={false} lockReason="ENROLLMENT_REQUIRED" type="TEXT" />
       </nav>
       <main className="dl-stamped min-w-0 flex-1">
         <ContentViewer
