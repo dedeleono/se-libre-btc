@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it, expect } from "vitest";
 
@@ -19,19 +19,16 @@ const overflowValues = (body: string): string[] =>
 
 const OVERFLOW_HIDDEN_UTILITY = /\boverflow(-x)?-hidden\b/;
 
-const PAGE_WRAPPERS = [
-  "app/(auth)/layout.tsx",
-  "app/(client)/layout.tsx",
-  "app/(client)/page.tsx",
-  "app/(client)/about/page.tsx",
-  "app/(course)/courses/[courseId]/layout.tsx",
-  "app/(course)/courses/loading.tsx",
-  "app/(dashboard)/_components/dashboard-shell.tsx",
-];
-
 /** Class lists of every element carrying the `dl-app` page-wrapper class. */
 const wrapperClasses = (tsx: string): string[] =>
   [...tsx.matchAll(/className="([^"]*\bdl-app\b[^"]*)"/g)].map((m) => m[1]);
+
+/** Every app/ file that renders a `dl-app` page wrapper. */
+const PAGE_WRAPPERS = (readdirSync(join(root, "app"), { recursive: true }) as string[])
+  .filter((file) => file.endsWith(".tsx"))
+  .map((file) => join("app", file))
+  .filter((path) => wrapperClasses(read(path)).length > 0)
+  .sort();
 
 describe("sticky positioning is not broken by page-level overflow", () => {
   const css = read("app/globals.css");
@@ -59,9 +56,18 @@ describe("sticky positioning is not broken by page-level overflow", () => {
     expect(body![1]).not.toMatch(OVERFLOW_HIDDEN_UTILITY);
   });
 
+  it("finds the page wrappers it guards", () => {
+    expect(PAGE_WRAPPERS).toEqual(
+      expect.arrayContaining([
+        join("app", "(client)", "page.tsx"),
+        join("app", "(client)", "about", "page.tsx"),
+        join("app", "(course)", "courses", "[courseId]", "layout.tsx"),
+        join("app", "(dashboard)", "_components", "dashboard-shell.tsx"),
+      ]),
+    );
+  });
+
   it.each(PAGE_WRAPPERS)("%s page wrapper uses clip, not hidden", (path) => {
-    const classes = wrapperClasses(read(path));
-    expect(classes.length).toBeGreaterThan(0);
-    for (const list of classes) expect(list).not.toMatch(OVERFLOW_HIDDEN_UTILITY);
+    for (const list of wrapperClasses(read(path))) expect(list).not.toMatch(OVERFLOW_HIDDEN_UTILITY);
   });
 });

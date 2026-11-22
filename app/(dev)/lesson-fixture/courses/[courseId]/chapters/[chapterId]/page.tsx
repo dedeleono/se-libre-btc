@@ -13,7 +13,7 @@ export default async function LessonNotesFixturePage(props: { params: Promise<{ 
   const { courseId, chapterId } = await props.params;
   const lesson = LESSON_FIXTURES["long-description"];
   return (
-    <div className="dl-app flex min-h-screen w-full max-w-full overflow-x-hidden">
+    <div className="dl-app flex min-h-screen w-full max-w-full overflow-x-clip">
       <nav aria-label="Lecciones" className="hidden w-80 shrink-0 border-r-2 border-foreground bg-card p-4 md:block">
         <CourseSidebarItem id="ch-1" label="Lección 1" courseId={courseId} isCourseFree isLocked={false} isAccessible isCompleted type="TEXT" />
         <CourseSidebarItem id="ch-2" label="Lección 2" courseId={courseId} isCourseFree isLocked={false} isAccessible type="TEXT" />
