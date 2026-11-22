@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { NextResponse } from "next/server";
 import { sendEmails } from "@/lib/email";
 
@@ -10,10 +10,8 @@ interface EmailRequest {
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    const authz = await requireAdminApi();
+    if (!authz.ok) return authz.response;
 
     if (!process.env.EMAIL_SERVER_USER || !process.env.EMAIL_SERVER_PASSWORD) {
       return NextResponse.json(

@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 
 export async function PATCH(req: Request, props: { params: Promise<{ quizId: string }> }) {
   const params = await props.params;
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return new NextResponse("Unauthorized", { status: 401 });
-  }
+  const authz = await requireAdminApi();
+  if (!authz.ok) return authz.response;
 
   const { list } = await req.json();
   if (!Array.isArray(list)) {

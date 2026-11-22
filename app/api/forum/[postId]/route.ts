@@ -1,22 +1,12 @@
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function DELETE(req: Request, props: { params: Promise<{ postId: string }> }) {
   const params = await props.params;
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
-    });
-
-    if (!user || user.role !== "ADMIN") {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    const authz = await requireAdminApi();
+    if (!authz.ok) return authz.response;
 
     // Delete all related records in a transaction
     await prisma.$transaction([

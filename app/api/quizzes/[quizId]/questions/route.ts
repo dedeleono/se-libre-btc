@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 import { quizQuestionPayloadSchema } from "@/lib/validations/quiz";
 
 export async function POST(req: Request, props: { params: Promise<{ quizId: string }> }) {
   const params = await props.params;
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return new NextResponse("Unauthorized", { status: 401 });
-  }
+  const authz = await requireAdminApi();
+  if (!authz.ok) return authz.response;
 
   const parsed = quizQuestionPayloadSchema.safeParse(await req.json());
   if (!parsed.success) {

@@ -1,23 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 import { withFallbackSlug } from "@/lib/slug";
 
-export async function GET() {
-  const cohorts = await prisma.cohort.findMany({
-    include: { course: true, learningPath: true, liveSessions: true },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return NextResponse.json(cohorts);
-}
-
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") {
-    return new NextResponse("Unauthorized", { status: 401 });
-  }
+  const authz = await requireAdminApi();
+  if (!authz.ok) return authz.response;
 
   const body = await req.json();
   if (!body.title) {

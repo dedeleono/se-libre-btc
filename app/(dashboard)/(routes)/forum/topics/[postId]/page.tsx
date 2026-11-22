@@ -1,5 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { userCanReadForumPost } from "@/lib/forum-post-access";
+import { publicAuthorSelect } from "@/lib/public-author";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { UserAvatar } from "@/components/user-avatar";
@@ -37,17 +39,17 @@ export default async function PostPage(props: PostPageProps) {
   const post = await prisma.forumPost.findUnique({
     where: { id: params.postId },
     include: {
-      author: true,
+      author: { select: publicAuthorSelect },
       learningPath: true,
       cohort: true,
       course: true,
       comments: {
         where: { parentId: null },
         include: {
-          author: true,
+          author: { select: publicAuthorSelect },
           replies: {
             include:{
-              author: true,
+              author: { select: publicAuthorSelect },
             },
           },
         },
@@ -62,44 +64,8 @@ export default async function PostPage(props: PostPageProps) {
     return redirect("/forum");
   }
 
-  // Check access for students
-  if (user.role === "STUDENT") {
-    const [courseEnrollment, learningPathEnrollment, cohortEnrollment] = await Promise.all([
-      post.courseId
-        ? prisma.courseEnrollment.findUnique({
-            where: {
-              userId_courseId: {
-                userId: user.id,
-                courseId: post.courseId,
-              },
-            },
-          })
-        : null,
-      post.learningPathId
-        ? prisma.learningPathEnrollment.findUnique({
-            where: {
-              userId_learningPathId: {
-                userId: user.id,
-                learningPathId: post.learningPathId,
-              },
-            },
-          })
-        : null,
-      post.cohortId
-        ? prisma.cohortEnrollment.findUnique({
-            where: {
-              userId_cohortId: {
-                userId: user.id,
-                cohortId: post.cohortId,
-              },
-            },
-          })
-        : null,
-    ]);
-
-    if (!courseEnrollment && !learningPathEnrollment && !cohortEnrollment) {
-      return redirect("/forum");
-    }
+  if (!(await userCanReadForumPost(user, post))) {
+    return redirect("/forum");
   }
 
   // Record the view
@@ -149,7 +115,6 @@ export default async function PostPage(props: PostPageProps) {
               <div className="flex items-center gap-x-3 text-sm dark:text-white/50">
                 <UserAvatar
                   userId={post.author.id}
-                  email={post.author.email}
                   name={post.author.name}
                   image={post.author.image}
                   size={32}

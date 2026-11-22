@@ -12,11 +12,12 @@ import { toast } from "sonner";
 import { ForumReply } from "@prisma/client";
 import { User } from "@prisma/client";
 import { UserAvatar } from "@/components/user-avatar";
+import type { PublicAuthor } from "@/lib/public-author";
 import { useLocale } from "@/lib/i18n";
 
 // Add this interface to define the shape of comments with author
 interface CommentWithAuthor extends ForumReply {
-  author: User;
+  author: PublicAuthor;
   replies?: CommentWithAuthor[];
 }
 
@@ -88,7 +89,6 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
             <div className="flex items-start gap-4">
               <UserAvatar
                 userId={comment.author.id}
-                email={comment.author.email}
                 name={comment.author.name}
                 image={comment.author.image}
                 size={40}
@@ -174,7 +174,6 @@ export function CommentsSection({ postId, comments, currentUser }: CommentsProps
                       <div key={reply.id} className="flex items-start gap-4">
                         <UserAvatar
                           userId={reply.author.id}
-                          email={reply.author.email}
                           name={reply.author.name}
                           image={reply.author.image}
                           size={32}

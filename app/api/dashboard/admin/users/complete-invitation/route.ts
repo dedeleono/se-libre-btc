@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { checkInvitationClaim } from "@/lib/invitation-claim";
 
 export async function POST(req: Request) {
   try {
@@ -33,7 +35,12 @@ export async function POST(req: Request) {
       return new NextResponse("Invitation not found", { status: 404 });
     }
 
-    const operations = [];
+    const claim = checkInvitationClaim(pendingInvitation, session.user.email, new Date());
+    if (!claim.ok) {
+      return new NextResponse(claim.status === 403 ? "Forbidden" : "Invitation has expired", { status: claim.status });
+    }
+
+    const operations: Prisma.PrismaPromise<unknown>[] = [];
 
     if (pendingInvitation.courseId) {
       operations.push(prisma.courseEnrollment.upsert({
@@ -67,16 +74,9 @@ export async function POST(req: Request) {
       }));
     }
 
-    if (operations.length > 0) {
-      await prisma.$transaction(operations);
-    }
+    operations.push(prisma.pendingInvitation.deleteMany({ where: { id: invitationId } }));
 
-    // Delete the pending invitation
-    await prisma.pendingInvitation.delete({
-      where: {
-        id: invitationId,
-      },
-    });
+    await prisma.$transaction(operations);
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,19 +1,16 @@
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 
 export async function POST(
     req: Request
 ) {
     try {
-        const session = await auth();
+        const authz = await requireAdminApi();
+        if (!authz.ok) return authz.response;
+
         const { categoryName } = await req.json();
 
-        if (!session?.user) {
-            return (
-                new NextResponse("Unauthorized", { status: 401 })
-            )
-        }
         if (!categoryName) {
             return new NextResponse("Category name is required", { status: 400 });
         }
