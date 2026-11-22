@@ -6,6 +6,7 @@ describe("isPublicRoute", () => {
   it.each([
     "/",
     "/courses",
+    "/error",
     "/sign-in",
     "/verify-request",
     "/learning-paths/abc",

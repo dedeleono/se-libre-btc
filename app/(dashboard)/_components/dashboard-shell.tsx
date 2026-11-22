@@ -5,7 +5,9 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { MAIN_CONTENT_ID } from "@/components/layout/skip-link";
 
 const SIDEBAR_COOKIE_NAME = "dashboard_sidebar_collapsed";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
@@ -30,6 +32,8 @@ function isEditableTarget(target: EventTarget | null) {
 
 export function DashboardShell({ navbar, sidebar, children }: DashboardShellProps) {
   const [collapsed, setCollapsed] = React.useState(getInitialCollapsed);
+  const { t } = useLocale();
+  const sidebarToggleLabel = collapsed ? t.common.expandSidebar : t.common.collapseSidebar;
 
   const toggleCollapsed = React.useCallback(() => {
     setCollapsed((current) => {
@@ -56,7 +60,7 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
     <TooltipProvider delayDuration={150}>
       <div
         data-dashboard-sidebar={collapsed ? "collapsed" : "expanded"}
-        className="dl-app h-full w-full max-w-full overflow-x-hidden"
+        className="dl-app h-full"
       >
       <div
         className={cn(
@@ -81,7 +85,7 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
               size="icon"
               onClick={toggleCollapsed}
               className="absolute right-2 top-3 z-10 h-8 w-8 bg-background/90"
-              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={sidebarToggleLabel}
             >
               {collapsed ? (
                 <PanelLeftOpen className="h-4 w-4" />
@@ -91,13 +95,14 @@ export function DashboardShell({ navbar, sidebar, children }: DashboardShellProp
             </Button>
           </TooltipTrigger>
           <TooltipContent side="right">
-            {collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            {sidebarToggleLabel}
           </TooltipContent>
         </Tooltip>
         {sidebar}
       </aside>
 
       <main
+        id={MAIN_CONTENT_ID}
         className={cn(
           "dl-stamped flex h-full min-h-screen w-full max-w-full flex-col bg-muted pt-16 transition-[padding] duration-200 dark:bg-background",
           collapsed ? "lg:pl-20" : "lg:pl-60"

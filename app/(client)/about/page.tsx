@@ -24,17 +24,17 @@ export default function AboutPage() {
   const slogans = ["Aprende", "Practica", "Comparte", "Resiste", "Sé tu propio banco"];
 
   return (
-    <main className="dl-app overflow-hidden">
+    <div className="dl-app overflow-hidden">
       {/* HERO */}
       <section className="relative border-b-2 border-foreground">
         <div className="absolute inset-0 dl-stamped" />
         <div className="relative mx-auto grid max-w-[1160px] items-center gap-12 px-4 py-16 md:grid-cols-[1.1fr_0.9fr] md:px-8 md:py-24">
           <div className="space-y-8">
-            <div className="page-eyebrow">#DineroLibre · Guatemala</div>
+            <div className="page-eyebrow">{t.public.aboutEyebrow}</div>
             <h1 className="page-title max-w-[12ch]">
               {t.public.aboutUsTitle}
               <span className="dl-libre-tag ml-3 align-top text-[0.4em] text-[var(--terracota-700)] dark:text-[var(--maiz-500)]">
-                / Libre
+                {t.public.libreTag}
               </span>
             </h1>
             <p className="max-w-xl text-lg font-semibold leading-relaxed text-muted-foreground">
@@ -57,7 +57,7 @@ export default function AboutPage() {
             <div className="stamp-card flex items-center justify-center bg-[var(--crema-050)] p-10">
               <Image
                 src="/images/se_libre/25.png"
-                alt="Sello Dinero Libre"
+                alt=""
                 width={760}
                 height={980}
                 priority
@@ -65,7 +65,7 @@ export default function AboutPage() {
               />
             </div>
             <div className="absolute -bottom-5 -left-5 hidden border-2 border-foreground bg-primary px-4 py-3 font-[var(--font-display)] text-2xl uppercase leading-none text-primary-foreground shadow-[4px_4px_0_hsl(var(--foreground))] md:block">
-              Dinero sano
+              {t.public.aboutBadge}
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function AboutPage() {
       <section className="mx-auto max-w-[1160px] px-4 py-16 md:px-8 md:py-20">
         <div className="grid gap-8 md:grid-cols-[0.4fr_1fr] md:gap-16">
           <div className="md:sticky md:top-28 h-fit">
-            <div className="page-eyebrow">#DineroLibre</div>
+            <div className="page-eyebrow">{t.public.aboutHashtag}</div>
             <h2 className="mt-4 text-4xl md:text-5xl">{t.public.aboutUsTitle}</h2>
           </div>
           <p className="text-2xl font-semibold leading-snug text-foreground md:text-[28px]">
@@ -137,7 +137,7 @@ export default function AboutPage() {
       {/* FEATURES */}
       {/* <section className="mx-auto max-w-[1160px] px-4 py-20 md:px-8">
         <div className="max-w-2xl">
-          <div className="page-eyebrow">#DineroLibre</div>
+          <div className="page-eyebrow">{t.public.aboutHashtag}</div>
           <h2 className="mt-4 text-5xl md:text-6xl">{t.public.featuresTitle}</h2>
         </div>
         <div className="mt-12 grid gap-4 md:grid-cols-3">
@@ -160,9 +160,9 @@ export default function AboutPage() {
         <div className="absolute inset-0 dl-stamped" />
         <div className="relative mx-auto max-w-[1160px] px-4 py-20 text-center md:px-8">
           <h2 className="mx-auto max-w-[16ch] text-5xl md:text-6xl">
-            Sé tu propio banco
+            {t.public.aboutClosingTitle}
             <span className="dl-libre-tag ml-2 text-[0.4em] align-top text-[var(--terracota-700)] dark:text-[var(--maiz-500)]">
-              / Libre
+              {t.public.libreTag}
             </span>
           </h2>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -178,6 +178,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

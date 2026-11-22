@@ -122,8 +122,9 @@ export default function ProfileForm({ initialData }: ProfileFormProps) {
                 type="button"
                 variant="destructive"
                 size="icon"
-                className="absolute -right-2 -top-2 z-10 h-7 w-7 rounded-full opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
+                className="absolute -right-2 -top-2 z-10 h-7 w-7 rounded-full shadow-lg"
                 onClick={() => setImageUrl(null)}
+                aria-label={t.profile.removePhoto}
               >
                 <Trash className="h-4 w-4" />
               </Button>

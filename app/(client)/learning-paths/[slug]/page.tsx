@@ -25,7 +25,7 @@ export default async function LearningPathDetailPage(props: { params: Promise<{ 
   }
 
   return (
-    <main className="dl-app mx-auto max-w-[1160px] space-y-10 px-4 py-16 md:px-8">
+    <div className="dl-app mx-auto max-w-[1160px] space-y-10 px-4 py-16 md:px-8">
       <div className="max-w-3xl">
         <div className="page-eyebrow">{t.public.learningPathsTitle}</div>
         <h1 className="page-title mt-4">{learningPath.title}</h1>
@@ -59,6 +59,6 @@ export default async function LearningPathDetailPage(props: { params: Promise<{ 
           </article>
         ))}
       </div>
-    </main>
+    </div>
   );
 }
