@@ -2,8 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 
 import Logo from "@/components/logo";
+import { getServerMessages } from "@/lib/i18n-server";
+import { legalDocumentPaths } from "@/lib/legal/content";
+
+const consentLink =
+  "rounded-[2px] text-foreground underline underline-offset-4 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+  const t = getServerMessages();
+
   return (
     <div className="dl-app grid min-h-screen w-full max-w-full overflow-x-hidden lg:grid-cols-[1fr_0.9fr]">
       <div className="relative hidden min-h-screen overflow-hidden border-r-2 border-foreground bg-[var(--volcan-900)] p-10 text-[var(--crema-050)] lg:flex">
@@ -38,16 +45,15 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 
           {children}
 
-          <p className="px-2 text-center text-xs font-semibold text-muted-foreground">
-            By clicking continue, you agree to our{" "}
-            <Link href="/terms" className="underline underline-offset-4 hover:text-primary">
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="underline underline-offset-4 hover:text-primary">
-              Privacy Policy
-            </Link>
-            .
+          <p className="text-pretty px-2 text-center text-xs font-semibold leading-relaxed text-muted-foreground">
+            {t.legal.consent(
+              <Link key="terms" href={legalDocumentPaths.terms} className={consentLink}>
+                {t.legal.termsLink}
+              </Link>,
+              <Link key="privacy" href={legalDocumentPaths.privacy} className={consentLink}>
+                {t.legal.privacyLink}
+              </Link>,
+            )}
           </p>
         </div>
       </div>

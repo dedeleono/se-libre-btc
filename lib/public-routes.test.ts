@@ -8,6 +8,8 @@ describe("isPublicRoute", () => {
     "/courses",
     "/sign-in",
     "/verify-request",
+    "/terms",
+    "/privacy",
     "/learning-paths/abc",
     "/courses/preview/abc",
     "/verify/DL-2026-7QK4ZP",
@@ -25,6 +27,8 @@ describe("isPublicRoute", () => {
     "/learning-paths-x",
     "/checkout",
     "/checkout/success",
+    "/terms/extra",
+    "/privacy-x",
   ])("%s needs a session", (pathname) => {
     expect(isPublicRoute(pathname)).toBe(false);
   });
