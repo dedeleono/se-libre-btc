@@ -26,3 +26,7 @@ export function prefillRecipientName(user: CertificateRecipient): string {
   const local = clean(user.email.split("@")[0]);
   return local || "Estudiante";
 }
+
+export function isCertificateValid(certificate: { revokedAt: Date | null }): boolean {
+  return certificate.revokedAt === null;
+}
