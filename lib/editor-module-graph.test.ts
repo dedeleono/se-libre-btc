@@ -65,6 +65,22 @@ describe("editor module graph", () => {
     expect([...files].some((f) => f.endsWith("components/editor/collaboration.ts"))).toBe(false);
   });
 
+  it("no longer carries the Lexical playground's dev-only tooling", () => {
+    const devOnly = [
+      "components/editor/Settings.tsx",
+      "components/editor-ui/Switch.tsx",
+      "components/editor/plugins/DocsPlugin/index.tsx",
+      "components/editor/plugins/PasteLogPlugin/index.tsx",
+      "components/editor/plugins/TestRecorderPlugin/index.tsx",
+      "components/editor/plugins/TreeViewPlugin/index.tsx",
+      "components/editor/plugins/TypingPerfPlugin/index.ts",
+    ];
+    for (const file of devOnly) expect(existsSync(path.join(ROOT, file)), file).toBe(false);
+    expect(importersOf("@lexical/react/LexicalTreeView")).toEqual([]);
+    const source = [...files].map((f) => readFileSync(f, "utf8")).join("\n");
+    expect(source).not.toMatch(/isDevPlayground|showTreeView|showNestedEditorTreeView|measureTypingPerf|setURLParam/);
+  });
+
   it("imports yjs only from the comments feature", () => {
     expect(importersOf("yjs")).toEqual([
       "components/editor/commenting/index.ts",

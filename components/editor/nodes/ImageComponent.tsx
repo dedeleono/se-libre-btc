@@ -43,14 +43,12 @@ import {
 import * as React from 'react';
 import {Suspense, useCallback, useEffect, useRef, useState} from 'react';
 
-import {useSettings} from '@/context/SettingsContext';
 import {useSharedHistoryContext} from '@/context/SharedHistoryContext';
 import brokenImage from '@/public/images/image-broken.svg';
 import EmojisPlugin from '../plugins/EmojisPlugin';
 import KeywordsPlugin from '../plugins/KeywordsPlugin';
 import LinkPlugin from '../plugins/LinkPlugin';
 import MentionsPlugin from '../plugins/MentionsPlugin';
-import TreeViewPlugin from '../plugins/TreeViewPlugin';
 import ContentEditable from '@/components/editor-ui/ContentEditable';
 import ImageResizer from '@/components/editor-ui/ImageResizer';
 import {$isImageNode} from './ImageNode';
@@ -434,10 +432,6 @@ export default function ImageComponent({
   };
 
   const {historyState} = useSharedHistoryContext();
-  const {
-    settings: {showNestedEditorTreeView},
-  } = useSettings();
-
   const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
   const isFocused = (isSelected || isResizing) && isEditable;
   return (
@@ -484,7 +478,6 @@ export default function ImageComponent({
                 }
                 ErrorBoundary={LexicalErrorBoundary}
               />
-              {showNestedEditorTreeView === true ? <TreeViewPlugin /> : null}
             </LexicalNestedComposer>
           </div>
         )}

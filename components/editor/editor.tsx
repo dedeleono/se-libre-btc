@@ -71,7 +71,6 @@ import TableCellResizer from "@/components/editor/plugins/TableCellResizer";
 import TableHoverActionsPlugin from "@/components/editor/plugins/TableHoverActionsPlugin";
 import TableOfContentsPlugin from "@/components/editor/plugins/TableOfContentsPlugin";
 import ToolbarPlugin from "@/components/editor/plugins/ToolbarPlugin";
-import TreeViewPlugin from "@/components/editor/plugins/TreeViewPlugin";
 import TwitterPlugin from "@/components/editor/plugins/TwitterPlugin";
 import YouTubePlugin from "@/components/editor/plugins/YouTubePlugin";
 import ContentEditable from "@/components/editor-ui/ContentEditable";
@@ -88,7 +87,6 @@ export default function Editor(): JSX.Element {
       hasLinkAttributes,
       isCharLimitUtf8,
       isRichText,
-      showTreeView,
       showTableOfContents,
       shouldUseLexicalContextMenu,
       shouldPreserveNewLinesInMarkdown,
@@ -155,9 +153,7 @@ export default function Editor(): JSX.Element {
         />
       )}
       <div
-        className={`editor-container ${showTreeView ? "tree-view" : ""} ${
-          !isRichText ? "plain-text" : ""
-        }`}
+        className={`editor-container ${!isRichText ? "plain-text" : ""}`}
       >
         {isMaxLength && <MaxLengthPlugin maxLength={30} />}
         <DragDropPaste />
@@ -268,7 +264,6 @@ export default function Editor(): JSX.Element {
           shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
         />
       </div>
-      {showTreeView && <TreeViewPlugin />}
     </>
   );
 }

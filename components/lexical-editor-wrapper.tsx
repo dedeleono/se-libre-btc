@@ -26,28 +26,18 @@ import {
   TextNode,
 } from "lexical";
 
-import { isDevPlayground } from "@/types/editor-settings";
 import { FlashMessageContext } from "@/context/FlashMessageContext";
-import { SettingsContext, useSettings } from "@/context/SettingsContext";
+import { SettingsContext } from "@/context/SettingsContext";
 import { SharedHistoryContext } from "@/context/SharedHistoryContext";
 import { ToolbarContext } from "@/context/ToolbarContext";
 import Editor from "./editor/editor";
 import logo from "@/public/images/logo.svg";
 import PlaygroundNodes from "./editor/nodes/PlaygroundNodes";
-import DocsPlugin from "./editor/plugins/DocsPlugin";
 import { HtmlLoadPlugin } from "./editor/plugins/HtmlLoadPlugin";
-import PasteLogPlugin from "./editor/plugins/PasteLogPlugin";
 import { TableContext } from "./editor/plugins/TablePlugin";
-import TestRecorderPlugin from "./editor/plugins/TestRecorderPlugin";
 import { parseAllowedFontSize } from "./editor/plugins/ToolbarPlugin/fontSize";
-import TypingPerfPlugin from "./editor/plugins/TypingPerfPlugin";
-import Settings from "./editor/Settings";
 import PlaygroundEditorTheme from "./editor/themes/PlaygroundEditorTheme";
 import { parseAllowedColor } from "./editor-ui/ColorPicker";
-
-console.warn(
-  "If you are profiling the playground app, please ensure you turn off the debug view. You can disable it by pressing on the settings control in the bottom-left of your screen and toggling the debug view setting."
-);
 
 // We no longer need the prepopulated rich text function as we'll load content from the database
 
@@ -119,8 +109,6 @@ function buildImportMap(): DOMConversionMap {
 // We've removed the App component and integrated its functionality directly into LexicalEditorWrapper
 
 export function LexicalEditorWrapper({ onChange, value }: { onChange: (value: string) => void; value: string }): JSX.Element {
-  // Use the imported isDevPlayground constant instead of trying to access it from settings
-
   // Create a plugin to handle content changes and call the onChange callback
   function OnChangePlugin({ onChange }: { onChange: (value: string) => void }) {
     const [editor] = useLexicalComposerContext();
@@ -170,10 +158,6 @@ export function LexicalEditorWrapper({ onChange, value }: { onChange: (value: st
                   {value && <HtmlLoadPlugin html={value} />}
                   <OnChangePlugin onChange={onChange} />
                 </div>
-                {/* Only show these plugins in dev playground */}
-                {isDevPlayground && <DocsPlugin />}
-                {isDevPlayground && <PasteLogPlugin />}
-                {isDevPlayground && <TestRecorderPlugin />}
               </ToolbarContext>
             </TableContext>
           </SharedHistoryContext>
