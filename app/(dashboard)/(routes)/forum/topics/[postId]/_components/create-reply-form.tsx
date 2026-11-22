@@ -37,7 +37,7 @@ export function CreateReplyForm({ postId }: CreateReplyFormProps) {
   const onSubmit = async (values: ReplyFormValues) => {
     try {
       setIsSubmitting(true);
-      await axios.post(`/api/forum/posts/${postId}/replies`, values);
+      await axios.post(`/api/forum/${postId}/comments`, { content: values.content });
       form.reset();
       toast.success(t.forum.replyPosted);
       router.refresh();

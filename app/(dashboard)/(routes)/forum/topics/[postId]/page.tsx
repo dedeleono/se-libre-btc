@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { userCanReadForumPost } from "@/lib/forum-post-access";
 import { publicAuthorSelect } from "@/lib/public-author";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
@@ -63,44 +64,8 @@ export default async function PostPage(props: PostPageProps) {
     return redirect("/forum");
   }
 
-  // Check access for students
-  if (user.role === "STUDENT") {
-    const [courseEnrollment, learningPathEnrollment, cohortEnrollment] = await Promise.all([
-      post.courseId
-        ? prisma.courseEnrollment.findUnique({
-            where: {
-              userId_courseId: {
-                userId: user.id,
-                courseId: post.courseId,
-              },
-            },
-          })
-        : null,
-      post.learningPathId
-        ? prisma.learningPathEnrollment.findUnique({
-            where: {
-              userId_learningPathId: {
-                userId: user.id,
-                learningPathId: post.learningPathId,
-              },
-            },
-          })
-        : null,
-      post.cohortId
-        ? prisma.cohortEnrollment.findUnique({
-            where: {
-              userId_cohortId: {
-                userId: user.id,
-                cohortId: post.cohortId,
-              },
-            },
-          })
-        : null,
-    ]);
-
-    if (!courseEnrollment && !learningPathEnrollment && !cohortEnrollment) {
-      return redirect("/forum");
-    }
+  if (!(await userCanReadForumPost(user, post))) {
+    return redirect("/forum");
   }
 
   // Record the view
