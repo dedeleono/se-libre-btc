@@ -37,9 +37,6 @@ export default function PaymentForm({
       }
 
       const response = await axios.post("/api/payments/create", {
-        customerEmail,
-        baseUrl: window.location.origin,
-        amount,
         productType,
         courseId: productType === "COURSE" ? productId : undefined,
         learningPathId: productType === "LEARNING_PATH" ? productId : undefined,

@@ -9,13 +9,15 @@ import ConfirmationStep from "@/components/forms/confirmation-step";
 import { motion } from "framer-motion";
 import { LucideIcon, User, GraduationCap, CreditCard, CheckCircle, XCircle } from "lucide-react";
 import { CheckoutFormData } from "@/types/checkout";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { StepperProviderRef } from "./stepper/context";
 import axios from "axios";
 import { useLocale } from "@/lib/i18n";
+import { useSession } from "@/lib/auth-client";
+import { checkoutResumeUrl, readCheckoutProduct } from "@/lib/checkout-return";
 
 interface CheckoutStep {
   id: string;
@@ -113,6 +115,7 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
 
   const [formData, setFormData] = useState<CheckoutFormData>(() => {
     // Initialize with default values
+    const resumedProduct = pendingInvitation?.learningPath ? null : readCheckoutProduct(new URLSearchParams(searchParams.toString()));
     const initialData: CheckoutFormData = {
       personalInfo: {
         name: pendingInvitation?.name || searchParams.get("name") || "",
@@ -121,9 +124,9 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
         dpi: "",
       },
       productSelection: {
-        productId: pendingInvitation?.learningPath?.id || "",
+        productId: pendingInvitation?.learningPath?.id || resumedProduct?.productId || "",
         productName: pendingInvitation?.learningPath?.title || "",
-        productType: "LEARNING_PATH",
+        productType: resumedProduct?.productType ?? "LEARNING_PATH",
         price: pendingInvitation?.learningPath?.price || 0,
       },
       payment: {
@@ -150,6 +153,17 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   const stepperRef = useRef<any & StepperProviderRef>(null);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session, isPending: isSessionPending } = useSession();
+  const isSignedIn = Boolean(session?.user);
+
+  useEffect(() => {
+    if (isSessionPending || isSignedIn) return;
+    const callbackUrl = checkoutResumeUrl(pathname, searchParams.toString());
+    router.replace(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  }, [isSessionPending, isSignedIn, pathname, router, searchParams]);
 
   const handleStepChange = (newStep: number) => {
     // Only allow moving to steps that have been completed or are next in sequence
@@ -232,6 +246,8 @@ export default function CheckoutStepper({ pendingInvitation }: CheckoutStepperPr
       }
     }
   };
+
+  if (!isSignedIn) return null;
 
   return (
     <div className="min-h-[600px] max-w-4xl mx-auto md:p-8">

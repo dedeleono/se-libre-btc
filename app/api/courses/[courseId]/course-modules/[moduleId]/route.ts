@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { requireAdminApi } from "@/lib/api-auth"
 import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { deleteFile } from "@/lib/s3"
@@ -16,10 +16,8 @@ export async function PATCH(
     const params = await props.params;
     try {
 
-        const session = await auth()
-
-        if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
-        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
+        const authz = await requireAdminApi()
+        if (!authz.ok) return authz.response
 
         const values = updateModuleSchema.parse(await req.json())
 
@@ -56,13 +54,8 @@ export async function DELETE(
 ) {
     const params = await props.params;
     try {
-        const session = await auth();
-        if (!session?.user) {
-            return new NextResponse("Unauthorized", { status: 401 });
-        }
-        if (session.user.role !== "ADMIN") {
-            return new NextResponse("Forbidden", { status: 403 });
-        }
+        const authz = await requireAdminApi();
+        if (!authz.ok) return authz.response;
 
         // Fetch the module with all related data
         const courseModule = await prisma.courseModule.findUnique({

@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { requireAdminApi } from "@/lib/api-auth"
 import { prisma } from "@/lib/db"
 import { deleteFile } from "@/lib/s3"
 import { NextResponse } from "next/server"
@@ -10,33 +10,16 @@ export async function DELETE(
     const params = await props.params;
     try {
 
-        const session = await auth()
-        if (!session?.user) {
-            return new NextResponse("Unauthorized: ", { status: 401 })
-        }
+        const authz = await requireAdminApi()
+        if (!authz.ok) return authz.response
 
-        const dbUser = await prisma.user.findUnique({
-            where: {
-                id: session.user.id,
-            }
+        const course = await prisma.course.findUnique({
+            where: { id: params.courseId },
+            select: { id: true },
         })
 
-        if (!dbUser) {
-            return new NextResponse("Unauthorized: ", { status: 401 })
-        }
-
-        const courseOwner = await prisma.course.findFirst({
-            where: {
-                id: params.courseId,
-                OR: [
-                    { contributors: { some: { userId: dbUser.id } } },
-                    ...(dbUser.role === "ADMIN" ? [{}] : []),
-                ],
-            }
-        })
-
-        if (!courseOwner) {
-            return new NextResponse("Unauthorized: ", { status: 401 })
+        if (!course) {
+            return new NextResponse("Not found", { status: 404 })
         }
 
         const attachment = await prisma.attachment.findUnique({

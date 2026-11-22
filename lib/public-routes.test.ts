@@ -23,6 +23,8 @@ describe("isPublicRoute", () => {
     "/verify",
     "/verifyX/abc",
     "/learning-paths-x",
+    "/checkout",
+    "/checkout/success",
   ])("%s needs a session", (pathname) => {
     expect(isPublicRoute(pathname)).toBe(false);
   });

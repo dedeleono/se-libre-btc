@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+import { requireAdminApi } from "@/lib/api-auth"
 import { deleteFile } from "@/lib/s3"
 import { CourseDeliveryMode, CourseDifficulty } from "@prisma/client"
 import * as z from "zod"
@@ -21,9 +21,8 @@ const updateCourseSchema = z.object({
 export async function DELETE(req: Request, props: { params: Promise<{ courseId: string }> }) {
     const params = await props.params;
     try {
-        const session = await auth()
-        if (!session?.user) return new NextResponse("Unauthorized", { status: 401 })
-        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
+        const authz = await requireAdminApi()
+        if (!authz.ok) return authz.response
 
         const course = await prisma.course.findUnique({
             where: { id: params.courseId },
@@ -81,10 +80,8 @@ export async function PATCH(req: Request, props: {params: Promise<{courseId: str
     const params = await props.params;
     try {
         
-        const session = await auth()
-
-        if(!session?.user) return new NextResponse("Unauthorized", { status: 401 })
-        if (session.user.role !== "ADMIN") return new NextResponse("Forbidden", { status: 403 })
+        const authz = await requireAdminApi()
+        if (!authz.ok) return authz.response
 
         const values = updateCourseSchema.parse(await req.json());
 

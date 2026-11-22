@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 import { prisma } from "@/lib/db";
 
 export async function POST(req: Request) {
@@ -16,19 +17,18 @@ export async function POST(req: Request) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
-    // Verify user is enrolled in the course
-    const studentCourse = await prisma.courseEnrollment.findUnique({
-      where: {
-        userId_courseId: {
-          userId: session.user.id,
-          courseId,
-        },
-      },
+    const chapter = await prisma.chapter.findFirst({
+      where: { id: chapterId, module: { courseId } },
+      select: { id: true },
     });
 
-    // if (!studentCourse) {
-    //   return new NextResponse("Not enrolled in this course", { status: 403 });
-    // }
+    if (!chapter) {
+      return new NextResponse("Chapter not found", { status: 404 });
+    }
+
+    if (session.user.role !== "ADMIN" && !(await hasCourseEnrollmentAccess(session.user.id, courseId))) {
+      return new NextResponse("Not enrolled in this course", { status: 403 });
+    }
 
     // Create or update the note
     const note = await prisma.studentNote.upsert({

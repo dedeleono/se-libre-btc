@@ -4,12 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/db";
 import { getServerMessages } from "@/lib/i18n-server";
 
+import { InviteStudentForm } from "./_components/invite-student-form";
+
 export default async function AdminStudentsPage() {
   const t = getServerMessages();
-  const students = await prisma.user.findMany({
-    where: { role: "STUDENT", isDeleted: false },
-    orderBy: { createdAt: "desc" },
-  });
+  const titleSelect = { id: true, title: true } as const;
+  const [students, courses, learningPaths, cohorts] = await Promise.all([
+    prisma.user.findMany({
+      where: { role: "STUDENT", isDeleted: false },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.course.findMany({ select: titleSelect, orderBy: { title: "asc" } }),
+    prisma.learningPath.findMany({ select: titleSelect, orderBy: { title: "asc" } }),
+    prisma.cohort.findMany({
+      where: { status: { notIn: ["COMPLETED", "CANCELLED"] } },
+      select: titleSelect,
+      orderBy: { title: "asc" },
+    }),
+  ]);
 
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">
@@ -22,6 +34,8 @@ export default async function AdminStudentsPage() {
           <p className="text-sm text-muted-foreground text-pretty">{t.admin.manageStudents}</p>
         </div>
       </div>
+
+      <InviteStudentForm options={{ courses, learningPaths, cohorts }} />
 
       <Card>
         <CardHeader>

@@ -1,29 +1,27 @@
 import { redirect } from 'next/navigation';
+
+import { productPagePath } from '@/lib/checkout-return';
 import { prisma } from '@/lib/db';
+
+async function callbackTarget(paymentId: string | null): Promise<string> {
+    if (!paymentId) return '/courses';
+
+    try {
+        const payment = await prisma.payment.findUnique({
+            where: { id: paymentId },
+            select: { status: true, courseId: true, learningPath: { select: { slug: true } } },
+        });
+
+        if (!payment) return '/courses';
+        if (payment.status === 'COMPLETED') return '/onboarding';
+        return productPagePath({ courseId: payment.courseId, learningPathSlug: payment.learningPath?.slug ?? null });
+    } catch (error) {
+        console.error('Error processing callback:', error);
+        return '/courses';
+    }
+}
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const paymentIntentId = searchParams.get('payment_intent');
-    
-    if (!paymentIntentId) {
-        return redirect('/checkout/error');
-    }
-
-    try {
-        // Verify payment status with Recurrente
-        const payment = await prisma.payment.findUnique({
-            where: { id: paymentIntentId }
-        });
-
-        if (payment?.status === "COMPLETED") {
-            // Payment successful, redirect to success page
-            return redirect('/checkout/success');
-        } else {
-            // Payment pending or failed
-            return redirect('/checkout/error');
-        }
-    } catch (error) {
-        console.error('Error processing callback:', error);
-        return redirect('/checkout/error');
-    }
-} 
+    redirect(await callbackTarget(searchParams.get('payment_intent')));
+}

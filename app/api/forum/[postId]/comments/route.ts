@@ -1,6 +1,15 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { userCanReadForumPost } from "@/lib/forum-post-access";
+import { publicAuthorSelect } from "@/lib/public-author";
+
+const createCommentSchema = z.object({
+  content: z.string().trim().min(1).max(10000),
+  parentId: z.string().min(1).nullish(),
+});
 
 export async function POST(req: Request, props: { params: Promise<{ postId: string }> }) {
   const params = await props.params;
@@ -10,80 +19,44 @@ export async function POST(req: Request, props: { params: Promise<{ postId: stri
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
-    });
-
-    if (!user) {
-      return new NextResponse("Unauthorized", { status: 401 });
+    const parsed = createCommentSchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid comment" }, { status: 400 });
     }
+    const { content, parentId } = parsed.data;
 
-    const { content, parentId } = await req.json();
-    const { postId } = params;
-
-    // Verify user has access to this forum post
     const post = await prisma.forumPost.findUnique({
-      where: { id: postId },
-      include: {
-        learningPath: true,
-        cohort: true,
-        course: true,
-      },
+      where: { id: params.postId },
+      select: { id: true, courseId: true, learningPathId: true, cohortId: true },
     });
 
     if (!post) {
       return new NextResponse("Forum post not found", { status: 404 });
     }
 
-    // Check if user has access to this post
-    if (user.role === "STUDENT") {
-      const [courseEnrollment, learningPathEnrollment, cohortEnrollment] = await Promise.all([
-        post.courseId
-          ? prisma.courseEnrollment.findUnique({
-              where: {
-                userId_courseId: {
-                  userId: user.id,
-                  courseId: post.courseId,
-                },
-              },
-            })
-          : null,
-        post.learningPathId
-          ? prisma.learningPathEnrollment.findUnique({
-              where: {
-                userId_learningPathId: {
-                  userId: user.id,
-                  learningPathId: post.learningPathId,
-                },
-              },
-            })
-          : null,
-        post.cohortId
-          ? prisma.cohortEnrollment.findUnique({
-              where: {
-                userId_cohortId: {
-                  userId: user.id,
-                  cohortId: post.cohortId,
-                },
-              },
-            })
-          : null,
-      ]);
+    if (!(await userCanReadForumPost(session.user, post))) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
 
-      if (!courseEnrollment && !learningPathEnrollment && !cohortEnrollment) {
-        return new NextResponse("Unauthorized", { status: 401 });
+    if (parentId) {
+      const parent = await prisma.forumReply.findFirst({
+        where: { id: parentId, postId: post.id },
+        select: { id: true },
+      });
+      if (!parent) {
+        return NextResponse.json({ error: "Invalid comment" }, { status: 400 });
       }
     }
 
     const comment = await prisma.forumReply.create({
       data: {
         content,
-        authorId: user.id,
-        postId,
-        parentId: parentId || null,
+        authorId: session.user.id,
+        postId: post.id,
+        parentId: parentId ?? null,
       },
       include: {
-        author: true,
+        author: { select: publicAuthorSelect },
       },
     });
 
@@ -93,36 +66,3 @@ export async function POST(req: Request, props: { params: Promise<{ postId: stri
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-
-export async function GET(req: Request, props: { params: Promise<{ postId: string }> }) {
-  const params = await props.params;
-  try {
-    const session = await auth();
-    if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    const comments = await prisma.forumReply.findMany({
-      where: {
-        postId: params.postId,
-        parentId: null, // Only get top-level comments
-      },
-      include: {
-        author: true,
-        replies: {
-          include: {
-            author: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-
-    return NextResponse.json(comments);
-  } catch (error) {
-    console.error("[FORUM_COMMENTS_GET]", error);
-    return new NextResponse("Internal Error", { status: 500 });
-  }
-} 

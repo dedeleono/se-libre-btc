@@ -1,15 +1,12 @@
-import { auth } from "@/lib/auth";
+import { requireAdminApi } from "@/lib/api-auth";
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function PATCH(req: Request, props: { params: Promise<{ userId: string }> }) {
   const params = await props.params;
   try {
-    const session = await auth();
-
-    if (!session?.user || session.user.role !== "ADMIN") {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    const authz = await requireAdminApi();
+    if (!authz.ok) return authz.response;
 
     const user = await prisma.user.update({
       where: {

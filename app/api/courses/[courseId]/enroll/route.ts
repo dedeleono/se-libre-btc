@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { decideSelfEnroll } from "@/lib/enrollment-policy";
 
 export async function POST(req: Request, props: { params: Promise<{ courseId: string }> }) {
   const params = await props.params;
@@ -12,11 +13,12 @@ export async function POST(req: Request, props: { params: Promise<{ courseId: st
 
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
-    select: { id: true },
+    select: { id: true, isPublished: true, isFree: true },
   });
 
-  if (!course) {
-    return new NextResponse("Course not found", { status: 404 });
+  const decision = decideSelfEnroll(course, session.user.role);
+  if (!course || !decision.ok) {
+    return new NextResponse(null, { status: decision.ok ? 404 : decision.status });
   }
 
   const enrollment = await prisma.courseEnrollment.upsert({

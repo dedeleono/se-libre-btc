@@ -1,34 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { auth } from '@/lib/auth';
-import { createPublicFileUrl, createStorageKey, getS3Client, getStorageConfig, getStorageErrorMessage, sanitizePresignedUrl, S3AssetType } from '@/lib/s3';
+import { requireAdminApi } from '@/lib/api-auth';
+import { createPublicFileUrl, createStorageKey, getS3Client, getStorageConfig, getStorageErrorMessage, sanitizePresignedUrl } from '@/lib/s3';
+import { decideUpload } from '@/lib/upload-policy';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const authz = await requireAdminApi();
+    if (!authz.ok) return authz.response;
 
-    const { fileName, contentType, fileType } = await req.json();
+    const { fileName, contentType, fileType, size } = await req.json();
 
-    if (!fileName || !contentType || !fileType) {
+    if (!fileName || typeof fileName !== 'string') {
       return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
     }
 
-    const validTypes: S3AssetType[] = ['video', 'image', 'document', 'mixed'];
-    if (!validTypes.includes(fileType)) {
-      return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
+    const decision = decideUpload({ role: authz.session.user.role, channel: 'presigned', kind: fileType, contentType, size });
+    if (!decision.ok) {
+      return NextResponse.json({ error: decision.reason }, { status: decision.status });
     }
 
-    const key = createStorageKey(fileName, fileType);
+    const key = createStorageKey(fileName, decision.kind);
     const command = new PutObjectCommand({
       Bucket: getStorageConfig().bucketName,
       Key: key,
-      ContentType: contentType,
+      ContentType: decision.contentType,
     });
 
     const presignedUrl = sanitizePresignedUrl(await getSignedUrl(getS3Client(), command, { expiresIn: 600 }));
