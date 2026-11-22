@@ -1,23 +1,27 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAdminApi } from "@/lib/api-auth";
 import { PaymentStatus } from "@prisma/client";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
+    const authz = await requireAdminApi();
+    if (!authz.ok) return authz.response;
+
     try {
         const { searchParams } = new URL(req.url);
         const search = searchParams.get("search");
-        const status = searchParams.get("status") as PaymentStatus | "all" | null;
+        const rawStatus = searchParams.get("status");
+        const status = rawStatus && rawStatus !== "all" ? rawStatus : null;
+        if (status && !(Object.values(PaymentStatus) as string[]).includes(status)) {
+            return new NextResponse("Invalid status", { status: 400 });
+        }
 
         const payments = await prisma.payment.findMany({
             where: {
                 AND: [
-                    status && status !== "all" 
-                        ? { 
-                            status: status as PaymentStatus 
-                          } 
-                        : {},
+                    status ? { status: status as PaymentStatus } : {},
                     search
                         ? {
                             OR: [
@@ -34,7 +38,12 @@ export async function GET(req: Request) {
                         : {},
                 ],
             },
-            include: {
+            select: {
+                id: true,
+                amount: true,
+                status: true,
+                productType: true,
+                paymentDate: true,
                 user: {
                     select: {
                         name: true,
@@ -50,8 +59,12 @@ export async function GET(req: Request) {
         });
 
         return NextResponse.json(payments.map((payment) => ({
-            ...payment,
+            id: payment.id,
             amount: payment.amount.toString(),
+            status: payment.status,
+            productType: payment.productType,
+            paymentDate: payment.paymentDate,
+            user: payment.user,
             productName: payment.course?.title || payment.learningPath?.title || "Subscription",
         })));
     } catch (error) {

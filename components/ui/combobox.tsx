@@ -20,18 +20,29 @@ import {
 } from "@/components/ui/popover";
 import { useLocale } from "@/lib/i18n";
 
-interface ComboBoxProps {
+type ComboBoxProps = Pick<
+  React.ComponentProps<"button">,
+  "id" | "aria-describedby" | "aria-invalid" | "onBlur" | "disabled"
+> & {
   options: { label: string; value: string }[];
   value?: string | string[]; // Support both single and multiple values
   onChange: (value: string | string[]) => void;
   multiple?: boolean; // Indicate if multiple selections are allowed
-}
+  /** React 19 ref-as-prop: lands on the trigger button so `form.setFocus` can reach it. */
+  ref?: React.Ref<HTMLButtonElement>;
+};
 
 const Combobox = ({
   options,
   value,
   onChange,
   multiple = false, // Default to single selection
+  ref,
+  id,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
+  onBlur,
+  disabled,
 }: ComboBoxProps) => {
   const { t } = useLocale();
   const [open, setOpen] = React.useState(false);
@@ -72,6 +83,12 @@ const Combobox = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          ref={ref}
+          id={id}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={ariaInvalid}
+          onBlur={onBlur}
+          disabled={disabled}
           variant="outline"
           role="combobox"
           aria-expanded={open}

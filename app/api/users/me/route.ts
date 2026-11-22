@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import { parseProfileUpdate } from "@/lib/validations/profile";
 
 export async function PATCH(req: Request) {
     try {
@@ -10,22 +11,21 @@ export async function PATCH(req: Request) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const body = await req.json();
-        const { name, imageUrl, onboardingCompleted, ageRange, country, region } = body;
+        const body = await req.json().catch(() => null);
+        const parsed = parseProfileUpdate(body);
 
-        const updateData: any = {};
-        if (name !== undefined) updateData.name = name;
-        if (imageUrl !== undefined) updateData.image = imageUrl;
-        if (onboardingCompleted !== undefined) updateData.onboardingCompleted = onboardingCompleted;
-        if (ageRange !== undefined) updateData.ageRange = ageRange;
-        if (country !== undefined) updateData.country = country;
-        if (region !== undefined) updateData.region = region;
+        if (!parsed.ok) {
+            return NextResponse.json(
+                { error: "INVALID_PROFILE", fieldErrors: parsed.fieldErrors },
+                { status: 400 },
+            );
+        }
 
         const user = await prisma.user.update({
             where: {
                 email: session.user.email,
             },
-            data: updateData,
+            data: parsed.data,
         });
 
         return NextResponse.json(user);
@@ -33,4 +33,4 @@ export async function PATCH(req: Request) {
         console.error("[USERS_PATCH]", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
-} 
+}

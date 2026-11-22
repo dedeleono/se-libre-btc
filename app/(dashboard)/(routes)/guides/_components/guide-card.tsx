@@ -46,7 +46,7 @@ const ExpandableGuideCards = ({
         <Input
           type="text"
           placeholder={t.public.searchGuide}
-          className="w-full p-4 pl-12 pr-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 dark:bg-foreground/5 dark:text-white dark:border-border backdrop-blur-sm"
+          className="w-full p-4 pl-12 pr-4 border rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:bg-foreground/5 dark:text-white dark:border-border backdrop-blur-sm"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />

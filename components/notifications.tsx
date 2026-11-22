@@ -18,13 +18,12 @@ import {
 import { cn } from "@/lib/utils";
 import { NotificationType, UserRole } from "@prisma/client";
 import { useEffect, useState, useMemo, memo, useCallback, forwardRef, useImperativeHandle, useRef } from "react";
-import { supabase } from "@/lib/supabase/supabase";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { SupabaseNotifications } from "@/lib/supabase/notifications";
 import { Suspense } from "react";
 import { toast } from "sonner";
 import { useLocale } from "@/lib/i18n";
+import { startVisiblePolling } from "@/lib/notification-polling";
 
 interface Sender {
   name: string | null;
@@ -37,8 +36,8 @@ interface Notification {
   title: string;
   body: string;
   isRead: boolean;
-  senderId: string | null;
-  receiverId: string;
+  senderId?: string | null;
+  receiverId?: string;
   paymentId?: string;
   forumPostId?: string;
   courseId?: string;
@@ -46,7 +45,7 @@ interface Notification {
   cohortId?: string;
   liveSessionId?: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   sender?: {
     name: string | null;
     image: string | null;
@@ -67,6 +66,22 @@ interface NotificationsProps {
 export interface NotificationsHandle {
   markAllAsRead: () => Promise<void>;
   refreshNotifications: () => void;
+}
+
+async function markNotificationRead(notificationId: string) {
+  const response = await fetch(`/api/notifications/${notificationId}/mark-read`, { method: "PATCH" });
+  if (!response.ok) throw new Error("Failed to mark notification as read");
+}
+
+async function fetchNotifications(): Promise<Notification[] | null> {
+  const response = await fetch("/api/notifications", { cache: "no-store" });
+  if (!response.ok) return null;
+  return response.json();
+}
+
+async function markAllNotificationsRead() {
+  const response = await fetch("/api/notifications/mark-all-read", { method: "PATCH" });
+  if (!response.ok) throw new Error("Failed to mark all notifications as read");
 }
 
 // Memoized notification item component
@@ -159,7 +174,7 @@ const NotificationContent = memo(({
   <Card className="shadow-lg border-0 rounded-xl overflow-hidden">
     <CardHeader className="border-b bg-gradient-to-r from-background to-muted/30 px-6 py-4 space-y-1">
       <div className="flex items-center justify-between">
-        <CardTitle className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70 font-['Open_Sans']">
+        <CardTitle className="text-foreground">
           {t.notifications.title}
         </CardTitle>
         {unreadCount > 0 && (
@@ -224,7 +239,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState<number>(0);
     const router = useRouter();
-    const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+    const localChangeRef = useRef(0);
 
     // Initialize state after mount
     useEffect(() => {
@@ -243,11 +258,13 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
         previousUnreadCount = unreadCount;
 
         // Optimistically update UI
+        localChangeRef.current += 1;
         setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
         setUnreadCount(0);
 
         // Update database
-        await SupabaseNotifications.markAllAsRead(userId);
+        await markAllNotificationsRead();
+        localChangeRef.current += 1;
         
         // Refresh server state
         router.refresh();
@@ -266,7 +283,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
           description: t.notifications.tryLater
         });
       }
-    }, [notifications, unreadCount, userId, router, t.notifications]);
+    }, [notifications, unreadCount, router, t.notifications]);
 
     // Expose methods via ref
     useImperativeHandle(ref, () => ({
@@ -281,13 +298,15 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       if (!notification.isRead) {
         try {
           // Optimistically update the UI
+          localChangeRef.current += 1;
           setNotifications(prev => 
             prev.map(n => n.id === notification.id ? { ...n, isRead: true } : n)
           );
           setUnreadCount(prev => Math.max(0, prev - 1));
           
           // Update the database
-          await SupabaseNotifications.markAsRead(notification.id, userId);
+          await markNotificationRead(notification.id);
+          localChangeRef.current += 1;
           
           // Refresh the router to sync server state
           router.refresh();
@@ -320,7 +339,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       } else if (notification.type === NotificationType.USER_SIGNUP && userRole === "ADMIN") {
         router.push("/admin/students");
       }
-    }, [userId, router, userRole, t.notifications.markOneError]);
+    }, [router, userRole, t.notifications.markOneError]);
 
     const getNotificationIcon = useCallback((type: NotificationType) => {
       switch (type) {
@@ -344,82 +363,22 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
       }
     }, []);
 
-    // Set up real-time subscription
-    useEffect(() => {
-      if (!userId || !mounted) {
-        console.log('NotificationsComponent: Skipping subscription setup - userId:', userId, 'mounted:', mounted);
+    const refreshFromServer = useCallback(async () => {
+      const changeAtStart = localChangeRef.current;
+      try {
+        const latest = await fetchNotifications();
+        if (!latest || changeAtStart !== localChangeRef.current) return;
+        setNotifications(latest);
+        setUnreadCount(latest.filter(n => !n.isRead).length);
+      } catch {
         return;
       }
+    }, []);
 
-      channelRef.current = supabase
-        .channel(`notifications:${userId}`)
-        .on(
-          "postgres_changes",
-          { 
-            event: "INSERT", 
-            schema: "public", 
-            table: "Notification",
-            filter: `receiverId=eq.${userId}`
-          },
-          async (payload) => {
-            
-            const newNotification = payload.new as Notification;
-            
-            if (newNotification.senderId) {
-              
-              const { data: senderData, error } = await supabase
-                .from('User')
-                .select('name, image')
-                .eq('id', newNotification.senderId)
-                .single();
-
-              if (error) {
-                console.error('NotificationsComponent: Error fetching sender data:', error);
-              } else if (senderData) {
-                console.log('NotificationsComponent: Found sender data:', senderData);
-                newNotification.sender = {
-                  name: senderData.name,
-                  image: senderData.image
-                };
-              }
-            }
-
-            
-            setNotifications(prev => [newNotification, ...prev]);
-            setUnreadCount(prev => prev + 1);
-          }
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "Notification",
-            filter: `receiverId=eq.${userId}`
-          },
-          (payload) => {
-            
-            const updatedNotification = payload.new as Notification;
-            setNotifications(prev =>
-              prev.map(n =>
-                n.id === updatedNotification.id ? { ...n, ...updatedNotification } : n
-              )
-            );
-            if (updatedNotification.isRead) {
-              setUnreadCount(prev => Math.max(0, prev - 1));
-            }
-          }
-        )
-        .subscribe((status) => {
-          console.log('Subscription status:', status);
-        });
-
-      return () => {
-        if (channelRef.current) {
-          channelRef.current.unsubscribe();
-        }
-      };
-    }, [userId, mounted]);
+    useEffect(() => {
+      if (!userId || !mounted) return;
+      return startVisiblePolling(refreshFromServer, { doc: document, win: window });
+    }, [userId, mounted, refreshFromServer]);
 
     if (!mounted) {
       return null;
@@ -435,7 +394,7 @@ export const NotificationsComponent = memo(forwardRef<NotificationsHandle, Notif
               className={cn(
                 "relative rounded-full transition-all duration-200",
                 "hover:bg-primary/10 hover:text-primary",
-                "focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2",
+                "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                 unreadCount > 0 && "text-primary dark:text-white/80"
               )}
             >

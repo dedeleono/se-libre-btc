@@ -12,6 +12,9 @@ import {
 import { getServerMessages } from "@/lib/i18n-server";
 import GuateLibreLogo from "@/components/guate-libre-logo";
 
+import "./landing-motion.css";
+import LandingReveal from "./landing-reveal";
+
 const posters = ["19.png", "24.png"];
 
 const INSTAGRAM_PATH =
@@ -47,19 +50,19 @@ export default function Home() {
   const t = getServerMessages();
 
   return (
-    <main className="dl-app min-h-screen overflow-hidden">
-      <section className="relative border-b-2 border-foreground">
+    <main className="dl-app dl-landing min-h-screen overflow-hidden">
+      <section data-intro className="relative border-b-2 border-foreground">
         <div className="absolute inset-0 dl-stamped" />
         <div className="relative mx-auto grid min-h-[calc(100vh-80px)] max-w-[1160px] items-center gap-12 px-4 py-12 md:grid-cols-[1.05fr_0.95fr] md:px-8">
           <div className="space-y-8">
-            <div className="page-eyebrow">Dinero Libre Guatemala</div>
+            <div data-reveal="eyebrow" className="page-eyebrow">Dinero Libre Guatemala</div>
             <div className="space-y-5">
-              <h1 className="page-title max-w-[10ch]">{t.public.heroTitle}</h1>
-              <p className="max-w-xl text-pretty text-lg font-semibold leading-relaxed text-muted-foreground">
+              <h1 data-reveal="print" className="page-title max-w-[10ch] [--dl-step:1]">{t.public.heroTitle}</h1>
+              <p data-reveal="rise" className="max-w-xl text-pretty text-lg font-semibold leading-relaxed text-muted-foreground [--dl-step:3]">
                 {t.public.heroSubtitle}
               </p>
             </div>
-            <div className="flex flex-wrap gap-4">
+            <div data-reveal="rise" className="flex flex-wrap gap-4 [--dl-step:4]">
               <Button asChild size="lg">
                 <Link href="/courses">
                   {t.public.start}
@@ -75,7 +78,7 @@ export default function Home() {
           </div>
 
           <div className="relative mx-auto w-full max-w-[420px]">
-            <div className="stamp-card p-5">
+            <div data-reveal="press" className="stamp-card p-5 [--dl-step:9]">
               {/* Light mode: dark wordmark on the light stamp card */}
               <Image
                 src="/logo.png"
@@ -94,14 +97,14 @@ export default function Home() {
                 className="hidden h-auto w-full object-contain dark:block"
               />
             </div>
-            <div className="absolute -bottom-5 -left-5 hidden border-2 border-foreground bg-primary px-4 py-3 font-[var(--font-display)] text-3xl uppercase leading-none text-primary-foreground shadow-[4px_4px_0_hsl(var(--foreground))] md:block">
+            <div data-reveal="stamp" className="absolute -bottom-5 -left-5 [--dl-step:6] hidden border-2 border-foreground bg-primary px-4 py-3 font-[var(--font-display)] text-3xl uppercase leading-none text-primary-foreground shadow-[4px_4px_0_hsl(var(--foreground))] md:block">
               Sé tu propio banco
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1160px] px-4 py-16 md:px-8">
+      <section data-reveal-group className="mx-auto max-w-[1160px] px-4 py-16 md:px-8">
         <div className="grid gap-4 md:grid-cols-3">
           {[
             {
@@ -120,7 +123,7 @@ export default function Home() {
               body: t.public.features[2].description,
             },
           ].map((item) => (
-            <div key={item.title} className="stamp-card p-6">
+            <div key={item.title} data-reveal="rise" className="stamp-card p-6">
               <item.icon className="mb-6 h-8 w-8 text-[var(--terracota-500)] dark:text-[var(--maiz-500)]" />
               <h2 className="text-balance text-3xl">{item.title}</h2>
               <p className="mt-4 text-pretty text-sm font-semibold leading-relaxed text-muted-foreground">
@@ -131,21 +134,21 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y-2 border-foreground bg-[var(--volcan-900)] text-[var(--crema-050)]">
+      <section data-reveal-group className="border-y-2 border-foreground bg-[var(--volcan-900)] text-[var(--crema-050)]">
         <div className="mx-auto grid max-w-[1160px] gap-10 px-4 py-16 md:grid-cols-[0.8fr_1.2fr] md:px-8">
           <div>
-            <div className="page-eyebrow text-[var(--cafe-300)]">
+            <div data-reveal="eyebrow" className="page-eyebrow text-[var(--cafe-300)]">
               Ruta práctica
             </div>
-            <h2 className="mt-4 text-balance text-6xl text-[var(--crema-050)] md:text-7xl">
+            <h2 data-reveal="print" className="mt-4 text-balance text-6xl text-[var(--crema-050)] md:text-7xl">
               Dinerlo Libre 1:1
             </h2>
-            <p className="mt-6 text-pretty text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
+            <p data-reveal="rise" className="mt-6 text-pretty text-base font-semibold leading-relaxed text-[var(--cafe-300)]">
               Aprende los fundamentos, práctica con recursos reales y avanza con
               una comunidad enfocada en la soberanía financiera a través de la
               tecnología innovadora de Bitcoin.
             </p>
-            <Button asChild className="mt-8" variant="secondary">
+            <Button asChild data-reveal="rise" className="mt-8" variant="secondary">
               <Link href="/courses">{t.public.viewCourse}</Link>
             </Button>
           </div>
@@ -160,6 +163,7 @@ export default function Home() {
                   alt={`Dinero Libre poster ${index + 1}`}
                   width={1545}
                   height={2000}
+                  data-reveal="sheet"
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -168,15 +172,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-b-2 border-foreground">
+      <section data-reveal-group className="border-b-2 border-foreground">
         <div className="mx-auto max-w-[1160px] px-4 py-16 md:px-8">
           <div className="flex justify-center">
-            <div className="page-eyebrow">{t.public.sponsorsEyebrow}</div>
+            <div data-reveal="eyebrow" className="page-eyebrow">{t.public.sponsorsEyebrow}</div>
           </div>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-12 sm:flex-row sm:gap-0">
             {/* CURSO — Guate Libre + Maverick juntos */}
-            <div className="flex flex-1 flex-col items-center gap-5 px-6">
+            <div data-reveal="rise" className="flex flex-1 flex-col items-center gap-5 px-6">
               <div className="flex items-center justify-center gap-12 sm:gap-16">
                 <div className="flex flex-col items-center gap-3">
                   <div className="flex h-12 items-center">
@@ -210,10 +214,10 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="hidden w-[2px] self-stretch bg-foreground sm:block" />
+            <div data-reveal="sheet" className="hidden w-[2px] self-stretch bg-foreground sm:block" />
 
             {/* PLATAFORMA */}
-            <div className="flex flex-1 flex-col items-center gap-5 px-6">
+            <div data-reveal="rise" className="flex flex-1 flex-col items-center gap-5 px-6">
               <div className="flex flex-col items-center gap-3">
                 <div className="flex h-12 items-center">
                   <Image
@@ -234,15 +238,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1160px] px-4 py-16 md:px-8">
+      <section data-reveal-group className="mx-auto max-w-[1160px] px-4 py-16 md:px-8">
         <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr]">
           <div className="md:sticky md:top-28 h-fit">
-            <div className="page-eyebrow">{t.public.faqEyebrow}</div>
-            <h2 className="mt-4 text-balance text-6xl">{t.public.faqTitle}</h2>
-            <p className="mt-4 text-pretty font-semibold leading-relaxed text-muted-foreground">
+            <div data-reveal="eyebrow" className="page-eyebrow">{t.public.faqEyebrow}</div>
+            <h2 data-reveal="print" className="mt-4 text-balance text-6xl">{t.public.faqTitle}</h2>
+            <p data-reveal="rise" className="mt-4 text-pretty font-semibold leading-relaxed text-muted-foreground">
               {t.public.faqSubtitle}
             </p>
-            <div className="stamp-card mt-8 p-6">
+            <div data-reveal="rise" className="stamp-card mt-8 p-6">
               <MessageCircle className="mb-4 h-6 w-6 text-primary" />
               <p className="text-sm font-bold text-muted-foreground">
                 {t.public.faqMissing}
@@ -261,6 +265,7 @@ export default function Home() {
               <AccordionItem
                 key={faq.question}
                 value={`faq-${index}`}
+                data-reveal="rise"
                 className="stamp-card overflow-hidden px-6"
               >
                 <AccordionTrigger className="py-5 text-left text-lg font-bold hover:no-underline">
@@ -274,6 +279,7 @@ export default function Home() {
           </Accordion>
         </div>
       </section>
+      <LandingReveal />
     </main>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MotionConfig } from "framer-motion";
 import { useState } from "react";
-import { LoadingProvider } from "@/components/providers/loading-provider";
 import { LocaleProvider, type Locale } from "@/lib/i18n";
 
 export default function Providers({
@@ -17,9 +17,7 @@ export default function Providers({
   return (
     <QueryClientProvider client={queryClient}>
       <LocaleProvider initialLocale={initialLocale}>
-        <LoadingProvider>
-          {children}
-        </LoadingProvider>
+        <MotionConfig reducedMotion="user">{children}</MotionConfig>
       </LocaleProvider>
     </QueryClientProvider>
   );

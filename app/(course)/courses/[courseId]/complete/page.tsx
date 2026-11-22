@@ -7,6 +7,7 @@ import { getProgress } from "@/actions/get-progress";
 import { ensureCertificate } from "@/actions/certificate";
 import { getCertificateEligibility, type CertificateEligibility } from "@/lib/certificate-eligibility";
 import { getServerMessages } from "@/lib/i18n-server";
+import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 import { CompletionHero } from "./_components/completion-hero";
 import { CertificateStudio } from "./_components/certificate-studio";
 import { MaverickCta } from "./_components/maverick-cta";
@@ -23,7 +24,7 @@ export default async function CourseCompletePage(props: { params: Promise<{ cour
   if (!session?.user?.id) redirect("/sign-in");
 
   const userId = session.user.id;
-  const [course, enrollment, progress, eligibility] = await Promise.all([
+  const [course, enrollment, progress, eligibility, hasEnrollment] = await Promise.all([
     prisma.course.findUnique({
       where: { id: params.courseId },
       select: { id: true, title: true },
@@ -33,11 +34,12 @@ export default async function CourseCompletePage(props: { params: Promise<{ cour
     }),
     getProgress(userId, params.courseId),
     getCertificateEligibility(userId, params.courseId),
+    hasCourseEnrollmentAccess(userId, params.courseId),
   ]);
   if (!course) redirect("/courses");
 
   // Guard: only finishers. Accept a recorded completedAt OR live 100%.
-  if (!enrollment?.completedAt && progress < 100) {
+  if (!hasEnrollment || (!enrollment?.completedAt && progress < 100)) {
     redirect(`/courses/${params.courseId}`);
   }
 
