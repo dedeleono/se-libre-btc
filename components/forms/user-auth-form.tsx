@@ -139,6 +139,7 @@ export default function UserAuthForm() {
           >
             <Form {...form}>
               <form
+                noValidate
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="w-full space-y-4"
               >
