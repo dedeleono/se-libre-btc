@@ -84,7 +84,7 @@ export default function LegalDocumentPage({ document: key }: { document: LegalDo
           </ol>
         </nav>
 
-        <article className="lesson-content">
+        <article className="lesson-content max-w-[56ch]">
           {doc.sections.map((section) => (
             <section key={section.id} aria-labelledby={section.id}>
               <h2 id={section.id} className="scroll-mt-28">

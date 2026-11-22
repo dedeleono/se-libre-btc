@@ -17,8 +17,7 @@ const Footer = () => {
           <div className="md:col-span-6 space-y-6">
             <Logo width={210} height={48} />
             <p className="max-w-md text-sm font-semibold text-muted-foreground">
-              Financial education with a warm, practical, sovereignty-first
-              learning platform.
+              {t.public.footerTagline}
             </p>
           </div>
 
