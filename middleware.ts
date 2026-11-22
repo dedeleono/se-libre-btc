@@ -8,6 +8,7 @@ const publicRoutes = [
   "/checkout/error",
   "/checkout/success",
   "/contact",
+  "/error",
   "/courses",
   "/learning-paths",
   "/onboarding",
