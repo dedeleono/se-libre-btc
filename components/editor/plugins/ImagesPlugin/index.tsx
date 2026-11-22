@@ -55,6 +55,7 @@ import Button from '@/components/editor-ui/Button';
 import {DialogActions, DialogButtonsList} from '@/components/editor-ui/Dialog';
 import FileInput from '@/components/editor-ui/FileInput';
 import TextInput from '@/components/editor-ui/TextInput';
+import {useLocale} from '@/lib/i18n';
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -66,6 +67,7 @@ export function InsertImageUriDialogBody({
 }: {
   onClick: (payload: InsertImagePayload) => void;
 }) {
+  const {t} = useLocale();
   const [src, setSrc] = useState('');
   const [altText, setAltText] = useState('');
 
@@ -74,15 +76,15 @@ export function InsertImageUriDialogBody({
   return (
     <>
       <TextInput
-        label="Image URL"
-        placeholder="i.e. https://source.unsplash.com/random"
+        label={t.editor.image.url}
+        placeholder={t.editor.image.urlPlaceholder}
         onChange={setSrc}
         value={src}
         data-test-id="image-modal-url-input"
       />
       <TextInput
-        label="Alt Text"
-        placeholder="Random unsplash image"
+        label={t.editor.image.altText}
+        placeholder={t.editor.image.altPlaceholder}
         onChange={setAltText}
         value={altText}
         data-test-id="image-modal-alt-text-input"
@@ -92,7 +94,7 @@ export function InsertImageUriDialogBody({
           data-test-id="image-modal-confirm-btn"
           disabled={isDisabled}
           onClick={() => onClick({altText, src})}>
-          Confirm
+          {t.editor.dialogs.confirm}
         </Button>
       </DialogActions>
     </>
@@ -104,6 +106,7 @@ export function InsertImageUploadedDialogBody({
 }: {
   onClick: (payload: InsertImagePayload) => void;
 }) {
+  const {t} = useLocale();
   const [src, setSrc] = useState('');
   const [altText, setAltText] = useState('');
 
@@ -125,14 +128,14 @@ export function InsertImageUploadedDialogBody({
   return (
     <>
       <FileInput
-        label="Image Upload"
+        label={t.editor.image.upload}
         onChange={loadImage}
         accept="image/*"
         data-test-id="image-modal-file-upload"
       />
       <TextInput
-        label="Alt Text"
-        placeholder="Descriptive alternative text"
+        label={t.editor.image.altText}
+        placeholder={t.editor.image.altPlaceholder}
         onChange={setAltText}
         value={altText}
         data-test-id="image-modal-alt-text-input"
@@ -142,7 +145,7 @@ export function InsertImageUploadedDialogBody({
           data-test-id="image-modal-file-upload-btn"
           disabled={isDisabled}
           onClick={() => onClick({altText, src})}>
-          Confirm
+          {t.editor.dialogs.confirm}
         </Button>
       </DialogActions>
     </>
@@ -156,6 +159,7 @@ export function InsertImageDialog({
   activeEditor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const [mode, setMode] = useState<null | 'url' | 'file'>(null);
   const hasModifier = useRef(false);
 
@@ -185,27 +189,26 @@ export function InsertImageDialog({
               onClick(
                 hasModifier.current
                   ? {
-                      altText:
-                        'Daylight fir trees forest glacier green high ice landscape',
+                      altText: t.editor.image.sampleForestAlt,
                       src: landscapeImage.src,
                     }
                   : {
-                      altText: 'Yellow flower in tilt shift lens',
+                      altText: t.editor.image.sampleFlowerAlt,
                       src: yellowFlowerImage.src,
                     },
               )
             }>
-            Sample
+            {t.editor.image.sample}
           </Button>
           <Button
             data-test-id="image-modal-option-url"
             onClick={() => setMode('url')}>
-            URL
+            {t.editor.image.urlTab}
           </Button>
           <Button
             data-test-id="image-modal-option-file"
             onClick={() => setMode('file')}>
-            File
+            {t.editor.image.file}
           </Button>
         </DialogButtonsList>
       )}

@@ -21,6 +21,7 @@ import {createContext, useContext, useEffect, useMemo, useState} from 'react';
 import Button from '@/components/editor-ui/Button';
 import {DialogActions} from '@/components/editor-ui/Dialog';
 import TextInput from '@/components/editor-ui/TextInput';
+import {useLocale} from '@/lib/i18n';
 
 export type InsertTableCommandPayload = Readonly<{
   columns: string;
@@ -85,6 +86,7 @@ export function InsertTableDialog({
   activeEditor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const [rows, setRows] = useState('5');
   const [columns, setColumns] = useState('5');
   const [isDisabled, setIsDisabled] = useState(true);
@@ -111,16 +113,16 @@ export function InsertTableDialog({
   return (
     <>
       <TextInput
-        placeholder={'# of rows (1-500)'}
-        label="Rows"
+        placeholder={t.editor.table.rowsPlaceholder}
+        label={t.editor.table.rows}
         onChange={setRows}
         value={rows}
         data-test-id="table-modal-rows"
         type="number"
       />
       <TextInput
-        placeholder={'# of columns (1-50)'}
-        label="Columns"
+        placeholder={t.editor.table.columnsPlaceholder}
+        label={t.editor.table.columns}
         onChange={setColumns}
         value={columns}
         data-test-id="table-modal-columns"
@@ -128,7 +130,7 @@ export function InsertTableDialog({
       />
       <DialogActions data-test-id="table-model-confirm-insert">
         <Button disabled={isDisabled} onClick={onClick}>
-          Confirm
+          {t.editor.dialogs.confirm}
         </Button>
       </DialogActions>
     </>

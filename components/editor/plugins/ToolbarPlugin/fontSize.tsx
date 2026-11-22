@@ -15,6 +15,7 @@ import {
   MAX_ALLOWED_FONT_SIZE,
   MIN_ALLOWED_FONT_SIZE,
 } from '@/context/ToolbarContext';
+import {useLocale} from '@/lib/i18n';
 import {SHORTCUTS} from '../ShortcutsPlugin/shortcuts';
 import {
   updateFontSize,
@@ -68,6 +69,8 @@ export default function FontSize({
   disabled: boolean;
   editor: LexicalEditor;
 }) {
+  const {t} = useLocale();
+  const tb = t.editor.toolbar;
   const [inputValue, setInputValue] = React.useState<string>(selectionFontSize);
   const [inputChangeFlag, setInputChangeFlag] = React.useState<boolean>(false);
 
@@ -127,14 +130,15 @@ export default function FontSize({
           updateFontSize(editor, UpdateFontSizeType.decrement, inputValue)
         }
         className="toolbar-item font-decrement"
-        aria-label="Decrease font size"
-        title={`Decrease font size (${SHORTCUTS.DECREASE_FONT_SIZE})`}>
+        aria-label={tb.decreaseFontSize}
+        title={tb.withShortcut(tb.decreaseFontSize, SHORTCUTS.DECREASE_FONT_SIZE)}>
         <i className="format minus-icon" />
       </button>
 
       <input
         type="number"
-        title="Font size"
+        title={tb.fontSize}
+        aria-label={tb.fontSize}
         value={inputValue}
         disabled={disabled}
         className="toolbar-item font-size-input"
@@ -156,8 +160,8 @@ export default function FontSize({
           updateFontSize(editor, UpdateFontSizeType.increment, inputValue)
         }
         className="toolbar-item font-increment"
-        aria-label="Increase font size"
-        title={`Increase font size (${SHORTCUTS.INCREASE_FONT_SIZE})`}>
+        aria-label={tb.increaseFontSize}
+        title={tb.withShortcut(tb.increaseFontSize, SHORTCUTS.INCREASE_FONT_SIZE)}>
         <i className="format add-icon" />
       </button>
     </>

@@ -56,6 +56,7 @@ import MentionsPlugin from '../plugins/MentionsPlugin';
 import TreeViewPlugin from '../plugins/TreeViewPlugin';
 import ContentEditable from '@/components/editor-ui/ContentEditable';
 import ImageResizer from '@/components/editor-ui/ImageResizer';
+import {useLocale} from '@/lib/i18n';
 import {$isImageNode} from './ImageNode';
 import Image from 'next/image';
 
@@ -200,6 +201,7 @@ function LazyImage({
 }
 
 function BrokenImage(): JSX.Element {
+  const {t} = useLocale();
   return (
     <Image
       src={brokenImage}
@@ -209,7 +211,7 @@ function BrokenImage(): JSX.Element {
         width: 200,
       }}
       draggable="false"
-      alt="Broken image"
+      alt={t.editor.image.broken}
     />
   );
 }
@@ -237,6 +239,7 @@ export default function ImageComponent({
   width: 'inherit' | number;
   captionsEnabled: boolean;
 }): JSX.Element {
+  const {t} = useLocale();
   const imageRef = useRef<null | HTMLImageElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isSelected, setSelected, clearSelection] =
@@ -489,7 +492,7 @@ export default function ImageComponent({
               <RichTextPlugin
                 contentEditable={
                   <ContentEditable
-                    placeholder="Enter a caption..."
+                    placeholder={t.editor.image.captionPlaceholder}
                     placeholderClassName="ImageNode__placeholder"
                     className="ImageNode__contentEditable"
                   />

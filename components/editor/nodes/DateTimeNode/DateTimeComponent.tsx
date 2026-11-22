@@ -31,6 +31,8 @@ import {$getNodeByKey, NodeKey} from 'lexical';
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import {DayPicker} from 'react-day-picker';
+import {enUS, es} from 'date-fns/locale';
+import {useLocale} from '@/lib/i18n';
 
 import {$isDateTimeNode, type DateTimeNode} from './DateTimeNode';
 
@@ -43,6 +45,7 @@ export default function DateTimeComponent({
   dateTime: Date | undefined;
   nodeKey: NodeKey;
 }): JSX.Element {
+  const {t, locale} = useLocale();
   const [editor] = useLexicalComposerContext();
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef(null);
@@ -167,8 +170,10 @@ export default function DateTimeComponent({
       className={`dateTimePill ${isNodeSelected ? 'selected' : ''}`}
       ref={ref}
       style={{cursor: 'pointer', width: 'fit-content'}}>
-      {dateTime?.toDateString() + (includeTime ? ' ' + timeValue : '') ||
-        'Invalid Date'}
+      {dateTime && !Number.isNaN(dateTime.getTime())
+        ? dateTime.toLocaleDateString(locale, {dateStyle: 'medium'}) +
+          (includeTime ? ' ' + timeValue : '')
+        : t.editor.dateTime.invalid}
       {isOpen && (
         <FloatingPortal>
           <FloatingOverlay lockScroll={true}>
@@ -179,6 +184,7 @@ export default function DateTimeComponent({
                 style={floatingStyles}
                 {...getFloatingProps()}>
                 <DayPicker
+                  locale={locale === 'es' ? es : enUS}
                   captionLayout="dropdown"
                   navLayout="after"
                   fixedWeeks={false}
@@ -206,6 +212,7 @@ export default function DateTimeComponent({
                       value="value1"
                       checked={includeTime}
                       onChange={handleCheckboxChange}
+                      aria-label={t.editor.dateTime.includeTime}
                     />
                     <label>
                       <input
@@ -213,6 +220,7 @@ export default function DateTimeComponent({
                         value={timeValue}
                         onChange={handleTimeChange}
                         disabled={!includeTime}
+                        aria-label={t.editor.dateTime.time}
                       />
                     </label>
                     <span> {userTimeZone}</span>

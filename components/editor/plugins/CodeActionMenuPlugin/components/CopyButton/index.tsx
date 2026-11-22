@@ -15,6 +15,7 @@ import {
 import * as React from 'react';
 import {useState} from 'react';
 
+import {useLocale} from '@/lib/i18n';
 import {useDebounce} from '../../utils';
 
 interface Props {
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function CopyButton({editor, getCodeDOMNode}: Props) {
+  const {t} = useLocale();
   const [isCopyCompleted, setCopyCompleted] = useState<boolean>(false);
 
   const removeSuccessIcon = useDebounce(() => {
@@ -59,7 +61,7 @@ export function CopyButton({editor, getCodeDOMNode}: Props) {
   }
 
   return (
-    <button className="menu-item" onClick={handleClick} aria-label="copy">
+    <button className="menu-item" onClick={handleClick} aria-label={t.editor.code.copy} title={t.editor.code.copy}>
       {isCopyCompleted ? (
         <i className="format success" />
       ) : (

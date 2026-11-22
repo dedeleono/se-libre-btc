@@ -110,7 +110,7 @@ export default function Editor(): JSX.Element {
   } = useSettings();
   const isEditable = useLexicalEditable();
   const { t } = useLocale();
-  const placeholder = t.common.editorPlaceholder;
+  const placeholder = t.editor.placeholder;
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
   const [isSmallWidthViewport, setIsSmallWidthViewport] =
