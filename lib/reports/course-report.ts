@@ -2,15 +2,13 @@ import type { ChapterType } from "@prisma/client";
 
 import { courseHasAnyQuiz, pickFinalQuiz } from "../certificate-eligibility";
 import { AGE_BUCKETS, normalizeOptionalText, toAgeBucket, type AgeBucket } from "../demographics";
+import { bucketByMonth, overviewWindow } from "../overview-buckets";
 
 export const FUNNEL_STEPS = ["ENROLLED", "STARTED", "COMPLETED", "FINAL_PASSED", "CERTIFIED"] as const;
 export type FunnelStep = (typeof FUNNEL_STEPS)[number];
 export type FinalExamStatus = "RESOLVED" | "NO_QUIZZES" | "UNRESOLVED";
 export const UNKNOWN = "UNKNOWN";
 export type BucketKey<T extends string> = T | typeof UNKNOWN;
-
-export const REPORT_MONTHS = 12;
-export const GUATEMALA_UTC_OFFSET_HOURS = -6;
 
 export type ReportRows = {
   courses: { id: string; title: string }[];
@@ -62,26 +60,7 @@ type Participation = {
   certificateIssuedAt: Date | null;
 };
 
-const OFFSET_MS = GUATEMALA_UTC_OFFSET_HOURS * 60 * 60 * 1000;
-
-function guatemalaMonthIndex(instant: Date): number {
-  const local = new Date(instant.getTime() + OFFSET_MS);
-  return local.getUTCFullYear() * 12 + local.getUTCMonth();
-}
-
-function monthKeyOfIndex(index: number): string {
-  const year = Math.floor(index / 12);
-  return `${year}-${String(index - year * 12 + 1).padStart(2, "0")}`;
-}
-
-export function guatemalaMonthKey(instant: Date): string {
-  return monthKeyOfIndex(guatemalaMonthIndex(instant));
-}
-
-export function reportMonths(now: Date): string[] {
-  const current = guatemalaMonthIndex(now);
-  return Array.from({ length: REPORT_MONTHS }, (_, i) => monthKeyOfIndex(current - (REPORT_MONTHS - 1) + i));
-}
+const monthKey = (monthStart: Date) => monthStart.toISOString().slice(0, 7);
 
 const pairKey = (a: string, b: string) => `${a}\u0000${b}`;
 
@@ -302,14 +281,16 @@ export function buildCourseReport(rows: ReportRows, scope: ReportScope, now: Dat
         })
         .sort((a, b) => b.certified - a.certified || compareNames(a.title, b.title));
 
-  const months = reportMonths(now);
-  const monthCounts = new Map(months.map((month) => [month, 0]));
-  for (const participation of participations) {
-    if (!participation.certificateIssuedAt) continue;
-    const month = guatemalaMonthKey(participation.certificateIssuedAt);
-    const count = monthCounts.get(month);
-    if (count !== undefined) monthCounts.set(month, count + 1);
-  }
+  const monthCounts = bucketByMonth(
+    participations.flatMap((participation) =>
+      participation.certificateIssuedAt ? [{ date: participation.certificateIssuedAt, value: 1 }] : [],
+    ),
+    now,
+  );
+  const certificatesByMonth = overviewWindow(now).monthStarts.map((start, i) => ({
+    month: monthKey(start),
+    count: monthCounts[i],
+  }));
 
   const selectedCourse = scope.courseId ? courses.get(scope.courseId) : undefined;
 
@@ -332,6 +313,6 @@ export function buildCourseReport(rows: ReportRows, scope: ReportScope, now: Dat
     byCountry: sortPlaces(breakdown(people, (student) => placeKey(student.country), [UNKNOWN])),
     byRegion: scope.country ? sortPlaces(breakdown(people, (student) => placeKey(student.region), [])) : null,
     byCourse,
-    certificatesByMonth: months.map((month) => ({ month, count: monthCounts.get(month) as number })),
+    certificatesByMonth,
   };
 }

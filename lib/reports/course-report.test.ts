@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildCourseReport, guatemalaMonthKey, reportMonths, type ReportRows, type ReportScope } from "./course-report";
+import { buildCourseReport, type ReportRows, type ReportScope } from "./course-report";
 import { FIXTURE_NOW, FIXTURE_ROWS } from "./course-report.fixture";
 
 const scope = (overrides: Partial<ReportScope> = {}): ReportScope => ({
@@ -172,17 +172,22 @@ describe("buildCourseReport", () => {
   });
 });
 
-describe("Guatemala months", () => {
-  it("puts an instant in the month it has in Guatemala (UTC-6)", () => {
-    expect(guatemalaMonthKey(new Date("2026-03-01T05:59:59Z"))).toBe("2026-02");
-    expect(guatemalaMonthKey(new Date("2026-03-01T06:00:00Z"))).toBe("2026-03");
-    expect(guatemalaMonthKey(new Date("2026-01-01T03:00:00Z"))).toBe("2025-12");
+describe("certificate months in Guatemala time", () => {
+  const issuedAt = (iso: string): ReportRows => ({
+    ...FIXTURE_ROWS,
+    certificates: [{ userId: "u1", courseId: "c1", issuedAt: new Date(iso), revokedAt: null }],
+  });
+  const monthOf = (rows: ReportRows, now = FIXTURE_NOW) =>
+    buildCourseReport(rows, T1, now).certificatesByMonth.find((month) => month.count === 1)?.month;
+
+  it("counts an instant in the month it has in Guatemala (UTC-6)", () => {
+    expect(monthOf(issuedAt("2026-03-01T05:59:59Z"))).toBe("2026-02");
+    expect(monthOf(issuedAt("2026-03-01T06:00:00Z"))).toBe("2026-03");
   });
 
-  it("ends the 12-month window at the current Guatemala month", () => {
-    const months = reportMonths(new Date("2026-12-01T05:00:00Z"));
-    expect(months).toHaveLength(12);
-    expect(months[0]).toBe("2025-12");
-    expect(months[11]).toBe("2026-11");
+  it("ends the window at the current Guatemala month", () => {
+    const months = buildCourseReport(FIXTURE_ROWS, T1, new Date("2026-12-01T05:00:00Z")).certificatesByMonth;
+    expect(months[0].month).toBe("2025-12");
+    expect(months[11].month).toBe("2026-11");
   });
 });
