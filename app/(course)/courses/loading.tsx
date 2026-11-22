@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 // sidebar (w-80) + max-w-5xl content area.
 export default function CourseLoading() {
   return (
-    <div className="dl-app h-full w-full max-w-full overflow-x-hidden">
+    <div className="dl-app h-full w-full max-w-full overflow-x-clip">
       {/* Navbar */}
       <div className="fixed inset-x-0 top-0 z-50 flex h-16 w-full items-center gap-3 border-b border-foreground/10 bg-background px-4 md:pl-[21rem]">
         <Skeleton className="h-8 w-8 md:hidden" />

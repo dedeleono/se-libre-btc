@@ -60,7 +60,7 @@ const CourseLayout = async (props: {
     !session?.user && chapterId ? findChapter(tree, chapterId) : null;
 
   return (
-    <div className="dl-app h-full w-full max-w-full overflow-x-hidden">
+    <div className="dl-app h-full w-full max-w-full overflow-x-clip">
       {previewChapter && (
         <PreviewAccessCheck
           chapterId={previewChapter.id}

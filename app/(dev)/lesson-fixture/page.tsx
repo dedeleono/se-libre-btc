@@ -13,7 +13,7 @@ export default async function LessonFixturePage(props: {
   if (!data) notFound();
   const enrolled = mode === "enrolled";
   return (
-    <div className="dl-app h-full w-full max-w-full overflow-x-hidden">
+    <div className="dl-app h-full w-full max-w-full overflow-x-clip">
       <div aria-hidden className="fixed inset-y-0 left-0 hidden w-80 border-r-2 border-foreground bg-card md:block" />
       <main className="dl-stamped h-full w-full max-w-full pt-16 md:pl-80">
         <div className="flex h-full flex-col">
