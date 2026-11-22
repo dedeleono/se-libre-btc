@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLocale } from "@/lib/i18n";
-import type { QuizAnswerKey, QuizForPlayer } from "@/lib/quiz-dto";
+import type { QuizForPlayer, QuizSubmitResult } from "@/lib/quiz-dto";
 
 interface QuizPlayerProps {
   quiz: QuizForPlayer;
@@ -23,12 +23,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
   const [textAnswers, setTextAnswers] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState<{
-    scorePercent: number;
-    showCorrectAnswers: boolean;
-    answerKey: QuizAnswerKey[];
-    courseCompleted?: boolean;
-  } | null>(null);
+  const [result, setResult] = useState<QuizSubmitResult | null>(null);
 
   const toggleOption = (questionId: string, optionId: string, single = false) => {
     setSelectedOptions((current) => {
@@ -53,11 +48,12 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
           textAnswer: textAnswers[question.id] || null,
         })),
       });
-      setResult(response.data);
+      const submitted = response.data as QuizSubmitResult;
+      setResult(submitted);
       toast.success(t.course.quizSubmitted);
       // Finishing a quiz can complete the whole course. Prompt the student to
       // their certificate / Maverick page instead of stranding them here.
-      if (response.data?.courseCompleted) {
+      if (submitted.courseCompleted) {
         router.push(`/courses/${courseId}/complete`);
       } else {
         router.refresh();

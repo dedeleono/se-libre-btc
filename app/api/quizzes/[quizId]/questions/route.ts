@@ -30,7 +30,7 @@ export async function POST(req: Request, props: { params: Promise<{ quizId: stri
       prompt: body.prompt,
       type: body.type,
       explanation: body.explanation,
-      points: 1,
+      points: body.points,
       position: lastQuestion ? lastQuestion.position + 1 : 1,
       metadata: body.metadata === undefined ? undefined : body.metadata ?? Prisma.JsonNull,
       options: body.options?.length
