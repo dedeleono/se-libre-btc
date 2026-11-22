@@ -143,11 +143,7 @@ export default async function PostPage(props: PostPageProps) {
         <div className="p-8 space-y-6">
           <div className="flex items-start justify-between">
             <div className="space-y-3">
-              <h1
-                className="text-3xl font-bold tracking-tight dark:text-white/90 
-                bg-gradient-to-r from-foreground to-foreground/70 
-                dark:from-white dark:to-white/70 bg-clip-text"
-              >
+              <h1 className="text-3xl text-balance text-foreground [overflow-wrap:anywhere]">
                 {post.title}
               </h1>
               <div className="flex items-center gap-x-3 text-sm dark:text-white/50">
