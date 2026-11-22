@@ -46,6 +46,7 @@ import {DialogActions} from '@/components/editor-ui/Dialog';
 import FileInput from '@/components/editor-ui/FileInput';
 import Select from '@/components/editor-ui/Select';
 import TextInput from '@/components/editor-ui/TextInput';
+import {useLocale} from '@/lib/i18n';
 
 export type InsertInlineImagePayload = Readonly<InlineImagePayload>;
 
@@ -59,6 +60,7 @@ export function InsertInlineImageDialog({
   activeEditor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const hasModifier = useRef(false);
 
   const [src, setSrc] = useState('');
@@ -110,7 +112,7 @@ export function InsertInlineImageDialog({
     <>
       <div style={{marginBottom: '1em'}}>
         <FileInput
-          label="Image Upload"
+          label={t.editor.image.upload}
           onChange={loadImage}
           accept="image/*"
           data-test-id="image-modal-file-upload"
@@ -118,8 +120,8 @@ export function InsertInlineImageDialog({
       </div>
       <div style={{marginBottom: '1em'}}>
         <TextInput
-          label="Alt Text"
-          placeholder="Descriptive alternative text"
+          label={t.editor.image.altText}
+          placeholder={t.editor.image.altPlaceholder}
           onChange={setAltText}
           value={altText}
           data-test-id="image-modal-alt-text-input"
@@ -128,13 +130,13 @@ export function InsertInlineImageDialog({
 
       <Select
         style={{marginBottom: '1em', width: '290px'}}
-        label="Position"
+        label={t.editor.image.position}
         name="position"
         id="position-select"
         onChange={handlePositionChange}>
-        <option value="left">Left</option>
-        <option value="right">Right</option>
-        <option value="full">Full Width</option>
+        <option value="left">{t.editor.image.left}</option>
+        <option value="right">{t.editor.image.right}</option>
+        <option value="full">{t.editor.image.fullWidth}</option>
       </Select>
 
       <div className="Input__wrapper">
@@ -145,7 +147,7 @@ export function InsertInlineImageDialog({
           checked={showCaption}
           onChange={handleShowCaptionChange}
         />
-        <label htmlFor="caption">Show Caption</label>
+        <label htmlFor="caption">{t.editor.image.showCaption}</label>
       </div>
 
       <DialogActions>
@@ -153,7 +155,7 @@ export function InsertInlineImageDialog({
           data-test-id="image-modal-file-upload-btn"
           disabled={isDisabled}
           onClick={() => handleOnClick()}>
-          Confirm
+          {t.editor.dialogs.confirm}
         </Button>
       </DialogActions>
     </>
@@ -211,8 +213,14 @@ export default function InlineImagePlugin(): JSX.Element | null {
 
 const TRANSPARENT_IMAGE =
   'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-const img = document.createElement('img');
-img.src = TRANSPARENT_IMAGE;
+let dragImage: HTMLImageElement | null = null;
+function getDragImage(): HTMLImageElement {
+  if (!dragImage) {
+    dragImage = document.createElement('img');
+    dragImage.src = TRANSPARENT_IMAGE;
+  }
+  return dragImage;
+}
 
 function $onDragStart(event: DragEvent): boolean {
   const node = $getImageNodeInSelection();
@@ -224,7 +232,7 @@ function $onDragStart(event: DragEvent): boolean {
     return false;
   }
   dataTransfer.setData('text/plain', '_');
-  dataTransfer.setDragImage(img, 0, 0);
+  dataTransfer.setDragImage(getDragImage(), 0, 0);
   dataTransfer.setData(
     'application/x-lexical-drag',
     JSON.stringify({

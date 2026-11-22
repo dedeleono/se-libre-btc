@@ -14,6 +14,7 @@ import {isDOMNode} from 'lexical';
 import * as React from 'react';
 import {ReactNode, useEffect, useRef} from 'react';
 import {createPortal} from 'react-dom';
+import {useLocale} from '@/lib/i18n';
 
 function PortalImpl({
   onClose,
@@ -26,6 +27,7 @@ function PortalImpl({
   onClose: () => void;
   title: string;
 }) {
+  const {t} = useLocale();
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -76,7 +78,7 @@ function PortalImpl({
         <h2 className="Modal__title">{title}</h2>
         <button
           className="Modal__closeButton"
-          aria-label="Close modal"
+          aria-label={t.editor.dialogs.close}
           type="button"
           onClick={onClose}>
           X

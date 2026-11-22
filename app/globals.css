@@ -2889,3 +2889,105 @@ hr.selected {
 .dark .lesson-content img { outline-color: rgb(255 255 255 / 0.1); }
 .lesson-content iframe { display: block; width: 100%; max-width: 100%; height: auto; aspect-ratio: 16 / 9; border: 0; }
 .lesson-content hr { margin: 2em 0; border: 0; border-top: 1px solid hsl(var(--foreground) / 0.2); }
+
+/* Lesson notebook: the Lexical playground editor themed with app tokens (light and dark). */
+.lesson-notebook .editor-wrapper { border-radius: 2px; background: hsl(var(--card)); }
+.lesson-notebook .editor-shell { margin: 0; color: hsl(var(--foreground)); font-weight: 400; line-height: 1.5; }
+.lesson-notebook .editor-shell .toolbar {
+  height: auto;
+  min-height: 44px;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid hsl(var(--foreground) / 0.2);
+  border-radius: 0;
+  background: hsl(var(--card));
+}
+.lesson-notebook .editor-shell .editor-container { border-radius: 0; background: hsl(var(--card)); }
+.lesson-notebook .ContentEditable__root { font-size: 1rem; color: hsl(var(--foreground)); }
+.lesson-notebook .ContentEditable__placeholder { font-size: 1rem; color: hsl(var(--muted-foreground)); }
+.lesson-notebook .ContentEditable__root ::selection { background-color: hsl(var(--primary) / 0.35); }
+.lesson-notebook .toolbar button.toolbar-item { border-radius: 2px; color: hsl(var(--foreground)); }
+.lesson-notebook .toolbar button.toolbar-item.active { background-color: hsl(var(--primary) / 0.15); }
+.lesson-notebook .toolbar .toolbar-item:hover:not([disabled]) { background-color: hsl(var(--secondary)); }
+.lesson-notebook .toolbar .toolbar-item .text,
+.lesson-notebook .font-size-input { color: hsl(var(--muted-foreground)); background: transparent; }
+.lesson-notebook .toolbar .divider { background-color: hsl(var(--foreground) / 0.2); }
+.lesson-notebook .action-button { border-radius: 2px; background-color: hsl(var(--secondary)); color: hsl(var(--foreground)); }
+.lesson-notebook .action-button:hover { background-color: hsl(var(--muted)); }
+.lesson-notebook button.action-button:disabled { background-color: hsl(var(--secondary)); opacity: 0.45; }
+.lesson-notebook :is(.toolbar button.toolbar-item, .action-button):focus-visible {
+  outline: 2px solid hsl(var(--foreground));
+  outline-offset: -2px;
+}
+.dark .lesson-notebook :is(.toolbar i, .toolbar .icon, .actions i, .add-icon, .minus-icon) { filter: invert(1); }
+
+/* Editor menus: the "/" insert menu (unstyled upstream) and dark-mode toolbar dropdowns, with app tokens. */
+.typeahead-popover {
+  position: relative;
+  z-index: 50;
+  margin-top: 28px;
+  min-width: 240px;
+  max-height: 20rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 2px solid hsl(var(--foreground));
+  border-radius: 2px;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  box-shadow: 0 10px 24px -8px hsl(var(--foreground) / 0.35);
+}
+.typeahead-popover ul { margin: 0; padding: 4px; list-style: none; }
+.typeahead-popover li {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 2px;
+  font-size: 15px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.typeahead-popover li.selected { background: hsl(var(--secondary)); }
+/* Lexical mounts the menu inside #typeahead-menu, whose playground rules are ID-specific. */
+#typeahead-menu:has(.typeahead-popover) { background: transparent; box-shadow: none; }
+#typeahead-menu .typeahead-popover ul { max-height: none; overflow: visible; border-radius: 0; }
+#typeahead-menu .typeahead-popover li,
+#typeahead-menu .typeahead-popover li:first-child,
+#typeahead-menu .typeahead-popover li:last-child {
+  margin: 0;
+  max-width: none;
+  border-radius: 2px;
+  background-color: transparent;
+  color: hsl(var(--foreground));
+  line-height: 1.3;
+}
+#typeahead-menu .typeahead-popover li.selected,
+#typeahead-menu .typeahead-popover li:hover { background-color: hsl(var(--secondary)); }
+.typeahead-popover li .icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.dark .typeahead-popover li .icon,
+.dark .dropdown .item :is(.icon, i) { filter: invert(1); }
+.dark .dropdown {
+  background-color: hsl(var(--card));
+  box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.6), inset 0 0 0 1px hsl(var(--foreground) / 0.2);
+}
+.dark .dropdown .item { background-color: hsl(var(--card)); color: hsl(var(--foreground)); }
+.dark .dropdown .item:hover,
+.dark .dropdown .item.dropdown-item-active { background-color: hsl(var(--secondary)); }
+.dark .dropdown .item .shortcut { color: hsl(var(--muted-foreground)); }
+.dark .dropdown .divider { background-color: hsl(var(--foreground) / 0.2); }
+.dark .floating-text-format-popup {
+  background-color: hsl(var(--card));
+  box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.6), inset 0 0 0 1px hsl(var(--foreground) / 0.2);
+}
+.dark .floating-text-format-popup button.popup-item { color: hsl(var(--foreground)); }
+.dark .floating-text-format-popup button.popup-item.active,
+.dark .floating-text-format-popup button.popup-item:hover:not([disabled]) { background-color: hsl(var(--secondary)); }
+.dark .floating-text-format-popup :is(i.format, .divider) { filter: invert(1); }

@@ -13,15 +13,17 @@ import * as React from 'react';
 import {useState} from 'react';
 
 import Button from '@/components/editor-ui/Button';
+import {useLocale} from '@/lib/i18n';
+import type {Messages} from '@/lib/i18n/messages';
 import DropDown, {DropDownItem} from '@/components/editor-ui/DropDown';
 import {INSERT_LAYOUT_COMMAND} from './LayoutPlugin';
 
-const LAYOUTS = [
-  {label: '2 columns (equal width)', value: '1fr 1fr'},
-  {label: '2 columns (25% - 75%)', value: '1fr 3fr'},
-  {label: '3 columns (equal width)', value: '1fr 1fr 1fr'},
-  {label: '3 columns (25% - 50% - 25%)', value: '1fr 2fr 1fr'},
-  {label: '4 columns (equal width)', value: '1fr 1fr 1fr 1fr'},
+const LAYOUTS: {key: keyof Messages['editor']['layout']; value: string}[] = [
+  {key: 'twoEqual', value: '1fr 1fr'},
+  {key: 'twoQuarterThreeQuarters', value: '1fr 3fr'},
+  {key: 'threeEqual', value: '1fr 1fr 1fr'},
+  {key: 'threeQuarterHalfQuarter', value: '1fr 2fr 1fr'},
+  {key: 'fourEqual', value: '1fr 1fr 1fr 1fr'},
 ];
 
 export default function InsertLayoutDialog({
@@ -31,8 +33,10 @@ export default function InsertLayoutDialog({
   activeEditor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const [layout, setLayout] = useState(LAYOUTS[0].value);
-  const buttonLabel = LAYOUTS.find((item) => item.value === layout)?.label;
+  const selected = LAYOUTS.find((item) => item.value === layout);
+  const buttonLabel = selected ? t.editor.layout[selected.key] : undefined;
 
   const onClick = () => {
     activeEditor.dispatchCommand(INSERT_LAYOUT_COMMAND, layout);
@@ -44,16 +48,16 @@ export default function InsertLayoutDialog({
       <DropDown
         buttonClassName="toolbar-item dialog-dropdown"
         buttonLabel={buttonLabel}>
-        {LAYOUTS.map(({label, value}) => (
+        {LAYOUTS.map(({key, value}) => (
           <DropDownItem
             key={value}
             className="item"
             onClick={() => setLayout(value)}>
-            <span className="text">{label}</span>
+            <span className="text">{t.editor.layout[key]}</span>
           </DropDownItem>
         ))}
       </DropDown>
-      <Button onClick={onClick}>Insert</Button>
+      <Button onClick={onClick}>{t.editor.dialogs.insert}</Button>
     </>
   );
 }

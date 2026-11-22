@@ -30,6 +30,7 @@ import {
 import Button from '@/components/editor-ui/Button';
 import {DialogActions} from '@/components/editor-ui/Dialog';
 import TextInput from '@/components/editor-ui/TextInput';
+import {useLocale} from '@/lib/i18n';
 
 export const INSERT_POLL_COMMAND: LexicalCommand<string> = createCommand(
   'INSERT_POLL_COMMAND',
@@ -42,6 +43,7 @@ export function InsertPollDialog({
   activeEditor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   const [question, setQuestion] = useState('');
 
   const onClick = () => {
@@ -51,10 +53,10 @@ export function InsertPollDialog({
 
   return (
     <>
-      <TextInput label="Question" onChange={setQuestion} value={question} />
+      <TextInput label={t.editor.poll.question} onChange={setQuestion} value={question} />
       <DialogActions>
         <Button disabled={question.trim() === ''} onClick={onClick}>
-          Confirm
+          {t.editor.dialogs.confirm}
         </Button>
       </DialogActions>
     </>

@@ -23,7 +23,7 @@ export default function RootLayout({
   const t = getServerMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col antialiased">
         <SkipLink label={t.common.skipToContent} />
         <Providers initialLocale={locale}>

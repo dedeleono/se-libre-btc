@@ -167,9 +167,7 @@ export const ChapterContentForm = ({
               />
             </div>
           ) : (
-            <div className="prose max-w-none">
-              <Preview value={initialData.richContent || ""} />
-            </div>
+            <Preview value={initialData.richContent || ""} className="lesson-content" />
           )}
         </div>
       )}

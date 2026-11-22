@@ -25,6 +25,7 @@ import {
   SerializedDecoratorBlockNode,
 } from '@lexical/react/LexicalDecoratorBlockNode';
 import * as React from 'react';
+import {useLocale} from '@/lib/i18n';
 
 type YouTubeComponentProps = Readonly<{
   className: Readonly<{
@@ -42,6 +43,7 @@ function YouTubeComponent({
   nodeKey,
   videoID,
 }: YouTubeComponentProps) {
+  const {t} = useLocale();
   return (
     <BlockWithAlignableContents
       className={className}
@@ -54,7 +56,7 @@ function YouTubeComponent({
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen={true}
-        title="YouTube video"
+        title={t.editor.youtubeTitle}
       />
     </BlockWithAlignableContents>
   );

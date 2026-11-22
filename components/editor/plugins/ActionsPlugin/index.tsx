@@ -31,15 +31,14 @@ import {
   $isParagraphNode,
   CLEAR_EDITOR_COMMAND,
   CLEAR_HISTORY_COMMAND,
-  COLLABORATION_TAG,
   COMMAND_PRIORITY_EDITOR,
-  HISTORIC_TAG,
 } from 'lexical';
 import {useCallback, useEffect, useState} from 'react';
 
 import {INITIAL_SETTINGS} from '@/types/editor-settings';
 import useFlashMessage from '@/hooks/useFlashMessage';
 import useModal from '@/hooks/useModal';
+import {useLocale} from '@/lib/i18n';
 import Button from '@/components/editor-ui/Button';
 import {docFromHash, docToHash} from '@/utilities/docSerialization';
 import {PLAYGROUND_TRANSFORMERS} from '../MarkdownTransformers';
@@ -47,44 +46,6 @@ import {
   SPEECH_TO_TEXT_COMMAND,
   SUPPORT_SPEECH_RECOGNITION,
 } from '../SpeechToTextPlugin';
-
-async function sendEditorState(editor: LexicalEditor): Promise<void> {
-  const stringifiedEditorState = JSON.stringify(editor.getEditorState());
-  try {
-    await fetch('http://localhost:1235/setEditorState', {
-      body: stringifiedEditorState,
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      method: 'POST',
-    });
-  } catch {
-    // NO-OP
-  }
-}
-
-async function validateEditorState(editor: LexicalEditor): Promise<void> {
-  const stringifiedEditorState = JSON.stringify(editor.getEditorState());
-  let response = null;
-  try {
-    response = await fetch('http://localhost:1235/validateEditorState', {
-      body: stringifiedEditorState,
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      method: 'POST',
-    });
-  } catch {
-    // NO-OP
-  }
-  if (response !== null && response.status === 403) {
-    throw new Error(
-      'Editor state validation failed! Server did not accept changes.',
-    );
-  }
-}
 
 async function shareDoc(doc: SerializedDocument): Promise<void> {
   if (typeof window === 'undefined') return;
@@ -103,6 +64,7 @@ export default function ActionsPlugin({
   isRichText: boolean;
   shouldPreserveNewLinesInMarkdown: boolean;
 }): JSX.Element {
+  const {t} = useLocale();
   const [editor] = useLexicalComposerContext();
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
   const [isSpeechToText, setIsSpeechToText] = useState(false);
@@ -141,17 +103,7 @@ export default function ActionsPlugin({
 
   useEffect(() => {
     return editor.registerUpdateListener(
-      ({dirtyElements, prevEditorState, tags}) => {
-        // If we are in read only mode, send the editor state
-        // to server and ask for validation if possible.
-        if (
-          !isEditable &&
-          dirtyElements.size > 0 &&
-          !tags.has(HISTORIC_TAG) &&
-          !tags.has(COLLABORATION_TAG)
-        ) {
-          validateEditorState(editor);
-        }
+      () => {
         editor.getEditorState().read(() => {
           const root = $getRoot();
           const children = root.getChildren();
@@ -169,7 +121,7 @@ export default function ActionsPlugin({
         });
       },
     );
-  }, [editor, isEditable]);
+  }, [editor]);
 
   const handleMarkdownToggle = useCallback(() => {
     editor.update(() => {
@@ -259,32 +211,28 @@ export default function ActionsPlugin({
         className="action-button clear"
         disabled={isEditorEmpty}
         onClick={() => {
-          showModal('Clear editor', (onClose) => (
+          showModal(t.editor.actions.clear, (onClose) => (
             <ShowClearDialog editor={editor} onClose={onClose} />
           ));
         }}
-        title="Clear"
-        aria-label="Clear editor contents">
+        title={t.editor.actions.clear}
+        aria-label={t.editor.actions.clear}>
         <i className="clear" />
       </button>
       <button
         className={`action-button ${!isEditable ? 'unlock' : 'lock'}`}
         onClick={() => {
-          // Send latest editor state to commenting validation server
-          if (isEditable) {
-            sendEditorState(editor);
-          }
           editor.setEditable(!editor.isEditable());
         }}
-        title="Read-Only Mode"
-        aria-label={`${!isEditable ? 'Unlock' : 'Lock'} read-only mode`}>
+        title={!isEditable ? t.editor.actions.unlockReadOnly : t.editor.actions.lockReadOnly}
+        aria-label={!isEditable ? t.editor.actions.unlockReadOnly : t.editor.actions.lockReadOnly}>
         <i className={!isEditable ? 'unlock' : 'lock'} />
       </button>
       <button
         className="action-button"
         onClick={handleMarkdownToggle}
-        title="Convert From Markdown"
-        aria-label="Convert from markdown">
+        title={t.editor.actions.convertFromMarkdown}
+        aria-label={t.editor.actions.convertFromMarkdown}>
         <i className="markdown" />
       </button>
       {isCollabActive && (
@@ -314,9 +262,10 @@ function ShowClearDialog({
   editor: LexicalEditor;
   onClose: () => void;
 }): JSX.Element {
+  const {t} = useLocale();
   return (
     <>
-      Are you sure you want to clear the editor?
+      {t.editor.actions.confirmClear}
       <div className="Modal__content">
         <Button
           onClick={() => {
@@ -324,14 +273,14 @@ function ShowClearDialog({
             editor.focus();
             onClose();
           }}>
-          Clear
+          {t.editor.actions.clear}
         </Button>{' '}
         <Button
           onClick={() => {
             editor.focus();
             onClose();
           }}>
-          Cancel
+          {t.editor.dialogs.cancel}
         </Button>
       </div>
     </>
