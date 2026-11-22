@@ -63,7 +63,7 @@ export default function LegalDocumentPage({ document: key }: { document: LegalDo
       </header>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-16">
-        <nav aria-labelledby="legal-contents" className="lg:sticky lg:top-28 lg:self-start">
+        <nav aria-labelledby="legal-contents">
           <p
             id="legal-contents"
             className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
