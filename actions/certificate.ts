@@ -6,11 +6,16 @@ import { auth } from "@/lib/auth";
 import { getProgress } from "@/actions/get-progress";
 import { generateSerial, prefillRecipientName } from "@/lib/certificate";
 import { getCertificateEligibility } from "@/lib/certificate-eligibility";
+import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
 
 async function requireUser() {
   const session = await auth();
   if (!session?.user?.id) throw new Error("UNAUTHORIZED");
   return session.user.id;
+}
+
+async function assertEnrolled(userId: string, courseId: string) {
+  if (!(await hasCourseEnrollmentAccess(userId, courseId))) throw new Error("NOT_ENROLLED");
 }
 
 async function assertCourseComplete(userId: string, courseId: string) {
@@ -27,6 +32,7 @@ async function assertCourseComplete(userId: string, courseId: string) {
 async function assertFinalQuizAced(userId: string, courseId: string) {
   const eligibility = await getCertificateEligibility(userId, courseId);
   if (!eligibility.eligible) throw new Error("FINAL_QUIZ_NOT_PASSED");
+  return eligibility;
 }
 
 export type CertificateSummary = {
@@ -49,8 +55,9 @@ function toSummary(c: CertificateSummary): CertificateSummary {
 
 export async function ensureCertificate(courseId: string): Promise<CertificateSummary> {
   const userId = await requireUser();
+  await assertEnrolled(userId, courseId);
   await assertCourseComplete(userId, courseId);
-  await assertFinalQuizAced(userId, courseId);
+  const eligibility = await assertFinalQuizAced(userId, courseId);
 
   const existing = await prisma.certificate.findUnique({
     where: { userId_courseId: { userId, courseId } },
@@ -68,6 +75,8 @@ export async function ensureCertificate(courseId: string): Promise<CertificateSu
           courseId,
           serial: generateSerial(),
           recipientName: prefillRecipientName(user),
+          finalQuizId: eligibility.finalQuiz?.id ?? null,
+          finalQuizScorePercent: eligibility.bestFinalQuizScorePercent,
         },
       });
       return toSummary(created);
@@ -96,6 +105,7 @@ export async function updateCertificate(input: {
   const userId = await requireUser();
   const cert = await prisma.certificate.findUnique({ where: { id: input.id } });
   if (!cert || cert.userId !== userId) throw new Error("NOT_FOUND");
+  await assertEnrolled(userId, cert.courseId);
   await assertFinalQuizAced(userId, cert.courseId);
 
   const data: { recipientName?: string; design?: "STANDARD" | "PUNK" } = {};

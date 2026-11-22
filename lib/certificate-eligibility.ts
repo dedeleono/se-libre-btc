@@ -1,3 +1,5 @@
+import type { ChapterType } from "@prisma/client";
+
 import { prisma } from "./db";
 
 /**
@@ -19,6 +21,8 @@ import { prisma } from "./db";
  *   genuinely does not apply, and certificates are issued on completion as
  *   before. Gating quiz-less courses would block every certificate they have
  *   ever issued.
+ *
+ *   Quiz rows on chapters whose `type` is not QUIZ are ignored (they cannot be taken).
  */
 export const PERFECT_FINAL_QUIZ_SCORE = 100;
 
@@ -41,8 +45,11 @@ export type CertificateEligibility = {
 type ChapterWithQuiz = {
   id: string;
   title: string;
+  type: ChapterType;
   quiz: { id: string; title: string; isFinalExam?: boolean } | null;
 };
+
+const isTakeableQuizChapter = (chapter: ChapterWithQuiz) => chapter.type === "QUIZ" && chapter.quiz != null;
 
 type ModuleWithChapters = { chapters: ChapterWithQuiz[] };
 
@@ -61,7 +68,7 @@ type ModuleWithChapters = { chapters: ChapterWithQuiz[] };
  * module's chapters ordered by position (getCertificateEligibility does this).
  */
 export function pickFinalQuiz(modules: ModuleWithChapters[]): FinalQuizRef | null {
-  const quizChapters = modules.flatMap((module) => module.chapters).filter((chapter) => chapter.quiz);
+  const quizChapters = modules.flatMap((module) => module.chapters).filter(isTakeableQuizChapter);
   const flagged = quizChapters.filter((chapter) => chapter.quiz?.isFinalExam);
   const pool = flagged.length > 0 ? flagged : quizChapters;
   const last = pool[pool.length - 1];
@@ -71,7 +78,7 @@ export function pickFinalQuiz(modules: ModuleWithChapters[]): FinalQuizRef | nul
 
 /** True if the course has any quiz chapter at all (published or not). */
 export function courseHasAnyQuiz(modules: ModuleWithChapters[]): boolean {
-  return modules.some((module) => module.chapters.some((chapter) => chapter.quiz));
+  return modules.some((module) => module.chapters.some(isTakeableQuizChapter));
 }
 
 /**
@@ -126,10 +133,9 @@ export function evaluateEligibility(
   };
 }
 
-export async function getCertificateEligibility(
-  userId: string,
+export async function resolveFinalQuiz(
   courseId: string
-): Promise<CertificateEligibility> {
+): Promise<{ finalQuiz: FinalQuizRef | null; courseHasQuiz: boolean }> {
   // Pull published chapters (used to resolve the final quiz in course order) and,
   // separately, whether the course has ANY quiz at all (published or not). The
   // latter decides whether a missing final quiz is a legacy quiz-less course
@@ -147,6 +153,7 @@ export async function getCertificateEligibility(
               select: {
                 id: true,
                 title: true,
+                type: true,
                 quiz: { select: { id: true, title: true, isFinalExam: true } },
               },
             },
@@ -155,14 +162,21 @@ export async function getCertificateEligibility(
       },
     }),
     prisma.quiz.findFirst({
-      where: { chapter: { module: { courseId } } },
+      where: { chapter: { type: "QUIZ", module: { courseId } } },
       select: { id: true },
     }),
   ]);
 
   const modules = course?.modules ?? [];
   const courseHasQuiz = anyQuiz != null || courseHasAnyQuiz(modules);
-  const finalQuiz = pickFinalQuiz(modules);
+  return { finalQuiz: pickFinalQuiz(modules), courseHasQuiz };
+}
+
+export async function getCertificateEligibility(
+  userId: string,
+  courseId: string
+): Promise<CertificateEligibility> {
+  const { finalQuiz, courseHasQuiz } = await resolveFinalQuiz(courseId);
 
   if (!finalQuiz) return evaluateEligibility(courseId, null, null, courseHasQuiz);
 

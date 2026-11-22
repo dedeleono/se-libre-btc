@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,6 +33,9 @@ import { useLocale } from "@/lib/i18n";
 import { AgeRangeSelect } from "@/components/forms/age-range-select";
 import Combobox from "@/components/ui/combobox";
 import { COUNTRIES, getRegionsForCountry, countryHasRegions } from "@/lib/constants/countries";
+import type { ProfileFieldErrors } from "@/lib/validations/profile";
+
+const SERVER_CHECKED_FIELDS = ["ageRange", "country", "region"] as const;
 
 interface OnboardingFormProps {
   organizationId: string;
@@ -148,6 +151,17 @@ export default function OnboardingForm({
     },
   });
 
+  // After a failed save on the photo step, we step back to the details step.
+  // Its fields only register their refs when that step commits, so focus waits
+  // for the effect that runs after the render instead of guessing with a timer.
+  const [pendingFocusField, setPendingFocusField] =
+    useState<(typeof SERVER_CHECKED_FIELDS)[number] | null>(null);
+  useEffect(() => {
+    if (currentStepIndex !== 0 || !pendingFocusField) return;
+    form.setFocus(pendingFocusField);
+    setPendingFocusField(null);
+  }, [currentStepIndex, pendingFocusField, form]);
+
   const handleStepSubmit = async (stepId: string, data: any) => {
     try {
       setStepStates(prev => ({ ...prev, [stepId]: 'loading' }));
@@ -206,7 +220,21 @@ export default function OnboardingForm({
       }
     } catch (error) {
       console.error(error);
-      toast.error(t.common.somethingWentWrong);
+      const fieldErrors: ProfileFieldErrors | undefined =
+        axios.isAxiosError(error) && error.response?.status === 400
+          ? error.response.data?.fieldErrors
+          : undefined;
+      const invalidFields = SERVER_CHECKED_FIELDS.filter((field) => fieldErrors?.[field]);
+      if (invalidFields.length === 0) {
+        toast.error(t.common.somethingWentWrong);
+        return;
+      }
+      for (const field of invalidFields) {
+        form.setError(field, { message: t.profile.invalidSelection });
+      }
+      setStepStates((prev) => ({ ...prev, "personal-info": "error" }));
+      setCurrentStepIndex(0);
+      setPendingFocusField(invalidFields[0]);
     } finally {
       setIsLoading(false);
     }
@@ -284,6 +312,8 @@ export default function OnboardingForm({
                       <FormControl>
                         <AgeRangeSelect
                           value={field.value}
+                          ref={field.ref}
+                          onBlur={field.onBlur}
                           onChange={field.onChange}
                           placeholder={t.profile.ageRangePlaceholder}
                         />
@@ -302,6 +332,8 @@ export default function OnboardingForm({
                         <Combobox
                           options={COUNTRIES.map((c) => ({ label: c.name, value: c.name }))}
                           value={field.value}
+                          ref={field.ref}
+                          onBlur={field.onBlur}
                           onChange={(v) => {
                             form.setValue("country", v as string, { shouldValidate: true });
                             form.setValue("region", "", { shouldValidate: true });
@@ -326,6 +358,8 @@ export default function OnboardingForm({
                               value: r,
                             }))}
                             value={field.value}
+                            ref={field.ref}
+                            onBlur={field.onBlur}
                             onChange={(v) =>
                               form.setValue("region", v as string, { shouldValidate: true })
                             }
@@ -340,7 +374,9 @@ export default function OnboardingForm({
                   type="button"
                   className="w-full"
                   onClick={async () => {
-                    const valid = await form.trigger(["name", "ageRange", "country", "region"]);
+                    const valid = await form.trigger(["name", "ageRange", "country", "region"], {
+                      shouldFocus: true,
+                    });
                     if (!valid) return;
                     handleStepSubmit('personal-info', {
                       name: form.getValues('name'),

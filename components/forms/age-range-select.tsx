@@ -1,5 +1,7 @@
 "use client";
 
+import type * as React from "react";
+
 import {
   Select,
   SelectContent,
@@ -9,16 +11,29 @@ import {
 } from "@/components/ui/select";
 import { AGE_RANGES } from "@/lib/constants/demographics";
 
-interface AgeRangeSelectProps {
+type AgeRangeSelectProps = Pick<
+  React.ComponentProps<"button">,
+  "id" | "aria-describedby" | "aria-invalid" | "onBlur"
+> & {
   value?: string;
   onChange: (value: string) => void;
   placeholder?: string;
-}
+  disabled?: boolean;
+  /** React 19 ref-as-prop: lands on the focusable trigger so `form.setFocus` can reach it. */
+  ref?: React.Ref<HTMLButtonElement>;
+};
 
-export function AgeRangeSelect({ value, onChange, placeholder }: AgeRangeSelectProps) {
+export function AgeRangeSelect({
+  value,
+  onChange,
+  placeholder,
+  disabled,
+  ref,
+  ...triggerProps
+}: AgeRangeSelectProps) {
   return (
-    <Select value={value || undefined} onValueChange={onChange}>
-      <SelectTrigger className="w-full">
+    <Select value={value || undefined} onValueChange={onChange} disabled={disabled}>
+      <SelectTrigger ref={ref} className="w-full" {...triggerProps}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

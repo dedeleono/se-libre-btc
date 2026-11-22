@@ -1,9 +1,9 @@
 import { Navbar } from "./_components/navbar";
 import { Sidebar } from "./_components/sidebar";
 import { DashboardShell } from "./_components/dashboard-shell";
-import { createSsrClient } from "@/lib/supabase/supabaseSsr";
 
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 import { NotificationType } from "@prisma/client";
 
 interface Notification {
@@ -26,39 +26,33 @@ interface Notification {
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await auth();
-  const supabase = createSsrClient();
-  
-  let notifications: Notification[] = [];
-  
-  if (session?.user) {
-    
-    try {
-      const { data, error } = await supabase
-        .from('Notification')
-        .select(`
-          *,
-          sender:User!senderId (
-            name,
-            image
-          )
-        `)
-        .eq('receiverId', session.user.id)
-        .order('createdAt', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching notifications:', error);
-        console.error('Error details:', {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint
-        });
-      } else {
-        console.log('Successfully fetched notifications:', data);
-        notifications = data as unknown as Notification[];
-      }
+  let notifications: Notification[] = [];
+
+  if (session?.user) {
+    try {
+      const rows = await prisma.notification.findMany({
+        where: { receiverId: session.user.id },
+        include: { sender: { select: { name: true, image: true } } },
+        orderBy: { createdAt: "desc" },
+      });
+
+      notifications = rows.map((row) => ({
+        id: row.id,
+        type: row.type,
+        title: row.title,
+        body: row.body,
+        isRead: row.isRead,
+        senderId: row.senderId,
+        receiverId: row.receiverId,
+        paymentId: row.paymentId ?? undefined,
+        forumPostId: row.forumPostId ?? undefined,
+        createdAt: row.createdAt.toISOString(),
+        updatedAt: row.updatedAt.toISOString(),
+        sender: row.sender,
+      }));
     } catch (error) {
-      console.error('Unexpected error fetching notifications:', error);
+      console.error("[DASHBOARD_NOTIFICATIONS]", error);
     }
   }
 

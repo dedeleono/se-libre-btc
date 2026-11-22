@@ -1,17 +1,34 @@
 import { describe, it, expect } from "vitest";
-import { pickFinalQuiz, evaluateEligibility, courseHasAnyQuiz } from "./certificate-eligibility";
+import {
+  pickFinalQuiz,
+  evaluateEligibility,
+  courseHasAnyQuiz,
+  PERFECT_FINAL_QUIZ_SCORE,
+} from "./certificate-eligibility";
+import { PERFECT_SCORE } from "./quiz-dto";
 
 const quizChapter = (chapterId: string, quizId: string, title = "Final quiz") => ({
   id: chapterId,
   title,
+  type: "QUIZ" as const,
   quiz: { id: quizId, title },
 });
 
 const lessonChapter = (chapterId: string, title = "Lesson") => ({
   id: chapterId,
   title,
+  type: "LESSON" as const,
   quiz: null,
 });
+
+const courseWithStrayQuiz = [
+  {
+    chapters: [
+      lessonChapter("l1"),
+      { id: "c2", title: "Was a quiz", type: "LESSON" as const, quiz: { id: "q2", title: "Stray", isFinalExam: true } },
+    ],
+  },
+];
 
 describe("pickFinalQuiz", () => {
   it("returns null when there are no chapters", () => {
@@ -39,7 +56,7 @@ describe("pickFinalQuiz", () => {
 
   it("falls back to the chapter title when the quiz title is empty", () => {
     const finalQuiz = pickFinalQuiz([
-      { chapters: [{ id: "c1", title: "Module wrap", quiz: { id: "q1", title: "" } }] },
+      { chapters: [{ id: "c1", title: "Module wrap", type: "QUIZ" as const, quiz: { id: "q1", title: "" } }] },
     ]);
     expect(finalQuiz).toEqual({ id: "q1", chapterId: "c1", title: "Module wrap" });
   });
@@ -58,7 +75,7 @@ describe("pickFinalQuiz", () => {
     const finalQuiz = pickFinalQuiz([
       {
         chapters: [
-          { id: "exam-ch", title: "EXAMEN FINAL", quiz: { id: "exam-q", title: "EXAMEN FINAL", isFinalExam: true } },
+          { id: "exam-ch", title: "EXAMEN FINAL", type: "QUIZ" as const, quiz: { id: "exam-q", title: "EXAMEN FINAL", isFinalExam: true } },
         ],
       },
       // A later-ordered module quiz that is NOT the final exam must be ignored.
@@ -69,10 +86,26 @@ describe("pickFinalQuiz", () => {
 
   it("uses the last flagged quiz when several are marked isFinalExam", () => {
     const finalQuiz = pickFinalQuiz([
-      { chapters: [{ id: "c1", title: "A", quiz: { id: "q1", title: "A", isFinalExam: true } }] },
-      { chapters: [{ id: "c2", title: "B", quiz: { id: "q2", title: "B", isFinalExam: true } }] },
+      { chapters: [{ id: "c1", title: "A", type: "QUIZ" as const, quiz: { id: "q1", title: "A", isFinalExam: true } }] },
+      { chapters: [{ id: "c2", title: "B", type: "QUIZ" as const, quiz: { id: "q2", title: "B", isFinalExam: true } }] },
     ]);
     expect(finalQuiz).toEqual({ id: "q2", chapterId: "c2", title: "B" });
+  });
+
+  it("ignores a flagged quiz left on a chapter whose type is no longer QUIZ", () => {
+    const finalQuiz = pickFinalQuiz([
+      { chapters: [quizChapter("cq1", "q1", "QUIZ LECCIÓN 1")] },
+      {
+        chapters: [
+          { id: "old-exam", title: "Old exam", type: "LESSON" as const, quiz: { id: "old-q", title: "Old exam", isFinalExam: true } },
+        ],
+      },
+    ]);
+    expect(finalQuiz).toEqual({ id: "q1", chapterId: "cq1", title: "QUIZ LECCIÓN 1" });
+  });
+
+  it("returns null when the only quiz row sits on a LESSON chapter", () => {
+    expect(pickFinalQuiz(courseWithStrayQuiz)).toBeNull();
   });
 });
 
@@ -87,6 +120,10 @@ describe("courseHasAnyQuiz", () => {
 
   it("is true when any chapter has a quiz", () => {
     expect(courseHasAnyQuiz([{ chapters: [lessonChapter("c1"), quizChapter("c2", "q2")] }])).toBe(true);
+  });
+
+  it("is false when the only quiz row sits on a LESSON chapter (quiz-less, not unresolved)", () => {
+    expect(courseHasAnyQuiz(courseWithStrayQuiz)).toBe(false);
   });
 });
 
@@ -168,5 +205,11 @@ describe("evaluateEligibility", () => {
     // regression suite is the null branch above. Here we assert the picker still works.
     expect(finalQuiz).toEqual({ id: "q1", chapterId: "cq1", title: "Final quiz" });
     expect(courseHasAnyQuiz(publishedModules)).toBe(true);
+  });
+});
+
+describe("score thresholds", () => {
+  it("the reveal threshold equals the certificate threshold", () => {
+    expect(PERFECT_SCORE).toBe(PERFECT_FINAL_QUIZ_SCORE);
   });
 });

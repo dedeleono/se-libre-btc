@@ -1,28 +1,7 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextRequest, NextResponse } from "next/server";
 
-const publicRoutes = [
-  "/",
-  "/about",
-  "/checkout",
-  "/checkout/error",
-  "/checkout/success",
-  "/contact",
-  "/error",
-  "/courses",
-  "/learning-paths",
-  "/onboarding",
-  "/sign-in",
-  "/verify-request",
-];
-
-function isPublicRoute(pathname: string) {
-  return (
-    publicRoutes.includes(pathname) ||
-    pathname.startsWith("/learning-paths/") ||
-    pathname.startsWith("/courses/preview/")
-  );
-}
+import { isPublicRoute } from "@/lib/public-routes";
 
 export function middleware(request: NextRequest) {
   const { nextUrl } = request;

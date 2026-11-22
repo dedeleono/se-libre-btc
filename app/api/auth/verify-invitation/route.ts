@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { errorPath } from "@/lib/error-codes";
-import { SupabaseNotifications } from "@/lib/supabase/notifications";
+import { createUserSignupNotification } from "@/lib/notifications";
 
 
 export const dynamic = 'force-dynamic';
@@ -65,7 +65,7 @@ export async function GET(req: Request) {
         // Create signup notification for admin users
         try {
             if (!existingUser) {
-                await SupabaseNotifications.createUserSignupNotification(
+                await createUserSignupNotification(
                     user.id,
                     user.role,
                     user.name || user.email

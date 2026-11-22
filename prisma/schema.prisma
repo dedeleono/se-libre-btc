@@ -180,6 +180,11 @@ model Certificate {
   design        CertificateDesign @default(STANDARD)
   issuedAt      DateTime          @default(now())
 
+  finalQuizId           String?
+  finalQuizScorePercent Float?
+  revokedAt             DateTime?
+  revokedReason         String?
+
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
