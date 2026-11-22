@@ -5,6 +5,7 @@ import React from "react";
 // import FooterCards from "../footercards/page";
 import Logo from "@/components/logo";
 import { useLocale } from "@/lib/i18n";
+import { legalDocumentPaths } from "@/lib/legal/content";
 
 const Footer = () => {
   const { t } = useLocale();
@@ -98,10 +99,24 @@ const Footer = () => {
         </div>
 
         {/* Copyright Section */}
-        <div className="flex items-center justify-center border-t-2 border-foreground py-4">
-          <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+        <div className="flex flex-col items-center gap-2 border-t-2 border-foreground py-4 sm:flex-row sm:justify-between">
+          <p className="m-0 text-center text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
             {t.public.copyright(new Date().getFullYear())}
           </p>
+          <nav aria-label={t.legal.footerNav} className="flex flex-wrap justify-center gap-x-6">
+            <Link
+              href={legalDocumentPaths.terms}
+              className="py-2 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+            >
+              {t.legal.termsLink}
+            </Link>
+            <Link
+              href={legalDocumentPaths.privacy}
+              className="py-2 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+            >
+              {t.legal.privacyLink}
+            </Link>
+          </nav>
         </div>
       </div>
     </footer>

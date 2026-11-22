@@ -6,7 +6,9 @@ export const publicRoutes = [
   "/error",
   "/learning-paths",
   "/onboarding",
+  "/privacy",
   "/sign-in",
+  "/terms",
   "/verify-request",
 ];
 
