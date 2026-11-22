@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { Prisma } from "@prisma/client";
+import { EnrollmentStatus, Prisma } from "@prisma/client";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { decideCohortEnroll } from "@/lib/enrollment-policy";
 
 export async function POST(req: Request, props: { params: Promise<{ cohortId: string }> }) {
   const params = await props.params;
@@ -15,12 +16,36 @@ export async function POST(req: Request, props: { params: Promise<{ cohortId: st
   const cohort = await prisma.cohort.findUnique({
     where: { id: params.cohortId },
     include: {
+      course: { select: { isPublished: true, isFree: true } },
       learningPath: { include: { courses: true } },
     },
   });
 
   if (!cohort) {
-    return new NextResponse("Cohort not found", { status: 404 });
+    return new NextResponse(null, { status: 404 });
+  }
+
+  const seatStatuses: EnrollmentStatus[] = ["ACTIVE", "COMPLETED"];
+  const [takenSeats, existingSeat] = await Promise.all([
+    prisma.cohortEnrollment.count({ where: { cohortId: cohort.id, status: { in: seatStatuses } } }),
+    prisma.cohortEnrollment.findFirst({
+      where: { cohortId: cohort.id, userId, status: { in: seatStatuses } },
+      select: { id: true },
+    }),
+  ]);
+
+  const decision = decideCohortEnroll(
+    {
+      status: cohort.status,
+      capacity: cohort.capacity,
+      takenSeats,
+      holdsSeat: existingSeat !== null,
+      content: [cohort.course, cohort.learningPath].filter((target) => target !== null),
+    },
+    session.user.role
+  );
+  if (!decision.ok) {
+    return new NextResponse(null, { status: decision.status });
   }
 
   const operations: Prisma.PrismaPromise<unknown>[] = [

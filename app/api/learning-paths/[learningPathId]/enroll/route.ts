@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { decideSelfEnroll } from "@/lib/enrollment-policy";
 
 export async function POST(req: Request, props: { params: Promise<{ learningPathId: string }> }) {
   const params = await props.params;
@@ -16,8 +17,9 @@ export async function POST(req: Request, props: { params: Promise<{ learningPath
     include: { courses: true },
   });
 
-  if (!learningPath) {
-    return new NextResponse("Learning path not found", { status: 404 });
+  const decision = decideSelfEnroll(learningPath, session.user.role);
+  if (!learningPath || !decision.ok) {
+    return new NextResponse(null, { status: decision.ok ? 404 : decision.status });
   }
 
   const source = session.user.role === "ADMIN" ? "ADMIN" : "FREE";
