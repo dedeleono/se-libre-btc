@@ -99,7 +99,6 @@ export const CourseSidebar = ({
                       courseId={course.id}
                       isLocked={access?.accessible !== true}
                       type={chapter.type}
-                      currentUserRole={currentUserRole}
                       isAccessible={access?.accessible === true}
                       lockReason={access && !access.accessible ? access.reason : undefined}
                     />
