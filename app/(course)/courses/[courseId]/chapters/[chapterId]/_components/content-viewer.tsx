@@ -76,7 +76,6 @@ export const ContentViewer = ({
 }: ContentViewerProps) => {
   const { t } = useLocale();
   
-  const [isCompleted, setIsCompleted] = useState(false);
   const [activeTab, setActiveTab] = useState<"content" | "discussion">("content");
   const completionRef = useRef<CompletionButtonRef>(null);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -89,10 +88,6 @@ export const ContentViewer = ({
     );
     setIsPreviewMode(lockType === "intro" && hasCookie);
   }, [lockType, chapterId]);
-
-  useEffect(() => {
-    setIsCompleted(progress === 100);
-  }, [progress]);
 
   const onVideoEnd = () => {
     if (completeOnEnd && completionRef.current && isAuthenticated && !isPreviewMode) {

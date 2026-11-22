@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -28,9 +27,8 @@ interface DiscussionSectionProps {
   currentUser: User;
 }
 
-export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionProps) {
+export function DiscussionSection({ chapterId }: DiscussionSectionProps) {
   const { t, locale } = useLocale();
-  const router = useRouter();
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,7 +70,7 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
       setShowCommentBox(false);
       toast.success(t.forum.discussionPosted);
       loadDiscussions();
-    } catch (error) {
+    } catch {
       toast.error(t.common.somethingWentWrong);
     } finally {
       setIsSubmitting(false);
