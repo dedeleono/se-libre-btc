@@ -13,11 +13,17 @@ export type CourseNavChapter = {
 
 export type CourseNavModule = { id: string; title: string; chapters: CourseNavChapter[] };
 
-export type CourseNavTree = { id: string; title: string; modules: CourseNavModule[] };
+export type CourseNavTree = {
+  id: string;
+  title: string;
+  isFree: boolean;
+  modules: CourseNavModule[];
+};
 
 export function toCourseNavTree(row: {
   id: string;
   title: string;
+  isFree: boolean;
   modules: {
     id: string;
     title: string;
@@ -34,6 +40,7 @@ export function toCourseNavTree(row: {
   return {
     id: row.id,
     title: row.title,
+    isFree: row.isFree,
     modules: row.modules.map((module) => ({
       id: module.id,
       title: module.title,

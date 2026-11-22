@@ -97,6 +97,7 @@ export const CourseSidebar = ({
                       label={chapter.title}
                       isCompleted={chapter.isCompleted}
                       courseId={course.id}
+                      isCourseFree={course.isFree}
                       isLocked={access?.accessible !== true}
                       type={chapter.type}
                       isAccessible={access?.accessible === true}

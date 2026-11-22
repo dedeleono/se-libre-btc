@@ -16,6 +16,7 @@ interface CourseSidebarItemProps {
   label: string;
   isCompleted?: boolean;
   courseId: string;
+  isCourseFree: boolean;
   isLocked: boolean;
   type: string;
   startTime?: Date | null;
@@ -29,6 +30,7 @@ export const CourseSidebarItem = ({
   label,
   isCompleted,
   courseId,
+  isCourseFree,
   isAccessible,
   lockReason,
 }: CourseSidebarItemProps) => {
@@ -107,7 +109,11 @@ export const CourseSidebarItem = ({
           className="mb-2 mr-3 flex flex-col items-start gap-3 rounded-[2px] border-2 border-[var(--maiz-500)] bg-[var(--maiz-100)] p-3 text-sm text-foreground"
         >
           <p id={messageId} className="text-pretty">
-            {needsSignIn ? t.course.signInToAccess : t.course.enrollToAccess}
+            {needsSignIn
+              ? t.course.signInToAccess
+              : isCourseFree
+                ? t.course.enrollToAccess
+                : t.course.enrollInCourseToAccess}
           </p>
           {needsSignIn ? (
             <Button asChild size="sm">
@@ -117,6 +123,12 @@ export const CourseSidebarItem = ({
                 aria-describedby={messageId}
               >
                 {t.nav.signIn}
+              </Link>
+            </Button>
+          ) : !isCourseFree ? (
+            <Button asChild size="sm">
+              <Link ref={actionRef} href={`/courses/preview/${courseId}`} aria-describedby={messageId}>
+                {t.course.viewCourse}
               </Link>
             </Button>
           ) : (

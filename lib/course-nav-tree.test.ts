@@ -21,10 +21,11 @@ const chapter = (id: string, extra: Partial<RowChapter> = {}): RowChapter => ({
   ...extra,
 });
 
-const tree = (modules: RowChapter[][]): CourseNavTree =>
+const tree = (modules: RowChapter[][], isFree = true): CourseNavTree =>
   toCourseNavTree({
     id: "course-1",
     title: "Course",
+    isFree,
     modules: modules.map((chapters, index) => ({ id: `m${index}`, title: `Module ${index}`, chapters })),
   });
 
@@ -33,6 +34,7 @@ describe("toCourseNavTree", () => {
     const row = {
       id: "course-1",
       title: "Course",
+      isFree: true,
       description: "secret course description",
       imageUrl: "https://cdn/course.png",
       price: 100,
@@ -88,6 +90,11 @@ describe("toCourseNavTree", () => {
       isPublished: true,
       isCompleted: true,
     });
+  });
+
+  it("carries whether the course is free, so the lock copy never promises a free enrollment for a paid course", () => {
+    expect(tree([[chapter("a")]], true).isFree).toBe(true);
+    expect(tree([[chapter("a")]], false).isFree).toBe(false);
   });
 
   it.each([

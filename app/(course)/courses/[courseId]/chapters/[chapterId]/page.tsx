@@ -1,5 +1,7 @@
 import { Banner } from "@/components/banner";
 import { EnrollmentButton } from "@/components/enrollment-button";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { ChapterType } from "@prisma/client";
@@ -49,11 +51,20 @@ const ChapterPage = async (
     }
     return (
       <div className="flex flex-col">
-        <Banner label={t.course.enrollToAccess} variant="warning" />
+        <Banner
+          label={tree.isFree ? t.course.enrollToAccess : t.course.enrollInCourseToAccess}
+          variant="warning"
+        />
         <div className="flex justify-center p-6">
-          <EnrollmentButton productId={params.courseId} productType="course">
-            {t.course.enrollForFree}
-          </EnrollmentButton>
+          {tree.isFree ? (
+            <EnrollmentButton productId={params.courseId} productType="course">
+              {t.course.enrollForFree}
+            </EnrollmentButton>
+          ) : (
+            <Button asChild>
+              <Link href={`/courses/preview/${params.courseId}`}>{t.course.viewCourse}</Link>
+            </Button>
+          )}
         </div>
       </div>
     );

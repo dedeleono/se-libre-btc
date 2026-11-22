@@ -12,6 +12,7 @@ export const getCourseNavTree = cache(
       select: {
         id: true,
         title: true,
+        isFree: true,
         modules: {
           orderBy: { position: "asc" },
           select: {
