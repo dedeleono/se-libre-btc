@@ -189,8 +189,7 @@ export function EmailingForm({ students = [], groups = [] }: EmailingFormProps) 
               placeholder={t.emailing.subjectPlaceholder}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="bg-card/50 dark:bg-black/40 border-2 dark:border-white/[0.08] 
-                focus-visible:ring-primary/20 dark:focus-visible:ring-primary/30
+              className="bg-card/50 dark:bg-black/40 border-2 dark:border-white/[0.08]
                 dark:placeholder:text-white/30 dark:text-white/90 text-xs sm:text-sm"
             />
           </div>

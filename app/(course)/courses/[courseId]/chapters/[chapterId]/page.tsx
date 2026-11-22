@@ -7,6 +7,7 @@ import { ContentViewer } from "./_components/content-viewer";
 import { isChapterAccessible } from "@/lib/chapter-access";
 import { ChapterWithProgress } from "@/types/chapter";
 import { QuizPlayer } from "./_components/quiz-player";
+import { toQuizForPlayer } from "@/lib/quiz-dto";
 import { getServerMessages } from "@/lib/i18n-server";
 
 const ChapterPage = async (
@@ -48,7 +49,6 @@ const ChapterPage = async (
             youtubeUrl={introChapter.youtubeUrl}
             title={introChapter.title}
             courseId={params.courseId}
-            isLocked={false}
             lockType="intro"
             completeOnEnd={false}
             description={introChapter.description as string}
@@ -76,10 +76,23 @@ const ChapterPage = async (
         module: { include: { course: true } },
         studentProgress: { where: { userId } },
         quiz: {
-          include: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            allowRetries: true,
             questions: {
-              include: { options: true },
               orderBy: { position: "asc" },
+              select: {
+                id: true,
+                prompt: true,
+                type: true,
+                metadata: true,
+                options: {
+                  orderBy: { position: "asc" },
+                  select: { id: true, content: true, isCorrect: true },
+                },
+              },
             },
           },
         },
@@ -164,7 +177,7 @@ const ChapterPage = async (
       case ChapterType.QUIZ:
         return (
           <QuizPlayer
-            quiz={chapter.quiz!}
+            quiz={toQuizForPlayer(chapter.quiz!)}
             courseId={params.courseId}
             nextChapterId={nextChapter?.id}
           />
@@ -179,7 +192,6 @@ const ChapterPage = async (
             title={chapter.title}
             courseId={params.courseId}
             nextChapterId={nextChapter?.id}
-            isLocked={false}
             completeOnEnd={completeOnEnd}
             description={chapter.description as string}
             attachments={chapter.attachments}

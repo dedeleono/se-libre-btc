@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateSerial, prefillRecipientName } from "./certificate";
+import { generateSerial, isCertificateValid, prefillRecipientName } from "./certificate";
 
 describe("generateSerial", () => {
   it("formats as DL-<year>-<6 base32 chars>", () => {
@@ -32,5 +32,15 @@ describe("prefillRecipientName", () => {
 
   it("falls back to 'Estudiante' when nothing usable is present", () => {
     expect(prefillRecipientName({ firstName: null, lastName: null, name: null, email: "@x.com" })).toBe("Estudiante");
+  });
+});
+
+describe("isCertificateValid", () => {
+  it("is valid while the certificate has not been revoked", () => {
+    expect(isCertificateValid({ revokedAt: null })).toBe(true);
+  });
+
+  it("is invalid once revoked", () => {
+    expect(isCertificateValid({ revokedAt: new Date("2026-11-17T00:00:00Z") })).toBe(false);
   });
 });

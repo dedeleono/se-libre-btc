@@ -1,7 +1,6 @@
 "use client";
 
 import axios from "axios";
-import { Quiz, QuizOption, QuizQuestion } from "@prisma/client";
 import { CheckCircle, ChevronRight, Loader2, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -10,40 +9,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLocale } from "@/lib/i18n";
-
-type QuizQuestionWithOptions = QuizQuestion & {
-  options: QuizOption[];
-};
-
-type QuizWithQuestions = Quiz & {
-  questions: QuizQuestionWithOptions[];
-};
-
-type ResultQuestion = QuizQuestionWithOptions;
+import type { QuizAnswerKey, QuizForPlayer } from "@/lib/quiz-dto";
 
 interface QuizPlayerProps {
-  quiz: QuizWithQuestions;
+  quiz: QuizForPlayer;
   courseId: string;
   nextChapterId?: string;
 }
-
-const getCorrectTextAnswer = (metadata: unknown) => {
-  if (metadata && typeof metadata === "object" && "correctAnswer" in metadata) {
-    const correctAnswer = (metadata as { correctAnswer?: unknown }).correctAnswer;
-    return typeof correctAnswer === "string" ? correctAnswer : null;
-  }
-  return null;
-};
-
-const allowsMultipleAnswers = (question: QuizQuestionWithOptions) => {
-  if (question.type !== "MULTIPLE_CHOICE") return false;
-
-  if (question.metadata && typeof question.metadata === "object" && "multipleAnswers" in question.metadata) {
-    return (question.metadata as { multipleAnswers?: unknown }).multipleAnswers === true;
-  }
-
-  return question.options.filter((option) => option.isCorrect).length > 1;
-};
 
 export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) => {
   const { t } = useLocale();
@@ -54,7 +26,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
   const [result, setResult] = useState<{
     scorePercent: number;
     showCorrectAnswers: boolean;
-    questions: ResultQuestion[];
+    answerKey: QuizAnswerKey[];
     courseCompleted?: boolean;
   } | null>(null);
 
@@ -130,8 +102,8 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
       <div className="space-y-4">
         {quiz.questions.map((question, index) => {
           const showAnswers = result?.showCorrectAnswers;
-          const resultQuestion = result?.questions.find((item) => item.id === question.id);
-          const isSingleChoice = question.type === "TRUE_FALSE" || !allowsMultipleAnswers(question);
+          const key = result?.answerKey.find((item) => item.questionId === question.id);
+          const isSingleChoice = !question.allowsMultiple;
 
           return (
             <div key={question.id} className="rounded-md border bg-white p-4">
@@ -140,7 +112,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
                   <p className="font-medium">
                     {index + 1}. {question.prompt}
                   </p>
-                  {question.type === "MULTIPLE_CHOICE" && allowsMultipleAnswers(question) && (
+                  {question.allowsMultiple && (
                     <p className="mt-1 text-xs text-muted-foreground">{t.course.selectAllThatApply}</p>
                   )}
                 </div>
@@ -168,7 +140,7 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
                           onChange={() => toggleOption(question.id, option.id, isSingleChoice)}
                         />
                         <span>{option.content}</span>
-                        {showAnswers && resultQuestion?.options.find((item) => item.id === option.id)?.isCorrect && (
+                        {showAnswers && key?.correctOptionIds.includes(option.id) && (
                           <span className="ml-auto text-xs font-medium text-success">{t.course.correct}</span>
                         )}
                       </label>
@@ -179,11 +151,11 @@ export const QuizPlayer = ({ quiz, courseId, nextChapterId }: QuizPlayerProps) =
 
               {showAnswers && question.type === "FILL_IN_THE_BLANK" && (
                 <p className="mt-3 text-sm text-success">
-                  {t.course.correctAnswer(getCorrectTextAnswer(resultQuestion?.metadata))}
+                  {t.course.correctAnswer(key?.correctTextAnswer ?? null)}
                 </p>
               )}
-              {showAnswers && resultQuestion?.explanation && (
-                <p className="mt-3 text-sm text-muted-foreground">{resultQuestion.explanation}</p>
+              {showAnswers && key?.explanation && (
+                <p className="mt-3 text-sm text-muted-foreground">{key.explanation}</p>
               )}
             </div>
           );

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDistanceToNow } from "date-fns";
+import { es, enUS } from "date-fns/locale";
 import { MessageCircle, Loader2, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -27,7 +28,7 @@ interface DiscussionSectionProps {
 }
 
 export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const router = useRouter();
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -113,6 +114,7 @@ export function DiscussionSection({ chapterId, currentUser }: DiscussionSectionP
                   <span className="text-sm text-muted-foreground">
                     {formatDistanceToNow(new Date(discussion.createdAt), {
                       addSuffix: true,
+                      locale: locale === "es" ? es : enUS,
                     })}
                   </span>
                 </div>

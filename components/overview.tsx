@@ -59,13 +59,13 @@ export function Overview({ data }: OverviewProps) {
         <LineChart data={data}>
           <XAxis
             dataKey="name"
-            stroke="#888888"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
             axisLine={false}
           />
           <YAxis
-            stroke="#888888"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
             axisLine={false}
@@ -111,21 +111,21 @@ export function Overview({ data }: OverviewProps) {
           <Line
             type="monotone"
             dataKey="revenue"
-            stroke="#8884d8"
+            stroke="hsl(var(--chart-1))"
             strokeWidth={2}
             name={t.dashboard.revenue}
           />
           <Line
             type="monotone"
             dataKey="students"
-            stroke="#82ca9d"
+            stroke="hsl(var(--chart-2))"
             strokeWidth={2}
             name={t.dashboard.newStudents}
           />
           <Line
             type="monotone"
             dataKey="courses"
-            stroke="#ffc658"
+            stroke="hsl(var(--chart-3))"
             strokeWidth={2}
             name={t.dashboard.newCourses}
           />
