@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseReportFilters, toSearchParams } from "./report-filters";
+import { guatemalaToday, parseReportFilters, toSearchParams } from "./report-filters";
 
 const KNOWN = new Set(["c1"]);
 
@@ -54,5 +54,12 @@ describe("parseReportFilters", () => {
     expect(params.toString()).toBe("course=c1&country=Guatemala&from=2026-03-01&to=2026-04-30");
     expect(parseReportFilters(Object.fromEntries(params), KNOWN).filters).toEqual(filters);
     expect(toSearchParams({ courseId: null, country: null, from: null, to: null }).toString()).toBe("");
+  });
+});
+
+describe("guatemalaToday", () => {
+  it("names the calendar day in Guatemala, not UTC", () => {
+    expect(guatemalaToday(new Date("2026-11-18T05:59:00Z"))).toBe("2026-11-17");
+    expect(guatemalaToday(new Date("2026-11-18T06:00:00Z"))).toBe("2026-11-18");
   });
 });

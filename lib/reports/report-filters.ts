@@ -70,6 +70,10 @@ export function toSearchParams(filters: ReportFilters): URLSearchParams {
   return params;
 }
 
+export function guatemalaToday(now: Date = new Date()): string {
+  return new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
 export function hasActiveFilters(filters: ReportFilters): boolean {
   return Object.values(filters).some((value) => value !== null);
 }

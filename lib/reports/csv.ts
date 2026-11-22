@@ -1,5 +1,6 @@
-import { UNKNOWN, type FunnelStep } from "./course-report";
-import { OTHER, type Cell, type Percent, type PublicBreakdownRow, type PublicCourseReport } from "./publish";
+import type { FunnelStep } from "./course-report";
+import { OTHER, UNKNOWN } from "./keys";
+import type { Cell, Percent, PublicBreakdownRow, PublicCourseReport } from "./publish";
 import type { ReportFilters } from "./report-filters";
 
 export type CsvTileKey = "certificatesIssued" | "peopleCompleted" | "completionRate" | "coverage";

@@ -1,11 +1,6 @@
 import type { AgeBucket } from "../demographics";
-import {
-  UNKNOWN,
-  type BreakdownRow,
-  type CourseReport,
-  type FinalExamStatus,
-  type FunnelStep,
-} from "./course-report";
+import type { BreakdownRow, CourseReport, FinalExamStatus, FunnelStep } from "./course-report";
+import { OTHER, UNKNOWN } from "./keys";
 import type { ReportFilters } from "./report-filters";
 
 /**
@@ -18,7 +13,6 @@ import type { ReportFilters } from "./report-filters";
  */
 export const SMALL_CELL_THRESHOLD = 5;
 
-export const OTHER = "OTHER";
 export const TOP_PLACES = 10;
 
 export type Cell = { kind: "value"; value: number } | { kind: "suppressed" };

@@ -3,11 +3,11 @@ import type { ChapterType } from "@prisma/client";
 import { courseHasAnyQuiz, pickFinalQuiz } from "../certificate-eligibility";
 import { AGE_BUCKETS, normalizeOptionalText, toAgeBucket, type AgeBucket } from "../demographics";
 import { bucketByMonth, overviewWindow } from "../overview-buckets";
+import { UNKNOWN } from "./keys";
 
 export const FUNNEL_STEPS = ["ENROLLED", "STARTED", "COMPLETED", "FINAL_PASSED", "CERTIFIED"] as const;
 export type FunnelStep = (typeof FUNNEL_STEPS)[number];
 export type FinalExamStatus = "RESOLVED" | "NO_QUIZZES" | "UNRESOLVED";
-export const UNKNOWN = "UNKNOWN";
 export type BucketKey<T extends string> = T | typeof UNKNOWN;
 
 export type ReportRows = {
