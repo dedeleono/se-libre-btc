@@ -26,7 +26,6 @@ import {
   TextNode,
 } from "lexical";
 
-import { FlashMessageContext } from "@/context/FlashMessageContext";
 import { SettingsContext } from "@/context/SettingsContext";
 import { SharedHistoryContext } from "@/context/SharedHistoryContext";
 import { ToolbarContext } from "@/context/ToolbarContext";
@@ -140,29 +139,27 @@ export function LexicalEditorWrapper({ onChange, value }: { onChange: (value: st
 
   return (
     <SettingsContext>
-      <FlashMessageContext>
-        <LexicalComposer initialConfig={{
-          namespace: "Playground",
-          nodes: [...PlaygroundNodes],
-          onError: (error: Error) => {
-            throw error;
-          },
-          theme: PlaygroundEditorTheme,
-          html: { import: buildImportMap() },
-        }}>
-          <SharedHistoryContext>
-            <TableContext>
-              <ToolbarContext>
-                <div className="editor-shell">
-                  <Editor />
-                  {value && <HtmlLoadPlugin html={value} />}
-                  <OnChangePlugin onChange={onChange} />
-                </div>
-              </ToolbarContext>
-            </TableContext>
-          </SharedHistoryContext>
-        </LexicalComposer>
-      </FlashMessageContext>
+      <LexicalComposer initialConfig={{
+        namespace: "Playground",
+        nodes: [...PlaygroundNodes],
+        onError: (error: Error) => {
+          throw error;
+        },
+        theme: PlaygroundEditorTheme,
+        html: { import: buildImportMap() },
+      }}>
+        <SharedHistoryContext>
+          <TableContext>
+            <ToolbarContext>
+              <div className="editor-shell">
+                <Editor />
+                {value && <HtmlLoadPlugin html={value} />}
+                <OnChangePlugin onChange={onChange} />
+              </div>
+            </ToolbarContext>
+          </TableContext>
+        </SharedHistoryContext>
+      </LexicalComposer>
     </SettingsContext>
   );
 }

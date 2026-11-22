@@ -23,34 +23,6 @@ async function* generateReader<T = any>(
   }
 }
 
-async function readBytestoString(
-  reader: ReadableStreamDefaultReader,
-): Promise<string> {
-  const output = [];
-  const chunkSize = 0x8000;
-  for await (const value of generateReader(reader)) {
-    for (let i = 0; i < value.length; i += chunkSize) {
-      output.push(String.fromCharCode(...value.subarray(i, i + chunkSize)));
-    }
-  }
-  return output.join('');
-}
-
-export async function docToHash(doc: SerializedDocument): Promise<string> {
-  const cs = new CompressionStream('gzip');
-  const writer = cs.writable.getWriter();
-  const [, output] = await Promise.all([
-    writer
-      .write(new TextEncoder().encode(JSON.stringify(doc)))
-      .then(() => writer.close()),
-    readBytestoString(cs.readable.getReader()),
-  ]);
-  return `#doc=${btoa(output)
-    .replace(/\//g, '_')
-    .replace(/\+/g, '-')
-    .replace(/=+$/, '')}`;
-}
-
 export async function docFromHash(
   hash: string,
 ): Promise<SerializedDocument | null> {

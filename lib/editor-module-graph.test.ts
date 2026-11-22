@@ -65,6 +65,20 @@ describe("editor module graph", () => {
     expect([...files].some((f) => f.endsWith("components/editor/collaboration.ts"))).toBe(false);
   });
 
+  it("drops the dead isCollab setting and the collaboration UI in ActionsPlugin", () => {
+    const settings = readFileSync(path.join(ROOT, "types/editor-settings.ts"), "utf8");
+    expect(settings).not.toMatch(/isCollab/);
+    expect(importersOf("@lexical/yjs")).toEqual([
+      "components/editor/commenting/index.ts",
+      "components/editor/plugins/CommentPlugin/index.tsx",
+    ]);
+    const actions = readFileSync(
+      path.join(ROOT, "components/editor/plugins/ActionsPlugin/index.tsx"),
+      "utf8",
+    );
+    expect(actions).not.toMatch(/isCollab|CONNECTED_COMMAND|TOGGLE_CONNECT_COMMAND|COLLABORATION_TAG/);
+  });
+
   it("no longer carries the Lexical playground's dev-only tooling", () => {
     const devOnly = [
       "components/editor/Settings.tsx",
