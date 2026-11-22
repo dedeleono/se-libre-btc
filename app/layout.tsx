@@ -21,7 +21,7 @@ export default async function RootLayout({
   const locale = await getServerLocale();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col antialiased overflow-x-hidden w-full">
         <Providers initialLocale={locale}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
