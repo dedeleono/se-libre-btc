@@ -10,7 +10,7 @@
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "verify": "yarn typecheck && yarn lint && yarn test",
-    "vercel-build": "yarn test && yarn build"
+    "vercel-build": "prisma generate && vitest run && next build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.645.0",
