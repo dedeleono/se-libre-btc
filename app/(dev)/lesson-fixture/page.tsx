@@ -1,12 +1,13 @@
-// TEMPORARY: deleted before the PR (plan 006, Step 10).
+// Dev-only lesson layout fixture for `yarn check:lesson-layout`. Returns 404 in production.
 import { notFound } from "next/navigation";
 import { ContentViewer } from "@/app/(course)/courses/[courseId]/chapters/[chapterId]/_components/content-viewer";
+import { devFixtureOnly } from "@/lib/dev-fixture";
 import { LESSON_FIXTURES, type LessonFixtureId } from "./fixtures";
 
 export default async function LessonFixturePage(props: {
   searchParams: Promise<{ fixture?: string; mode?: string }>;
 }) {
-  if (process.env.NODE_ENV === "production") notFound();
+  devFixtureOnly();
   const { fixture = "long-description", mode = "preview" } = await props.searchParams;
   const data = LESSON_FIXTURES[fixture as LessonFixtureId];
   if (!data) notFound();
@@ -26,7 +27,6 @@ export default async function LessonFixturePage(props: {
             isAuthenticated={enrolled}
             lockType={enrolled ? undefined : "intro"}
             attachments={[]}
-            isLocked={false}
           />
         </div>
       </main>

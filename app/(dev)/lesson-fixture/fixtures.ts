@@ -1,4 +1,4 @@
-// TEMPORARY: deleted before the PR (plan 006, Step 10).
+// Lesson HTML fixtures for the dev-only lesson layout harness (`yarn check:lesson-layout`).
 const p = (text: string) =>
   `<p class="PlaygroundEditorTheme__paragraph" dir="ltr"><span style="white-space: pre-wrap;">${text}</span></p>`;
 const cell = (tag: "th" | "td", text: string) =>
