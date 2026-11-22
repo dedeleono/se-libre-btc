@@ -53,6 +53,10 @@ const GROWTH_METRICS: OverviewMetric[] = ["students", "courses"];
 // CardContent is pl-2 so the y-axis ticks fit; text steps in to the card title's edge.
 const TEXT_INSET = "ps-4";
 
+// One y-axis width for both stacked charts, so each month sits at the same x in both.
+// Sized for the widest revenue tick ("Q 150K" / "Q 1.5M"); measured in the rendered check.
+const Y_AXIS_WIDTH = 64;
+
 // Global h1–h6 use the uppercase display face; these sit under the Open Sans card title.
 const SUBHEADING = "[font-family:inherit] text-sm font-medium normal-case leading-snug text-foreground";
 
@@ -114,7 +118,7 @@ function MetricChart({
   metrics: OverviewMetric[];
   title: string;
   maxBarSize: number;
-  yAxis: { width: number; tickFormatter?: (value: number) => string; integer?: boolean };
+  yAxis: { tickFormatter?: (value: number) => string; integer?: boolean };
 }) {
   const { locale, t } = useLocale();
   const ticks = niceTicks(Math.max(...data.flatMap((row) => metrics.map((metric) => row[metric]))), {
@@ -148,7 +152,7 @@ function MetricChart({
             {...AXIS_STYLE}
           />
           <YAxis
-            width={yAxis.width}
+            width={Y_AXIS_WIDTH}
             tickFormatter={yAxis.tickFormatter}
             ticks={ticks}
             domain={[0, ticks[ticks.length - 1]]}
@@ -262,7 +266,8 @@ export function Overview({ data }: { data: OverviewRow[] }) {
 
   return (
     <div className="space-y-8">
-      <p className={`${TEXT_INSET} text-xs text-muted-foreground`}>{t.dashboard.overviewPeriod}</p>
+      {/* The card's gap-6 sits between header and content; pull the period up so it reads with the header. */}
+      <p className={`${TEXT_INSET} -mt-4 text-xs text-muted-foreground`}>{t.dashboard.overviewPeriod}</p>
 
       <section aria-labelledby="overview-revenue-title" className="space-y-3">
         <h3 id="overview-revenue-title" className={`${TEXT_INSET} ${SUBHEADING}`}>
@@ -276,7 +281,7 @@ export function Overview({ data }: { data: OverviewRow[] }) {
             metrics={["revenue"]}
             title={t.dashboard.revenueByMonth}
             maxBarSize={24}
-            yAxis={{ width: 64, tickFormatter: revenueTick }}
+            yAxis={{ tickFormatter: revenueTick }}
           />
         )}
       </section>
@@ -305,7 +310,7 @@ export function Overview({ data }: { data: OverviewRow[] }) {
             metrics={GROWTH_METRICS}
             title={t.dashboard.growthByMonth}
             maxBarSize={14}
-            yAxis={{ width: 32, integer: true }}
+            yAxis={{ integer: true }}
           />
         )}
       </section>
