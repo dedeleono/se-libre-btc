@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Accordion,
@@ -25,9 +24,9 @@ interface CalendarData {
   [program: string]: Entry[];
 }
 
-const CalendarPage: FC = () => {
+const CalendarPage = async () => {
   const data: CalendarData = calendarData;
-  const t = getServerMessages();
+  const t = await getServerMessages();
 
   return (
     <div className="flex-1 space-y-6 p-4 sm:p-6 md:p-8">

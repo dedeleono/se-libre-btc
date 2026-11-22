@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function VerifyCertificatePage(props: { params: Promise<{ serial: string }> }) {
   const params = await props.params;
-  const t = getServerMessages().certificate;
+  const t = (await getServerMessages()).certificate;
   const cert = await prisma.certificate.findUnique({
     where: { serial: params.serial },
     include: { course: { select: { title: true } } },

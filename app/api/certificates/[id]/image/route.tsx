@@ -20,7 +20,7 @@ export async function GET(req: Request, props0: { params: Promise<{ id: string }
   if (!cert || !isCertificateValid(cert)) return new Response("Not found", { status: 404 });
 
   try {
-    const locale = getServerLocale();
+    const locale = await getServerLocale();
     const baseUrl = getBaseUrl(req);
     const isPunk = cert.design === "PUNK";
     const [fonts, qrDataUrl, bgDataUrl] = await Promise.all([

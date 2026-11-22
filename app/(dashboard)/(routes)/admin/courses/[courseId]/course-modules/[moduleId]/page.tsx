@@ -15,7 +15,7 @@ const CourseModuleIdPage = async (
   }
 ) => {
   const params = await props.params;
-  const t = getServerMessages();
+  const t = await getServerMessages();
 
   const courseModule = await prisma.courseModule.findFirst({
     where: {

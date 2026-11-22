@@ -14,7 +14,7 @@ export const fetchCache = "force-no-store";
 
 export default async function StudentCoursesPage() {
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
 
   if (!session?.user?.id) {
     redirect("/sign-in");

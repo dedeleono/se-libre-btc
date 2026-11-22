@@ -15,7 +15,7 @@ type CourseWithPath = {
 };
 
 export default async function Forum() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const session = await auth();
   if (!session?.user) {
     return redirect("/");

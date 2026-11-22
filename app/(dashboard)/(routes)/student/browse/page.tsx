@@ -19,7 +19,7 @@ interface BrowsePageProps {
 const BrowsePage = async (props: BrowsePageProps) => {
   const searchParams = await props.searchParams;
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const userId = session?.user?.id;
 
   const categories: Category[] = await prisma.category.findMany({

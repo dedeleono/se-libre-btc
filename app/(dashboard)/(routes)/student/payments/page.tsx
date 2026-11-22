@@ -7,7 +7,7 @@ import { PaymentsTable } from "./_components/payments-table";
 import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function PaymentsPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
 
   const session = await auth();
 

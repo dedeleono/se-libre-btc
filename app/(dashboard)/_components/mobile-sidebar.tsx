@@ -5,8 +5,8 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 import { Sidebar } from "./sidebar";
 
-export const MobileSidebar = () => {
-  const t = getServerMessages();
+export const MobileSidebar = async () => {
+  const t = await getServerMessages();
 
   return (
     <Sheet>

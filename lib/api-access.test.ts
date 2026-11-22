@@ -11,6 +11,7 @@ const METHODS: readonly Method[] = ["GET", "POST", "PUT", "PATCH", "DELETE"];
 // A new route.ts fails this test until it is listed here with a deliberate level.
 const API_ACCESS: Record<string, Partial<Record<Method, Access>>> = {
   "admin/invitations/route.ts": { POST: "ADMIN" },
+  "admin/reports/course/route.ts": { GET: "ADMIN" },
   "auth/[...all]/route.ts": { GET: "PUBLIC", POST: "PUBLIC", PUT: "PUBLIC", PATCH: "PUBLIC", DELETE: "PUBLIC" },
   "auth/logout/route.ts": { GET: "PUBLIC", POST: "PUBLIC" },
   "auth/post-login/route.ts": { GET: "PUBLIC" },
@@ -80,7 +81,6 @@ const API_ACCESS: Record<string, Partial<Record<Method, Access>>> = {
   "s3/asset-upload/route.ts": { POST: "AUTHED" },
   "s3/file/[...key]/route.ts": { GET: "PUBLIC" },
   "s3/presigned-url/route.ts": { POST: "ADMIN" },
-  "s3/youtube-download/route.ts": { POST: "ADMIN" },
   "s3/yt/route.ts": { POST: "ADMIN" },
   "users/[userId]/soft-delete/route.ts": { PATCH: "ADMIN" },
   "users/me/route.ts": { PATCH: "OWNER" },

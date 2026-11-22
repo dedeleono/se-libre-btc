@@ -8,7 +8,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function UnauthorizedPage() {
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const role = session?.user.role;
   const href =
     role === UserRole.ADMIN ? "/admin" : role === UserRole.STUDENT ? "/student" : "/sign-in";

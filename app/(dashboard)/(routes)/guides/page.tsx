@@ -28,7 +28,7 @@ type GuidesByUserType = Record<UserType, GuideContent[]>;
 
 export default async function GuidesPage() {
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
 
   if (!session) {
     redirect("/sign-in");

@@ -4,8 +4,8 @@ import UserAuthForm from "@/components/forms/user-auth-form";
 import UserAuthFormSkeleton from "@/components/forms/user-auth-form-skeleton";
 import { getServerMessages } from "@/lib/i18n-server";
 
-export default function Page() {
-  const t = getServerMessages();
+export default async function Page() {
+  const t = await getServerMessages();
 
   return (
     <div className="space-y-6">

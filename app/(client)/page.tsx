@@ -46,8 +46,8 @@ function SocialLink({
   );
 }
 
-export default function Home() {
-  const t = getServerMessages();
+export default async function Home() {
+  const t = await getServerMessages();
 
   return (
     <main className="dl-app dl-landing min-h-screen overflow-clip">

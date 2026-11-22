@@ -22,7 +22,7 @@ const ChapterPage = async (
   }
 ) => {
   const params = await props.params;
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const session = await auth();
   const userId = session?.user?.id ?? null;
   const role = session?.user?.role ?? null;

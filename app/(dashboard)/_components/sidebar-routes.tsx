@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BarChart3,
   BookAIcon,
   BookOpen,
   Calendar,
@@ -58,6 +59,7 @@ export const SidebarRoutes = () => {
       label: t.nav.admin,
       routes: [
         { icon: LayoutDashboard, label: t.nav.dashboard, href: "/admin" },
+        { icon: BarChart3, label: t.nav.analytics, href: "/admin/analytics" },
         { icon: BookAIcon, label: t.nav.courses, href: "/admin/courses" },
         { icon: Layout, label: t.nav.learningPaths, href: "/admin/learning-paths" },
         { icon: Calendar, label: t.nav.cohorts, href: "/admin/cohorts" },

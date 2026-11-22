@@ -6,8 +6,8 @@ import { Card } from "@/components/ui/card";
 import type { CertificateEligibility } from "@/lib/certificate-eligibility";
 import { getServerMessages } from "@/lib/i18n-server";
 
-export function CertificateLockedCard({ eligibility }: { eligibility: CertificateEligibility }) {
-  const t = getServerMessages().completion;
+export async function CertificateLockedCard({ eligibility }: { eligibility: CertificateEligibility }) {
+  const t = (await getServerMessages()).completion;
 
   return (
     <Card className="border-2 border-foreground p-6">

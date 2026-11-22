@@ -2,8 +2,8 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 import CourseFormCreate from "./_components/create-form";
 
-export default function NewCoursePage() {
-  const t = getServerMessages();
+export default async function NewCoursePage() {
+  const t = await getServerMessages();
 
   return (
     <div className=" flex flex-col mx-6 md:justify-center min-h-screen h-full p-6">

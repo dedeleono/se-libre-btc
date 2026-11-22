@@ -7,7 +7,7 @@ import { prisma } from "@/lib/db";
 import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function AdminCohortsPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const cohorts = await prisma.cohort.findMany({
     include: { course: true, learningPath: true, _count: { select: { enrollments: true, liveSessions: true } } },
     orderBy: { createdAt: "desc" },

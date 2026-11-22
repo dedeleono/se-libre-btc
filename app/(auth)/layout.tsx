@@ -4,9 +4,13 @@ import Link from "next/link";
 import { MAIN_CONTENT_ID } from "@/components/layout/skip-link";
 import Logo from "@/components/logo";
 import { getServerMessages } from "@/lib/i18n-server";
+import { legalDocumentPaths } from "@/lib/legal/content";
 
-const AuthLayout = ({ children }: { children: React.ReactNode }) => {
-  const t = getServerMessages();
+const consentLink =
+  "rounded-[2px] text-foreground underline underline-offset-4 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
+
+const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
+  const t = await getServerMessages();
 
   return (
     <div className="dl-app grid min-h-screen lg:grid-cols-[1fr_0.9fr]">
@@ -41,6 +45,17 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
           </Link>
 
           {children}
+
+          <p className="text-pretty px-2 text-center text-xs font-semibold leading-relaxed text-muted-foreground">
+            {t.legal.consent(
+              <Link key="terms" href={legalDocumentPaths.terms} className={consentLink}>
+                {t.legal.termsLink}
+              </Link>,
+              <Link key="privacy" href={legalDocumentPaths.privacy} className={consentLink}>
+                {t.legal.privacyLink}
+              </Link>,
+            )}
+          </p>
         </div>
       </main>
     </div>
