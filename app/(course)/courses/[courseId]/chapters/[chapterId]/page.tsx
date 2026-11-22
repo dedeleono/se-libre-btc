@@ -1,11 +1,16 @@
 import { Banner } from "@/components/banner";
+import { EnrollmentButton } from "@/components/enrollment-button";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { ChapterType } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { ContentViewer } from "./_components/content-viewer";
-import { isChapterAccessible } from "@/lib/chapter-access";
-import { ChapterWithProgress } from "@/types/chapter";
+import { hasCourseEnrollmentAccess } from "@/lib/chapter-access";
+import { resolveChapterAccess } from "@/lib/chapter-access-rule";
+import { findChapter, findNextPublishedChapterId } from "@/lib/course-nav-tree";
+import { getCourseNavTree } from "@/lib/get-course-nav-tree";
 import { QuizPlayer } from "./_components/quiz-player";
 import { toQuizForPlayer } from "@/lib/quiz-dto";
 import { getServerMessages } from "@/lib/i18n-server";
@@ -18,141 +23,112 @@ const ChapterPage = async (
   const params = await props.params;
   const t = getServerMessages();
   const session = await auth();
+  const userId = session?.user?.id ?? null;
+  const role = session?.user?.role ?? null;
+  const isAdmin = role === "ADMIN";
 
-  if (!session?.user) {
-    // For unauthenticated visitors we still need to know if this is an intro
-    // chapter; fetch only the minimal field needed for that decision.
-    const chapterIntro = await prisma.chapter.findUnique({
-      where: { id: params.chapterId },
-      select: { isIntro: true },
-    });
-
-    if (chapterIntro?.isIntro) {
-      const introChapter = await prisma.chapter.findUnique({
-        where: { id: params.chapterId },
-        include: {
-          module: { include: { course: true } },
-          attachments: true,
-        },
-      });
-
-      if (!introChapter) {
-        return redirect(`/courses/${params.courseId}`);
-      }
-
-      return (
-        <div className="flex flex-col h-full">
-          <ContentViewer
-            videoUrl={introChapter.videoUrl}
-            pdfUrl={introChapter.pdfUrl}
-            richContent={introChapter.richContent}
-            youtubeUrl={introChapter.youtubeUrl}
-            title={introChapter.title}
-            courseId={params.courseId}
-            lockType="intro"
-            completeOnEnd={false}
-            description={introChapter.description as string}
-            attachments={introChapter.attachments}
-            chapterId={introChapter.id}
-            isAuthenticated={false}
-          />
-        </div>
-      );
-    }
-
-    // Non-intro chapter: redirect to sign-in
-    return redirect("/sign-in");
+  // The outline query is shared with the course layout through React cache().
+  const [tree, hasEnrollment] = await Promise.all([
+    getCourseNavTree(params.courseId, userId, isAdmin),
+    userId && !isAdmin
+      ? hasCourseEnrollmentAccess(userId, params.courseId)
+      : Promise.resolve(false),
+  ]);
+  const navChapter = tree ? findChapter(tree, params.chapterId) : null;
+  if (!tree || !navChapter) {
+    return redirect(`/courses/${params.courseId}`);
   }
 
-  // Authenticated path: fetch chapter (full include), nextChapter id, and
-  // studentProgress concurrently — three parallel round-trips instead of a
-  // sequential waterfall of ~50.
-  const userId = session.user.id;
+  const access = resolveChapterAccess({
+    isAuthenticated: !!userId,
+    role,
+    isIntro: navChapter.isIntro,
+    hasEnrollment,
+  });
+  if (!access.accessible) {
+    if (access.reason === "SIGN_IN_REQUIRED") {
+      return redirect("/sign-in");
+    }
+    return (
+      <div className="flex flex-col">
+        <Banner
+          label={tree.isFree ? t.course.enrollToAccess : t.course.enrollInCourseToAccess}
+          variant="warning"
+        />
+        <div className="flex justify-center p-6">
+          {tree.isFree ? (
+            <EnrollmentButton productId={params.courseId} productType="course">
+              {t.course.enrollForFree}
+            </EnrollmentButton>
+          ) : (
+            <Button asChild>
+              <Link href={`/courses/preview/${params.courseId}`}>{t.public.viewCourse}</Link>
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
-  const [chapter, nextChapter, studentProgress] = await Promise.all([
-    prisma.chapter.findUnique({
-      where: { id: params.chapterId },
-      include: {
-        module: { include: { course: true } },
-        studentProgress: { where: { userId } },
-        quiz: {
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            allowRetries: true,
-            questions: {
-              orderBy: { position: "asc" },
-              select: {
-                id: true,
-                prompt: true,
-                type: true,
-                metadata: true,
-                options: {
-                  orderBy: { position: "asc" },
-                  select: { id: true, content: true, isCorrect: true },
-                },
+  const chapter = await prisma.chapter.findFirst({
+    where: { id: params.chapterId, module: { courseId: params.courseId } },
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      description: true,
+      videoUrl: true,
+      pdfUrl: true,
+      richContent: true,
+      youtubeUrl: true,
+      hasWalletSimulator: true,
+      attachments: true,
+      quiz: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          allowRetries: true,
+          questions: {
+            orderBy: { position: "asc" },
+            select: {
+              id: true,
+              prompt: true,
+              type: true,
+              metadata: true,
+              options: {
+                orderBy: { position: "asc" },
+                select: { id: true, content: true, isCorrect: true },
               },
             },
           },
         },
-        liveSession: true,
-        attachments: true,
       },
-    }),
-    // Cheapest possible next-chapter lookup: one indexed query, returns only id.
-    // Requires chapter.moduleId + chapter.position — we derive them from the
-    // chapter fetch above. Because Promise.all runs them concurrently we pass a
-    // nested sub-promise that waits for the minimal fields first.
-    prisma.chapter
-      .findUnique({
-        where: { id: params.chapterId },
-        select: { moduleId: true, position: true },
-      })
-      .then((c) =>
-        c
-          ? prisma.chapter.findFirst({
-              where: {
-                moduleId: c.moduleId,
-                position: { gt: c.position },
-                isPublished: true,
-              },
-              orderBy: { position: "asc" },
-              select: { id: true },
-            })
-          : null
-      ),
-    prisma.chapterProgress.findUnique({
-      where: { userId_chapterId: { userId, chapterId: params.chapterId } },
-    }),
-  ]);
+    },
+  });
 
   if (!chapter) {
-    // If no session user in DB (edge case: session exists but user deleted),
-    // fall through to sign-in for non-intro chapters. For intro we already
-    // handled the unauthenticated branch above; if we reach here authenticated
-    // but chapter missing just redirect to course root.
     return redirect(`/courses/${params.courseId}`);
   }
 
-  // If the chapter turns out to be an intro and somehow an authenticated user
-  // landed here without a corresponding DB record, guard gracefully.
-  if (chapter.isIntro && !session.user.id) {
-    return redirect("/sign-in");
-  }
-
-  const isAccessible = await isChapterAccessible(
-    chapter as ChapterWithProgress,
-    session.user.id,
-    session.user.role
-  );
-
-  if (!isAccessible) {
+  if (!session?.user) {
     return (
-      <Banner
-        label={t.course.completePrevious}
-        variant="warning"
-      />
+      <div className="flex flex-col h-full">
+        <ContentViewer
+          videoUrl={chapter.videoUrl}
+          pdfUrl={chapter.pdfUrl}
+          richContent={chapter.richContent}
+          youtubeUrl={chapter.youtubeUrl}
+          title={chapter.title}
+          courseId={params.courseId}
+          lockType="intro"
+          completeOnEnd={false}
+          description={chapter.description as string}
+          attachments={chapter.attachments}
+          chapterId={chapter.id}
+          isAuthenticated={false}
+        />
+      </div>
     );
   }
 
@@ -160,51 +136,12 @@ const ChapterPage = async (
     return <Banner label={t.course.quizNotConfigured} variant="warning" />;
   }
 
-  const isLocked = !isAccessible;
-  const completeOnEnd = !!session.user && !studentProgress?.isCompleted;
-
-  const renderChapterContent = () => {
-    if (isLocked) {
-      return (
-        <Banner
-          variant="warning"
-          label={t.course.completePrevious}
-        />
-      );
-    }
-
-    switch (chapter.type) {
-      case ChapterType.QUIZ:
-        return (
-          <QuizPlayer
-            quiz={toQuizForPlayer(chapter.quiz!)}
-            courseId={params.courseId}
-            nextChapterId={nextChapter?.id}
-          />
-        );
-      default:
-        return (
-          <ContentViewer
-            videoUrl={chapter.videoUrl}
-            pdfUrl={chapter.pdfUrl}
-            richContent={chapter.richContent}
-            youtubeUrl={chapter.youtubeUrl}
-            title={chapter.title}
-            courseId={params.courseId}
-            nextChapterId={nextChapter?.id}
-            completeOnEnd={completeOnEnd}
-            description={chapter.description as string}
-            attachments={chapter.attachments}
-            chapterId={chapter.id}
-            hasWalletSimulator={chapter.hasWalletSimulator}
-          />
-        );
-    }
-  };
+  const nextChapterId = findNextPublishedChapterId(tree, chapter.id) ?? undefined;
+  const isCompleted = navChapter.isCompleted;
 
   return (
     <div className="flex flex-col h-full">
-      {studentProgress?.isCompleted && (
+      {isCompleted && (
         <div className="sticky top-0 w-full border-t-0">
           <Banner
             label={t.course.lessonCompleted}
@@ -212,7 +149,28 @@ const ChapterPage = async (
           />
         </div>
       )}
-      {renderChapterContent()}
+      {chapter.type === ChapterType.QUIZ ? (
+        <QuizPlayer
+          quiz={toQuizForPlayer(chapter.quiz!)}
+          courseId={params.courseId}
+          nextChapterId={nextChapterId}
+        />
+      ) : (
+        <ContentViewer
+          videoUrl={chapter.videoUrl}
+          pdfUrl={chapter.pdfUrl}
+          richContent={chapter.richContent}
+          youtubeUrl={chapter.youtubeUrl}
+          title={chapter.title}
+          courseId={params.courseId}
+          nextChapterId={nextChapterId}
+          completeOnEnd={!isCompleted}
+          description={chapter.description as string}
+          attachments={chapter.attachments}
+          chapterId={chapter.id}
+          hasWalletSimulator={chapter.hasWalletSimulator}
+        />
+      )}
     </div>
   );
 };
