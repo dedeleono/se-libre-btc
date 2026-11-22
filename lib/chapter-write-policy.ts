@@ -1,5 +1,7 @@
 import type { ChapterType } from "@prisma/client";
 
+import { resolveChapterAccess } from "./chapter-access-rule";
+
 export type ChapterWriteTarget = {
   courseId: string;
   type: ChapterType;
@@ -30,6 +32,12 @@ export function decideChapterWrite(input: {
     return { ok: false, status: 409, reason: "QUIZ_CHAPTER_REQUIRES_SUBMISSION" };
   }
   if (action === "SUBMIT_QUIZ" && chapter.type !== "QUIZ") return NOT_FOUND;
-  if (isAdmin || chapter.isIntro || input.hasEnrollment) return { ok: true };
+  const access = resolveChapterAccess({
+    isAuthenticated: true,
+    role: isAdmin ? "ADMIN" : "STUDENT",
+    isIntro: chapter.isIntro,
+    hasEnrollment: input.hasEnrollment,
+  });
+  if (access.accessible) return { ok: true };
   return { ok: false, status: 403, reason: "NOT_ENROLLED" };
 }

@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { signInWithGoogle, signInWithMagicLink } from "@/lib/auth-client";
@@ -30,7 +30,6 @@ export default function UserAuthForm() {
   const [emailSent, setEmailSent] = useState(false);
   const [sentEmail, setSentEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
   const loginFormSchema = z.object({
@@ -45,16 +44,22 @@ export default function UserAuthForm() {
   });
 
   const isPending = form.formState.isSubmitting || loading;
+  const emailErrorType = form.formState.errors.email?.type;
+
+  useEffect(() => {
+    if (!isPending && emailErrorType === "server") form.setFocus("email");
+  }, [isPending, emailErrorType, form]);
+
+  const showSendError = () =>
+    form.setError("email", { type: "server", message: t.auth.emailSendError }, { shouldFocus: true });
 
   const onSubmit = async (data: UserFormValue) => {
     setLoading(true);
-    setError(null);
     try {
       const result = await signInWithMagicLink(data.email, callbackUrl);
 
       if (result?.error) {
-        setError(result.error.message ?? t.toasts.verificationEmailError);
-        toast.error(t.toasts.verificationEmailError);
+        showSendError();
         return;
       }
 
@@ -63,8 +68,8 @@ export default function UserAuthForm() {
       toast.success(t.toasts.verificationEmailSent);
     } catch (error) {
       console.error("Error during sign in:", error);
-      setError(error instanceof Error ? error.message : t.toasts.verificationEmailError);
       toast.error(t.toasts.unexpectedError);
+      showSendError();
     } finally {
       setLoading(false);
     }
@@ -97,9 +102,9 @@ export default function UserAuthForm() {
               <CheckCircle2 className="h-8 w-8" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-3xl">
+              <h2 className="text-3xl">
                 {t.auth.checkEmail}
-              </h3>
+              </h2>
               <p className="text-muted-foreground max-w-sm mx-auto">
                 {t.auth.magicLinkSent(sentEmail)}
               </p>
@@ -134,6 +139,7 @@ export default function UserAuthForm() {
           >
             <Form {...form}>
               <form
+                noValidate
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="w-full space-y-4"
               >

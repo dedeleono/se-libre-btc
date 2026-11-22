@@ -1,7 +1,8 @@
 "use client";
 
 import { useSession } from "@/lib/auth-client";
-import { Chapter, Course, CourseModule, ChapterProgress } from "@prisma/client";
+import type { ChapterAccess } from "@/lib/chapter-access-rule";
+import type { CourseNavTree } from "@/lib/course-nav-tree";
 import { Menu } from "lucide-react";
 import {
   Sheet,
@@ -13,26 +14,15 @@ import { CourseSidebar } from "./course-sidebar";
 import { useLocale } from "@/lib/i18n";
 
 interface CourseMobileSidebarProps {
-  course: Course & {
-    modules: (CourseModule & {
-      chapters: (Chapter & {
-        studentProgress: ChapterProgress[] | null;
-      })[];
-    })[];
-    attachments: {
-      id: string;
-      name: string;
-      url: string;
-    }[];
-  };
+  course: CourseNavTree;
   progressCount: number;
-  chaptersAccessibility: Record<string, boolean>;
+  chapterAccess: Record<string, ChapterAccess>;
 }
 
 export const CourseMobileSidebar = ({
   course,
   progressCount,
-  chaptersAccessibility,
+  chapterAccess,
 }: CourseMobileSidebarProps) => {
   const { data: session } = useSession();
   const currentUserRole = (session?.user as { role?: string } | undefined)
@@ -55,8 +45,8 @@ export const CourseMobileSidebar = ({
         <SheetTitle className="sr-only">{t.nav.myLearning}</SheetTitle>
         <CourseSidebar
           course={course}
-          userSession={session}
-          chaptersAccessibility={chaptersAccessibility}
+          isAuthenticated={!!session?.user}
+          chapterAccess={chapterAccess}
           currentUserRole={currentUserRole}
           progressCount={progressCount}
         />

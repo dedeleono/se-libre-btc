@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
-  CardTitle,
   CardHeader,
 } from "@/components/ui/card";
 import { S3FileUpload } from "@/components/file-upload";
@@ -244,7 +243,7 @@ export default function OnboardingForm({
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>{t.onboarding.completeProfile}</CardTitle>
+        <h1 data-slot="card-title" className="font-[var(--font-display)] text-xl uppercase leading-none tracking-normal">{t.onboarding.completeProfile}</h1>
         <CardDescription>
           {t.onboarding.completeProfileDescription}
         </CardDescription>

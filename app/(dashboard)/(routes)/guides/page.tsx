@@ -97,13 +97,11 @@ export default async function GuidesPage() {
                 <LucideGitPullRequestDraft className="h-8 w-8 text-primary dark:text-white/90" />
               </div>
               <div>
-                <h2
-                  className="text-2xl font-black tracking-tight sm:text-4xl
-                  bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent
-                  dark:from-white dark:to-white/70 font-['Open_Sans']"
+                <h1
+                  className="text-3xl text-balance text-foreground md:text-4xl"
                 >
                   {t.dashboard.guidesTitle}
-                </h2>
+                </h1>
                 <p className="text-muted-foreground/80 text-sm dark:text-white/50 font-['Open_Sans'] mt-1">
                   {t.dashboard.guidesSubtitle}
                 </p>

@@ -6,6 +6,8 @@ import { Navbar } from "./_components/navbar";
 import { prisma } from "@/lib/db";
 import { checkInvitationClaim } from "@/lib/invitation-claim";
 import { UserRole } from "@prisma/client";
+import { errorPath } from "@/lib/error-codes";
+import { MAIN_CONTENT_ID } from "@/components/layout/skip-link";
 
 export default async function OnboardingPage(
   props: {
@@ -20,7 +22,7 @@ export default async function OnboardingPage(
   }
 
   if (!session.user?.role) {
-    redirect('/error?message=Invalid user role');
+    redirect(errorPath("accountRoleMissing"));
   }
 
   const user = await prisma.user.findUnique({
@@ -34,7 +36,7 @@ export default async function OnboardingPage(
   });
 
   if (!user || user.isBanned || user.isDeleted) {
-    redirect('/error?message=User not allowed');
+    redirect(errorPath("accountBlocked"));
   }
 
   if (user.onboardingCompleted) {
@@ -56,7 +58,7 @@ export default async function OnboardingPage(
     });
 
     if (!invitation || !checkInvitationClaim(invitation, session.user.email, new Date()).ok) {
-      redirect('/error?message=Invalid invitation');
+      redirect(errorPath("invitationInvalid"));
     }
 
     pendingInvitation = {
@@ -81,7 +83,7 @@ export default async function OnboardingPage(
       <div className="h-[80px] fixed inset-y-0 w-full z-50">
         <Navbar userId={session?.user?.id} userRole={session?.user?.role} />
       </div>
-      <main className="grid flex-1 place-items-center p-4 min-h-screen">
+      <main id={MAIN_CONTENT_ID} className="grid flex-1 place-items-center p-4 min-h-screen">
         <div className="w-full min-h-screen max-w-3xl flex flex-col items-center justify-center">
           <OnboardingForm
             organizationId={session.user.id}
