@@ -95,6 +95,17 @@ describe("editor module graph", () => {
     expect(source).not.toMatch(/isDevPlayground|showTreeView|showNestedEditorTreeView|measureTypingPerf|setURLParam/);
   });
 
+  it("never loads editor content from the URL fragment", () => {
+    // A crafted `#doc=` link used to silently replace the editor's content.
+    expect(existsSync(path.join(ROOT, "utilities/docSerialization.ts"))).toBe(false);
+    expect(importersOf("@lexical/file")).toEqual([]);
+    for (const file of files) {
+      expect(readFileSync(file, "utf8"), path.relative(ROOT, file)).not.toMatch(
+        /location\.hash|docFromHash|#doc=/,
+      );
+    }
+  });
+
   it("imports yjs only from the comments feature", () => {
     expect(importersOf("yjs")).toEqual([
       "components/editor/commenting/index.ts",

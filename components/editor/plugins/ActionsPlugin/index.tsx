@@ -10,7 +10,6 @@ import type {LexicalEditor} from 'lexical';
 import type {JSX} from 'react';
 
 import {$createCodeNode, $isCodeNode} from '@lexical/code';
-import {editorStateFromSerializedDocument} from '@lexical/file';
 import {
   $convertFromMarkdownString,
   $convertToMarkdownString,
@@ -21,14 +20,12 @@ import {
   $getRoot,
   $isParagraphNode,
   CLEAR_EDITOR_COMMAND,
-  CLEAR_HISTORY_COMMAND,
   HISTORIC_TAG,
 } from 'lexical';
 import {useCallback, useEffect, useState} from 'react';
 
 import useModal from '@/hooks/useModal';
 import Button from '@/components/editor-ui/Button';
-import {docFromHash} from '@/utilities/docSerialization';
 import {PLAYGROUND_TRANSFORMERS} from '../MarkdownTransformers';
 import {
   SPEECH_TO_TEXT_COMMAND,
@@ -85,17 +82,6 @@ export default function ActionsPlugin({
   const [isSpeechToText, setIsSpeechToText] = useState(false);
   const [isEditorEmpty, setIsEditorEmpty] = useState(true);
   const [modal, showModal] = useModal();
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    docFromHash(window.location.hash).then((doc) => {
-      if (doc && doc.source === 'Playground') {
-        editor.setEditorState(editorStateFromSerializedDocument(editor, doc));
-        editor.dispatchCommand(CLEAR_HISTORY_COMMAND, undefined);
-      }
-    });
-  }, [editor]);
   useEffect(() => {
     return editor.registerEditableListener((editable) => {
       setIsEditable(editable);

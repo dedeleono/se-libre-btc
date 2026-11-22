@@ -1054,13 +1054,6 @@
   dependencies:
     lexical "0.34.0"
 
-"@lexical/file@^0.34.0":
-  version "0.34.0"
-  resolved "https://registry.yarnpkg.com/@lexical/file/-/file-0.34.0.tgz#0b8f9b9da5be81022416c32beb375aeae6954db3"
-  integrity sha512-dwGsx5o0W86A7zchEdeNzFB07IkYd5SuU5r9PeQbQD+8SglddtoWvORW29Pgk2dw7NhKannmS2/OZK+h1Fuu0Q==
-  dependencies:
-    lexical "0.34.0"
-
 "@lexical/hashtag@0.34.0", "@lexical/hashtag@^0.34.0":
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/@lexical/hashtag/-/hashtag-0.34.0.tgz#51208372f53d434e282c8aef29b75d4513f290d8"
