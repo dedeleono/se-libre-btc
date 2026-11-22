@@ -39,7 +39,7 @@ export function TableDetails({
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.key}>
-              <TableHead scope="row" className="font-normal">
+              <TableHead scope="row" className="text-sm font-normal normal-case tracking-normal">
                 {row.header}
               </TableHead>
               {row.cells.map((cell, i) => (

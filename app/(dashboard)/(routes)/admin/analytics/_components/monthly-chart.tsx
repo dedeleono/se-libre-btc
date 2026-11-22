@@ -29,7 +29,7 @@ export function MonthlyChart({ report }: { report: PublicCourseReport }) {
       <CardContent>
         {hasAny ? (
           <TooltipProvider delayDuration={150}>
-            <ol aria-label={a.monthlyTitle} className="grid h-48 grid-cols-12 items-end gap-0.5 border-b border-border sm:gap-2">
+            <ol aria-label={a.monthlyTitle} className="grid h-52 grid-cols-12 gap-0.5 border-b border-border pt-6 sm:gap-2">
               {months.map((month, i) => {
                 const value = values[i];
                 const height = max > 0 ? (value / max) * 100 : 0;
@@ -39,15 +39,16 @@ export function MonthlyChart({ report }: { report: PublicCourseReport }) {
                     <TooltipTrigger asChild>
                       <li
                         tabIndex={0}
-                        className="group relative flex h-full flex-col items-center justify-end rounded-t-[2px] transition-colors duration-150 hover:bg-muted/60 focus-visible:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
+                        className="relative flex h-full items-end justify-center rounded-t-[2px] transition-colors duration-150 hover:bg-muted/60 focus-visible:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
                       >
                         <span className="sr-only">{monthLong(month.month)}: </span>
                         <span
                           className={cn(
-                            "mb-1 text-[11px] font-semibold tabular-nums sm:text-xs",
+                            "absolute inset-x-0 text-center text-[11px] font-semibold tabular-nums sm:text-xs",
                             month.count.kind === "suppressed" && "font-normal text-muted-foreground",
                             !labelled && "sr-only",
                           )}
+                          style={{ insetBlockEnd: `calc(${height}% + 4px)` }}
                         >
                           <CellValue cell={month.count} threshold={report.threshold} />
                         </span>
@@ -69,7 +70,7 @@ export function MonthlyChart({ report }: { report: PublicCourseReport }) {
             </ol>
             <div aria-hidden="true" className="mt-1.5 grid grid-cols-12 gap-0.5 text-center text-[11px] text-muted-foreground sm:gap-2 sm:text-xs">
               {months.map((month, i) => (
-                <span key={month.month} className={cn("truncate", i % 2 === 1 && i !== lastIndex && "max-sm:invisible")}>
+                <span key={month.month} className={cn("whitespace-nowrap", (lastIndex - i) % 3 !== 0 && "max-sm:invisible")}>
                   {monthShort(month.month)}
                 </span>
               ))}

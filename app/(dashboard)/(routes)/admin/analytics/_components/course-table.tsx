@@ -36,7 +36,7 @@ export function CourseTable({ report }: { report: PublicCourseReport }) {
           <TableBody>
             {report.byCourse.map((row) => (
               <TableRow key={row.key}>
-                <TableHead scope="row" className="min-w-48 py-2 font-normal whitespace-normal">
+                <TableHead scope="row" className="min-w-48 py-2 text-sm font-normal normal-case tracking-normal whitespace-normal">
                   <div className="flex flex-wrap items-center gap-2">
                     <Link
                       href={`?${toSearchParams({ ...report.filters, courseId: row.key })}`}

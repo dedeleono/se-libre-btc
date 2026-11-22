@@ -34,20 +34,22 @@ export function BarList({
 
   return (
     <TooltipProvider delayDuration={150}>
-      <ul aria-label={label} className="space-y-1">
+      <ul
+        aria-label={label}
+        className="grid grid-cols-[minmax(5rem,7rem)_1fr_auto] gap-x-3 gap-y-1 sm:grid-cols-[minmax(6rem,11rem)_1fr_auto]"
+      >
         {rows.map((row) => {
           const width = row.value.kind === "value" && max > 0 ? (row.value.value / max) * 100 : 0;
           const item = (
             <li
               tabIndex={row.tooltip ? 0 : undefined}
               className={cn(
-                "rounded-[2px] px-2 py-1.5 transition-colors duration-150",
+                "col-span-3 grid min-h-10 grid-cols-subgrid items-center gap-y-1 rounded-[2px] px-2 py-1.5 transition-colors duration-150",
                 row.tooltip &&
                   "hover:bg-muted/60 focus-visible:bg-muted/60 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
               )}
             >
-              <div className="grid min-h-7 grid-cols-[minmax(5rem,7rem)_1fr_auto] items-center gap-3 sm:grid-cols-[minmax(6rem,10rem)_1fr_auto]">
-                <span className="truncate text-sm" title={row.label}>
+                <span className="line-clamp-2 text-sm leading-snug" title={row.label}>
                   {row.label}
                 </span>
                 <div className="h-5 bg-muted/70" aria-hidden="true">
@@ -65,10 +67,10 @@ export function BarList({
                   <span className="font-semibold tabular-nums">
                     <CellValue cell={row.value} threshold={threshold} />
                   </span>
-                  {row.aside && <span className="text-xs text-muted-foreground tabular-nums">{row.aside}</span>}
+                  {row.aside && <span className="hidden text-xs text-muted-foreground tabular-nums sm:inline">{row.aside}</span>}
                 </span>
-              </div>
-              {row.note && <p className="mt-1 text-xs text-muted-foreground text-pretty">{row.note}</p>}
+              {row.aside && <p className="col-span-3 text-xs text-muted-foreground tabular-nums sm:hidden">{row.aside}</p>}
+              {row.note && <p className="col-span-3 text-xs text-muted-foreground text-pretty">{row.note}</p>}
             </li>
           );
 
