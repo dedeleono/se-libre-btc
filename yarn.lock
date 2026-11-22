@@ -5994,7 +5994,7 @@ lexical@0.34.0, lexical@^0.34.0:
   resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.34.0.tgz#9f8e4739cf5ade90e3f6492dc1e0daddd5ef3012"
   integrity sha512-oqQ87i49oGRt8u9qIXow+fWeqN6luRMtYAa1GAx1l9AaR3A8Tfrgnmj2+13ej6CMPK6JunKaUXbd+7FDy+s8XQ==
 
-lib0@^0.2.102, lib0@^0.2.85, lib0@^0.2.99:
+lib0@^0.2.99:
   version "0.2.117"
   resolved "https://registry.yarnpkg.com/lib0/-/lib0-0.2.117.tgz#6c3f926475d28904af05b590703cbbbc29475716"
   integrity sha512-DeXj9X5xDCjgKLU/7RR+/HQEVzuuEUiwldwOGsHK/sfAfELGWEyTcf0x+uOvCvK3O2zPmZePXWL85vtia6GyZw==
@@ -8148,21 +8148,6 @@ xml-naming@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/xml-naming/-/xml-naming-0.1.0.tgz#8ab7106c5b8d23caa2fabac1cadf17136379fbd8"
   integrity sha512-k8KO9hrMyNk6tUWqUfkTEZbezRRpONVOzUTnc97VnCvyj6Tf9lyUR9EDAIeiVLv56jsMcoXEwjW8Kv5yPY52lw==
-
-y-protocols@^1.0.5:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/y-protocols/-/y-protocols-1.0.7.tgz#6631c492e75b78b3a61353a60067e6f8a4c38d5f"
-  integrity sha512-YSVsLoXxO67J6eE/nV4AtFtT3QEotZf5sK5BHxFBXso7VDUT3Tx07IfA6hsu5Q5OmBdMkQVmFZ9QOA7fikWvnw==
-  dependencies:
-    lib0 "^0.2.85"
-
-y-websocket@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/y-websocket/-/y-websocket-3.0.0.tgz#e86bdb29cc0a53cb8d6e33ec8d24614a723832af"
-  integrity sha512-mUHy7AzkOZ834T/7piqtlA8Yk6AchqKqcrCXjKW8J1w2lPtRDjz8W5/CvXz9higKAHgKRKqpI3T33YkRFLkPtg==
-  dependencies:
-    lib0 "^0.2.102"
-    y-protocols "^1.0.5"
 
 y18n@^4.0.0:
   version "4.0.3"

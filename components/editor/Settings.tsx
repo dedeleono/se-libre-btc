@@ -21,7 +21,6 @@ export default function Settings(): JSX.Element {
     setOption,
     settings: {
       measureTypingPerf,
-      isCollab,
       isRichText,
       isMaxLength,
       hasLinkAttributes,
@@ -69,18 +68,6 @@ export default function Settings(): JSX.Element {
       />
       {showSettings ? (
         <div className="switches">
-          {isRichText && isDevPlayground && (
-            <Switch
-              onClick={() => {
-                setOption('isCollab', !isCollab);
-                if (typeof window !== 'undefined') {
-                  window.location.reload();
-                }
-              }}
-              checked={isCollab}
-              text="Collaboration"
-            />
-          )}
           {isDevPlayground && (
             <Switch
               onClick={() => {
@@ -115,7 +102,6 @@ export default function Settings(): JSX.Element {
           <Switch
             onClick={() => {
               setOption('isRichText', !isRichText);
-              setOption('isCollab', false);
             }}
             checked={isRichText}
             text="Rich Text"
