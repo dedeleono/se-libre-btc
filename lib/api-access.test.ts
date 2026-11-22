@@ -65,6 +65,7 @@ const API_ACCESS: Record<string, Partial<Record<Method, Access>>> = {
   "notes/route.ts": { GET: "OWNER", POST: "OWNER" },
   "notifications/[notificationId]/mark-read/route.ts": { PATCH: "OWNER" },
   "notifications/mark-all-read/route.ts": { PATCH: "OWNER" },
+  "notifications/route.ts": { GET: "AUTHED" },
   "payments/create/route.ts": { POST: "AUTHED" },
   "payments/getAll/route.ts": { GET: "ADMIN" },
   "payments/getPaymentsByStudent/route.ts": { GET: "OWNER" },
