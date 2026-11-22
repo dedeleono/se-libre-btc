@@ -97,7 +97,7 @@ export const ChapterDescriptionForm = ({
         >
           {!initialData.description && t.admin.noDescription}
           {initialData.description && (
-            <Preview value={initialData.description} />
+            <Preview value={initialData.description} className="lesson-content" />
           )}
         </div>
       )}
