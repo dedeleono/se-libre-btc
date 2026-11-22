@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
+import { filterControlClass } from "@/components/filter-control";
 import Combobox from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -44,7 +45,7 @@ export function StudentFiltersBar({ filters }: { filters: StudentFilters }) {
       <div className="grid gap-1.5 sm:w-48">
         <Label htmlFor="students-age">{s.filterAge}</Label>
         <Select value={filters.ageRange ?? ALL} onValueChange={(value) => apply({ ageRange: value === ALL ? null : (value as StudentFilters["ageRange"]) })}>
-          <SelectTrigger id="students-age" className="w-full text-base sm:text-sm">
+          <SelectTrigger id="students-age" className={filterControlClass(filters.ageRange === null)}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -65,6 +66,7 @@ export function StudentFiltersBar({ filters }: { filters: StudentFilters }) {
           id="students-country"
           options={countryOptions}
           value={filters.country ?? ALL}
+          triggerClassName={filterControlClass(filters.country === null)}
           onChange={(value) => {
             const country = typeof value === "string" && value && value !== ALL ? value : null;
             apply({ country, region: null });
@@ -76,7 +78,7 @@ export function StudentFiltersBar({ filters }: { filters: StudentFilters }) {
         <div className="grid gap-1.5 sm:w-56">
           <Label htmlFor="students-region">{s.filterRegion}</Label>
           <Select value={filters.region ?? ALL} onValueChange={(value) => apply({ region: value === ALL ? null : value })}>
-            <SelectTrigger id="students-region" className="w-full text-base sm:text-sm">
+            <SelectTrigger id="students-region" className={filterControlClass(filters.region === null)}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -97,7 +99,7 @@ export function StudentFiltersBar({ filters }: { filters: StudentFilters }) {
           value={filters.certificates ?? ALL}
           onValueChange={(value) => apply({ certificates: value === "some" || value === "none" ? value : null })}
         >
-          <SelectTrigger id="students-certificates" className="w-full text-base sm:text-sm">
+          <SelectTrigger id="students-certificates" className={filterControlClass(filters.certificates === null)}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

@@ -7,6 +7,7 @@ import * as React from "react";
 import type { DateRange } from "react-day-picker";
 
 import { CalendarDateRangePicker } from "@/components/date-range-picker";
+import { filterControlClass } from "@/components/filter-control";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Combobox from "@/components/ui/combobox";
 import { Label } from "@/components/ui/label";
@@ -89,7 +90,7 @@ export function ReportFiltersBar({
             value={filters.courseId ?? ALL}
             onValueChange={(value) => onChange({ ...filters, courseId: value === ALL ? null : value })}
           >
-            <SelectTrigger id="analytics-course" className="w-full text-base sm:text-sm">
+            <SelectTrigger id="analytics-course" className={filterControlClass(filters.courseId === null)}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -109,6 +110,7 @@ export function ReportFiltersBar({
             id="analytics-country"
             options={countryOptions}
             value={filters.country ?? ALL}
+            triggerClassName={filterControlClass(filters.country === null)}
             onChange={(value) => {
               const country = typeof value === "string" && value && value !== ALL ? value : null;
               onChange({ ...filters, country });
@@ -129,7 +131,7 @@ export function ReportFiltersBar({
             aria-labelledby="analytics-dates-label"
             calendarLocale={locale === "es" ? es : enUS}
             numberOfMonths={wide ? 2 : 1}
-            triggerClassName="sm:w-[280px]"
+            triggerClassName={filterControlClass(!draftRange?.from, "justify-start sm:w-[280px]")}
           />
         </div>
 
