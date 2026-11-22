@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { decideInvitationRedemption } from "@/lib/invitation-redemption";
 import { createUserSignupNotification } from "@/lib/notifications";
 
 
@@ -37,10 +38,15 @@ export async function GET(req: Request) {
             return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
         }
 
-        if (invitation.expires < new Date()) {
-            await prisma.pendingInvitation.delete({
+        const redemption = decideInvitationRedemption(invitation, new Date());
+        if (!redemption.ok) {
+            await prisma.pendingInvitation.deleteMany({
                 where: { id: invitation.id }
             });
+            if (redemption.reason === "not_student") {
+                console.warn("[VERIFY_INVITATION] rejected non-student invitation", { invitationId: invitation.id, role: invitation.role });
+                return NextResponse.redirect(`${getBaseUrl()}/error?message=Invalid invitation link`);
+            }
             return NextResponse.redirect(`${getBaseUrl()}/error?message=Invitation has expired`);
         }
 
@@ -54,8 +60,7 @@ export async function GET(req: Request) {
                 name: invitation.name,
                 firstName: invitation.firstName,
                 lastName: invitation.lastName,
-                role: invitation.role,
-                phone: invitation.phone,
+                role: "STUDENT",
                 emailVerified: true,
                 onboardingCompleted: false,
             },
