@@ -13,6 +13,8 @@
 //   BROWSER_PATH       Chromium-based browser executable (optional; default: playwright's chromium)
 //   ONLY               comma-separated sections to run: reading,notes,admin (default: all)
 //   NAV_TIMEOUT        page navigation timeout in ms (default 180000; first loads compile the route)
+//   READY_TIMEOUT      wait for the editor and lesson content in ms (default 60000)
+//   STATUS_TIMEOUT     wait for each notes save status in ms (default 8000)
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -23,6 +25,8 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const SCRATCH = join(tmpdir(), "se-libre-lesson-check");
 const SHOTS = process.env.SHOTS_DIR ?? join(SCRATCH, "shots");
 const NAV_TIMEOUT = Number(process.env.NAV_TIMEOUT ?? 180000);
+const READY_TIMEOUT = Number(process.env.READY_TIMEOUT ?? 60000);
+const STATUS_TIMEOUT = Number(process.env.STATUS_TIMEOUT ?? 8000);
 const ONLY = new Set((process.env.ONLY ?? "reading,notes,admin").split(","));
 mkdirSync(SHOTS, { recursive: true });
 
@@ -96,7 +100,7 @@ if (ONLY.has("reading")) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(`${BASE}/lesson-fixture?fixture=${fixture}&mode=${mode}`, { waitUntil: "load", timeout: NAV_TIMEOUT });
       await page.waitForSelector(".lexical-preview p", { timeout: 30000 });
-      if (mode === "enrolled") await page.waitForSelector(".editor-shell", { timeout: 60000 });
+      if (mode === "enrolled") await page.waitForSelector(".editor-shell", { timeout: READY_TIMEOUT });
       await page.waitForTimeout(300);
       if (width === 375 || width === 1440) await page.screenshot({ path: shot(id), fullPage: true });
       const r = await page.evaluate(([expectDark, contrastSrc]) => {
@@ -155,10 +159,13 @@ if (ONLY.has("reading")) {
 // 2. Notes, tabs, discussion, resources and sidebar (plan 007).
 const NOTES_URL = `${BASE}/lesson-fixture/courses/fixture-course/chapters/ch-1`;
 const statusText = (page) => page.locator('section[aria-labelledby="lesson-notes-title"] [role="status"]').innerText();
-const waitStatus = (page, text, timeout = 8000) =>
+const waitStatus = (page, text, timeout = STATUS_TIMEOUT) =>
   page.waitForFunction((t) => document.querySelector('section[aria-labelledby="lesson-notes-title"] [role="status"]')?.textContent?.includes(t), text, { timeout }).then(() => true, () => false);
 const editor = (page) => page.locator('.lesson-notebook .editor-shell [contenteditable="true"]').first();
 const notebook = (page) => page.locator('section[aria-labelledby="lesson-notes-title"]');
+const selectedTab = (page, index) =>
+  page.waitForFunction((i) => document.querySelectorAll('[role="tab"]')[i]?.getAttribute("aria-selected") === "true", index, { timeout: 3000 }).then(() => true, () => false);
+const settle = (page) => page.waitForTimeout(500); // let 150ms color transitions finish before measuring contrast
 
 async function openNotes(opts) {
   const s = await newPage(opts);
@@ -171,7 +178,7 @@ if (ONLY.has("notes")) {
   {
     const id = "notes";
     const { page, state, context } = await openNotes();
-    await editor(page).waitFor({ timeout: 60000 });
+    await editor(page).waitFor({ timeout: READY_TIMEOUT });
     await page.waitForTimeout(3000);
     if (state.posts.length) fail(id, `opening the lesson sent ${state.posts.length} POSTs without input`);
     if (!(await statusText(page)).includes("automáticamente")) fail(id, `idle status is "${await statusText(page)}"`);
@@ -179,10 +186,13 @@ if (ONLY.has("notes")) {
 
     await editor(page).click();
     await page.keyboard.press("End");
-    for (const ch of " extra") { await page.keyboard.type(ch); await page.waitForTimeout(300); }
-    const typedAt = Date.now();
+    const keyTimes = [];
+    for (const ch of " extra") { await page.keyboard.type(ch); keyTimes.push(Date.now()); await page.waitForTimeout(300); }
+    const typedAt = keyTimes.at(-1);
+    const maxGap = Math.max(...keyTimes.slice(1).map((t, i) => t - keyTimes[i]));
     if (!(await waitStatus(page, "Guardado"))) fail(id, "never showed Guardado after typing");
-    if (state.posts.length !== 1) fail(id, `expected 1 POST after a typing burst, got ${state.posts.length}`);
+    if (state.posts.length !== 1)
+      fail(id, `expected 1 POST after a typing burst, got ${state.posts.length} (largest gap between keys ${maxGap}ms; posts ${JSON.stringify(state.posts.map((p) => ({ afterLastKeyMs: p.at - typedAt, content: p.body.content.replace(/<[^>]+>/g, "") })))})`);
     else {
       if (!state.posts[0].body.content.includes("extra")) fail(id, "POST body lacks the typed text");
       if (state.posts[0].at - typedAt < 1200) fail(id, `save fired ${state.posts[0].at - typedAt}ms after the last key`);
@@ -195,7 +205,7 @@ if (ONLY.has("notes")) {
     for (let i = 0; i < (await tabs.count()); i++) { const b = await tabs.nth(i).boundingBox(); if (!b || b.height < 44) fail("tabs", `tab ${i} height ${b?.height}`); }
     await tabs.first().focus();
     await page.keyboard.press("ArrowRight");
-    if ((await tabs.nth(1).getAttribute("aria-selected")) !== "true") fail("tabs", "ArrowRight did not select Discussion");
+    if (!(await selectedTab(page, 1))) fail("tabs", "ArrowRight did not select Discussion");
     if ((await page.locator(".lesson-notebook .editor-shell").count()) !== 1) fail("tabs", "notebook unmounted while Discussion is open");
     const hiddenPanel = await page.evaluate(() => [...document.querySelectorAll('[role="tabpanel"]')].filter((p) => p.getAttribute("data-state") === "inactive").map((p) => getComputedStyle(p).display));
     if (hiddenPanel.some((d) => d !== "none")) fail("tabs", `inactive panel still rendered (display ${hiddenPanel})`);
@@ -242,7 +252,7 @@ if (ONLY.has("notes")) {
     if (!(await page.getByText("No se pudieron cargar tus notas.").isVisible())) fail("load-error", "message missing");
     state.get = { status: 200, body: { content: "<p>Recuperadas</p>" } };
     await notebook(page).getByRole("button", { name: "Intentar de nuevo" }).click();
-    await editor(page).waitFor({ timeout: 60000 });
+    await editor(page).waitFor({ timeout: READY_TIMEOUT });
     if (!(await editor(page).innerText()).includes("Recuperadas")) fail("load-error", "retry did not load notes");
     if (state.posts.length) fail("load-error", "a POST was sent during load recovery");
     await context.close();
@@ -252,7 +262,7 @@ if (ONLY.has("notes")) {
   {
     const legacy = JSON.stringify({ root: { type: "root", children: [{ type: "paragraph", children: [{ type: "text", text: "Hola" }] }, { type: "paragraph", children: [{ type: "text", text: "Mundo" }] }] } });
     const { page, context } = await openNotes({ notes: legacy });
-    await editor(page).waitFor({ timeout: 60000 });
+    await editor(page).waitFor({ timeout: READY_TIMEOUT });
     const txt = await editor(page).innerText();
     if (!txt.includes("Hola") || !txt.includes("Mundo")) fail("legacy", `editor shows "${txt}"`);
     await context.close();
@@ -261,7 +271,7 @@ if (ONLY.has("notes")) {
   // Sidebar (desktop width so the nav shows).
   {
     const { page, context } = await openNotes({ width: 1280, notes: "" });
-    await editor(page).waitFor({ timeout: 60000 });
+    await editor(page).waitFor({ timeout: READY_TIMEOUT });
     const placeholder = await page.locator(".lesson-notebook .ContentEditable__placeholder").innerText().catch(() => "");
     if (placeholder !== "Escribe aquí…") fail("placeholder", `empty notebook placeholder is "${placeholder}"`);
     const current = page.locator('nav a[aria-current="page"]');
@@ -277,7 +287,7 @@ if (ONLY.has("notes")) {
   for (const theme of ["light", "dark"]) for (const width of [375, 1280]) {
     const tag = `${theme}-${width}`;
     const { page, state, context } = await openNotes({ theme, width });
-    await editor(page).waitFor({ timeout: 60000 });
+    await editor(page).waitFor({ timeout: READY_TIMEOUT });
     await page.waitForTimeout(800);
     await page.screenshot({ path: shot(`notes-tab-${tag}`), fullPage: true });
     await notebook(page).screenshot({ path: shot(`notes-idle-${tag}`) });
@@ -297,9 +307,12 @@ if (ONLY.has("notes")) {
     if (!(await waitStatus(page, "Guardado"))) fail(`autosave-${tag}`, "never showed Guardado");
     await notebook(page).screenshot({ path: shot(`notes-saved-${tag}`) });
     state.postDelay = 0;
-    state.postStatus = 500;
+    if (state.errors.length) fail(`console-${tag}`, state.errors.slice(0, 2).join(" | "));
+    state.postStatus = 500; // the browser logs this forced 500; console errors are checked before it
+
     await page.keyboard.type(" falla");
     if (!(await waitStatus(page, "No se pudieron guardar"))) fail(`autosave-${tag}`, "no error status");
+    await settle(page);
     await notebook(page).screenshot({ path: shot(`notes-error-${tag}`) });
     const notebookContrast = await notebook(page).evaluate((el, src) => eval(src)(el), CONTRAST_FN);
     notebookContrast.forEach((p) => fail(`contrast-${tag}`, p));
@@ -317,20 +330,23 @@ if (ONLY.has("notes")) {
     if (!ring) fail(`keyboard-${tag}`, "focused tab has no visible focus indicator");
     await page.getByRole("tablist").screenshot({ path: shot(`tabs-focus-content-${tag}`) });
     await page.keyboard.press("ArrowRight");
-    const afterRight = await page.evaluate(() => [document.activeElement?.textContent, document.activeElement?.getAttribute("aria-selected")]);
-    if (!/discusi/i.test(afterRight[0] ?? "") || afterRight[1] !== "true") fail(`keyboard-${tag}`, `ArrowRight focus/selection wrong: ${afterRight}`);
+    const rightSelected = await selectedTab(page, 1);
+    const afterRight = await page.evaluate(() => document.activeElement?.textContent);
+    if (!/discusi/i.test(afterRight ?? "") || !rightSelected) fail(`keyboard-${tag}`, `ArrowRight focus/selection wrong: focus "${afterRight}", selected ${rightSelected}`);
+    await settle(page);
     await page.getByRole("tablist").screenshot({ path: shot(`tabs-focus-discussion-${tag}`) });
     await page.screenshot({ path: shot(`tabs-discussion-${tag}`), fullPage: false });
     await page.keyboard.press("Home");
-    if ((await page.getByRole("tab").first().getAttribute("aria-selected")) !== "true") fail(`keyboard-${tag}`, "Home did not select the first tab");
+    if (!(await selectedTab(page, 0))) fail(`keyboard-${tag}`, "Home did not select the first tab");
     await page.keyboard.press("End");
-    if ((await page.getByRole("tab").last().getAttribute("aria-selected")) !== "true") fail(`keyboard-${tag}`, "End did not select the last tab");
+    if (!(await selectedTab(page, 1))) fail(`keyboard-${tag}`, "End did not select the last tab");
     await page.keyboard.press("ArrowLeft");
+    if (!(await selectedTab(page, 0))) fail(`keyboard-${tag}`, "ArrowLeft did not select the first tab");
     await page.keyboard.press("Tab");
     if ((await page.evaluate(() => document.activeElement?.getAttribute("role"))) !== "tabpanel") fail(`keyboard-${tag}`, "Tab from the tablist did not enter the panel");
+    await settle(page);
     const tabContrast = await page.getByRole("tablist").evaluate((el, src) => eval(src)(el), CONTRAST_FN);
     tabContrast.forEach((p) => fail(`contrast-${tag}`, p));
-    if (state.errors.length) fail(`console-${tag}`, state.errors.slice(0, 2).join(" | "));
     await context.close();
   }
 }
