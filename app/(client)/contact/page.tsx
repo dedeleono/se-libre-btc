@@ -4,8 +4,8 @@ import { Download, MessageCircle, Users } from "lucide-react";
 import { KEET_COMMUNITY_URL, KEET_DOWNLOAD_URL } from "@/lib/keet";
 import { getServerMessages } from "@/lib/i18n-server";
 
-export default function ContactPage() {
-  const t = getServerMessages();
+export default async function ContactPage() {
+  const t = await getServerMessages();
 
   return (
     <div className="space-y-10">

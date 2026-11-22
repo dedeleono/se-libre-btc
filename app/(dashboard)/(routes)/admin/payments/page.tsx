@@ -48,7 +48,7 @@ async function getPaymentsData() {
 }
 
 export default async function PaymentsPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const data = await getPaymentsData();
 
   return (

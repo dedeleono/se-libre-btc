@@ -80,8 +80,8 @@ export default async function CourseCompletePage(props: { params: Promise<{ cour
   );
 }
 
-function CertificateLockedCard({ eligibility }: { eligibility: CertificateEligibility }) {
-  const t = getServerMessages().completion;
+async function CertificateLockedCard({ eligibility }: { eligibility: CertificateEligibility }) {
+  const t = (await getServerMessages()).completion;
 
   return (
     <Card className="border-2 border-foreground p-6">

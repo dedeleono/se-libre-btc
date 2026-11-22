@@ -5,7 +5,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function StudentLearningPathsPage() {
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const enrollments = session?.user?.id
     ? await prisma.learningPathEnrollment.findMany({
         where: { userId: session.user.id },

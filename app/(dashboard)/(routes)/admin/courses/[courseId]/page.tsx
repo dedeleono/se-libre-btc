@@ -15,7 +15,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 const CourseIdPage = async (props: { params: Promise<{ courseId: string }> }) => {
   const params = await props.params;
-  const t = getServerMessages();
+  const t = await getServerMessages();
 
   // const session = await auth()
 

@@ -12,8 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { getServerMessages } from "@/lib/i18n-server";
 
-export default function AboutPage() {
-  const t = getServerMessages();
+export default async function AboutPage() {
+  const t = await getServerMessages();
 
   const features = [
     { icon: BookOpen, ...t.public.aboutFeatures[0] },

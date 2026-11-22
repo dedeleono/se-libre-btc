@@ -9,7 +9,7 @@ export default async function ErrorPage(props: {
   searchParams: Promise<{ code?: string | string[] }>;
 }) {
   const { code } = await props.searchParams;
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const known = parseErrorCode(code);
   const copy = known
     ? t.errors.pages[known]

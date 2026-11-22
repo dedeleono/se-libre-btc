@@ -20,8 +20,8 @@ const relatedDocument: Record<LegalDocumentKey, LegalDocumentKey> = {
 const linkFocus =
   "rounded-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
-export function legalMetadata(key: LegalDocumentKey): Metadata {
-  const doc = legalDocuments[getServerLocale()][key];
+export async function legalMetadata(key: LegalDocumentKey): Promise<Metadata> {
+  const doc = legalDocuments[await getServerLocale()][key];
   return { title: `${doc.title} · Dinero Libre`, description: doc.summary };
 }
 
@@ -36,8 +36,8 @@ function withSupportLink(text: string): ReactNode {
   ));
 }
 
-export default function LegalDocumentPage({ document: key }: { document: LegalDocumentKey }) {
-  const locale = getServerLocale();
+export default async function LegalDocumentPage({ document: key }: { document: LegalDocumentKey }) {
+  const locale = await getServerLocale();
   const t = messages[locale].legal;
   const doc = legalDocuments[locale][key];
   const related = relatedDocument[key];

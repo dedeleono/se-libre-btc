@@ -16,7 +16,7 @@ export default async function AdminAnalyticsPage(props: { searchParams: Promise<
   const session = await auth();
   if (session?.user?.role !== UserRole.ADMIN) redirect("/unauthorized");
 
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const { courses, report, issues } = await loadPublicCourseReport(await props.searchParams);
 
   return (

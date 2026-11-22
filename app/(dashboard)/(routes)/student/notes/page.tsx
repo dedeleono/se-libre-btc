@@ -5,7 +5,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function StudentNotesPage() {
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const notes = session?.user?.id
     ? await prisma.studentNote.findMany({
         where: { userId: session.user.id },

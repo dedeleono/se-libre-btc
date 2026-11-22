@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const guard = await requireAdminApi();
   if (!guard.ok) return guard.response;
 
-  const locale = getServerLocale();
+  const locale = await getServerLocale();
   const a = messages[locale].analytics;
   const { report } = await loadPublicCourseReport(Object.fromEntries(req.nextUrl.searchParams));
 

@@ -9,8 +9,8 @@ import { legalDocumentPaths } from "@/lib/legal/content";
 const consentLink =
   "rounded-[2px] text-foreground underline underline-offset-4 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
-const AuthLayout = ({ children }: { children: React.ReactNode }) => {
-  const t = getServerMessages();
+const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
+  const t = await getServerMessages();
 
   return (
     <div className="dl-app grid min-h-screen lg:grid-cols-[1fr_0.9fr]">

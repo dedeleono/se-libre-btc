@@ -7,7 +7,7 @@ import { prisma } from "@/lib/db";
 import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function AdminLearningPathsPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const learningPaths = await prisma.learningPath.findMany({
     include: { _count: { select: { courses: true, enrollments: true } } },
     orderBy: { position: "asc" },

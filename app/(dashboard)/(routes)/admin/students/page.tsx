@@ -11,7 +11,7 @@ import { StudentsList } from "./_components/students-list";
 export const dynamic = "force-dynamic";
 
 export default async function AdminStudentsPage(props: { searchParams: Promise<RawSearchParams> }) {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const filters = parseStudentFilters(await props.searchParams);
   const where = toStudentWhere(filters);
   const titleSelect = { id: true, title: true } as const;

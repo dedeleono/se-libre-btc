@@ -23,7 +23,7 @@ interface PostPageProps {
 export default async function PostPage(props: PostPageProps) {
   const params = await props.params;
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
   if (!session?.user) {
     return redirect("/");
   }

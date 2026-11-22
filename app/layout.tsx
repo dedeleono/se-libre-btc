@@ -14,17 +14,17 @@ export const metadata: Metadata = {
   description: "Dinero Libre - Sé dueño de tu futuro",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = getServerLocale();
-  const t = getServerMessages();
+  const locale = await getServerLocale();
+  const t = await getServerMessages();
 
   return (
-    <html lang={locale}>
-      <body className="min-h-screen flex flex-col antialiased">
+    <html lang={locale} suppressHydrationWarning>
+      <body className="min-h-screen flex flex-col antialiased overflow-x-hidden w-full">
         <SkipLink label={t.common.skipToContent} />
         <Providers initialLocale={locale}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>

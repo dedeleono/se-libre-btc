@@ -10,7 +10,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 export const revalidate = 0;
 
 export default async function CoursesPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const courses = await prisma.course.findMany({
     include: {
       _count: {
