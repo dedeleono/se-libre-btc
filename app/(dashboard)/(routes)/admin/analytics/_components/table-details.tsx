@@ -3,7 +3,8 @@
 import { ChevronRight } from "lucide-react";
 import * as React from "react";
 
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableScrollRegion } from "@/components/table-scroll-region";
+import { TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLocale } from "@/lib/i18n";
 
 export type DetailsRow = { key: string; header: React.ReactNode; cells: React.ReactNode[] };
@@ -25,7 +26,7 @@ export function TableDetails({
         <ChevronRight className="size-4 motion-safe:transition-transform motion-safe:duration-150 group-open:rotate-90" aria-hidden="true" />
         {t.analytics.viewAsTable}
       </summary>
-      <Table className="mt-2">
+      <TableScrollRegion label={t.analytics.tableCaption(chartName)} className="mt-2">
         <TableCaption className="sr-only">{t.analytics.tableCaption(chartName)}</TableCaption>
         <TableHeader>
           <TableRow>
@@ -50,7 +51,7 @@ export function TableDetails({
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+      </TableScrollRegion>
     </details>
   );
 }

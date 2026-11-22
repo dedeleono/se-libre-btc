@@ -14,6 +14,7 @@ const es = {
   languageLabel: "Idioma",
   common: {
     appName: "Se Libre",
+    scrollTableHint: "Desplázate hacia el lado para ver todas las columnas.",
     cancel: "Cancelar",
     save: "Guardar",
     create: "Crear",
@@ -1144,6 +1145,7 @@ const en: Messages = {
   languageLabel: "Language",
   common: {
     appName: "Se Libre",
+    scrollTableHint: "Scroll sideways to see every column.",
     cancel: "Cancel",
     save: "Save",
     create: "Create",

@@ -3,7 +3,8 @@ import Link from "next/link";
 
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableScrollRegion } from "@/components/table-scroll-region";
+import { TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { normalizeOptionalText, toAgeBucket } from "@/lib/demographics";
 import type { Messages } from "@/lib/i18n/messages";
 import { STUDENT_PAGE_SIZE, studentListParams, type StudentFilters } from "@/lib/reports/student-filters";
@@ -62,7 +63,7 @@ export function StudentsList({
           {students.length === 0 ? (
             <p className="text-sm text-muted-foreground">{total === 0 && !hasStudentFilters(filters) ? t.admin.noStudentsYet : s.noMatches}</p>
           ) : (
-            <Table>
+            <TableScrollRegion label={s.tableCaption}>
               <TableCaption className="sr-only">{s.tableCaption}</TableCaption>
               <TableHeader>
                 <TableRow>
@@ -94,7 +95,7 @@ export function StudentsList({
                   );
                 })}
               </TableBody>
-            </Table>
+            </TableScrollRegion>
           )}
 
           {pages > 1 && (

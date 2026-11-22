@@ -4,7 +4,8 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableScrollRegion } from "@/components/table-scroll-region";
+import { TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { PublicCourseReport } from "@/lib/reports/publish";
 import { toSearchParams } from "@/lib/reports/report-filters";
 
@@ -22,7 +23,7 @@ export function CourseTable({ report }: { report: PublicCourseReport }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
+        <TableScrollRegion label={a.byCourseTitle}>
           <TableCaption className="sr-only">{a.byCourseTitle}</TableCaption>
           <TableHeader>
             <TableRow>
@@ -67,7 +68,7 @@ export function CourseTable({ report }: { report: PublicCourseReport }) {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </TableScrollRegion>
       </CardContent>
     </Card>
   );
