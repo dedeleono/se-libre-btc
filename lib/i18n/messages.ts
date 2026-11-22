@@ -89,6 +89,9 @@ const es = {
     payments: "Pagos",
   },
   public: {
+    footerTagline: "Educación financiera práctica y cercana, con la soberanía como punto de partida.",
+    socialInstagram: "Instagram",
+    socialTiktok: "TikTok",
     coursesEmptyTitle: "Aún no hay cursos publicados",
     coursesEmptyBody: "Estamos preparando los primeros. Mientras tanto, revisa las rutas de aprendizaje.",
     coursesEmptyAction: "Ver rutas de aprendizaje",
@@ -1148,6 +1151,9 @@ const en: Messages = {
     payments: "Payments",
   },
   public: {
+    footerTagline: "Financial education with a warm, practical, sovereignty-first learning platform.",
+    socialInstagram: "Instagram",
+    socialTiktok: "TikTok",
     coursesEmptyTitle: "No courses published yet",
     coursesEmptyBody: "The first ones are on their way. In the meantime, browse the learning paths.",
     coursesEmptyAction: "Browse learning paths",
