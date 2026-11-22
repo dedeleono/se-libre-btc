@@ -89,6 +89,9 @@ const es = {
     payments: "Pagos",
   },
   public: {
+    coursesEmptyTitle: "Aún no hay cursos publicados",
+    coursesEmptyBody: "Estamos preparando los primeros. Mientras tanto, revisa las rutas de aprendizaje.",
+    coursesEmptyAction: "Ver rutas de aprendizaje",
     aboutEyebrow: "#DineroLibre · Guatemala",
     aboutHashtag: "#DineroLibre",
     libreTag: "/ Libre",
@@ -1145,6 +1148,9 @@ const en: Messages = {
     payments: "Payments",
   },
   public: {
+    coursesEmptyTitle: "No courses published yet",
+    coursesEmptyBody: "The first ones are on their way. In the meantime, browse the learning paths.",
+    coursesEmptyAction: "Browse learning paths",
     aboutEyebrow: "#DineroLibre · Guatemala",
     aboutHashtag: "#DineroLibre",
     libreTag: "/ Libre",

@@ -41,26 +41,27 @@ export const CourseCard = ({
   const cardHref = isEnrolled ? enrolledHref : `/courses/preview/${id}`;
 
   return (
-    <div className="stamp-card group flex h-full w-full flex-col overflow-hidden p-3 transition-[transform,box-shadow] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_hsl(var(--foreground))] dark:hover:shadow-[6px_6px_0_var(--naranja-500)]">
-      <Link href={cardHref}>
-        <div className="relative w-full aspect-video overflow-hidden border-2 border-foreground">
-          {imageUrl ? (
-            <Image src={imageUrl} alt={title} fill className="object-cover" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-secondary dl-stamped">
-              <span className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                {t.course.noImage}
-              </span>
-            </div>
-          )}
-        </div>
-      </Link>
-      <div className="flex flex-col pt-2">
-        <Link href={cardHref}>
-          <div className="line-clamp-2 text-balance font-[var(--font-display)] text-2xl uppercase leading-none transition-colors group-hover:text-[var(--terracota-500)]">
-            {title}
+    <div className="stamp-card group relative flex h-full w-full flex-col overflow-hidden p-3 transition-[transform,box-shadow] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_hsl(var(--foreground))] dark:hover:shadow-[6px_6px_0_var(--naranja-500)]">
+      <div className="relative w-full aspect-video overflow-hidden border-2 border-foreground">
+        {imageUrl ? (
+          <Image src={imageUrl} alt="" fill className="object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-secondary dl-stamped">
+            <span className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+              {t.course.noImage}
+            </span>
           </div>
-        </Link>
+        )}
+      </div>
+      <div className="flex flex-col pt-2">
+        <h2 className="line-clamp-2 text-balance font-[var(--font-display)] text-2xl uppercase leading-none transition-colors group-hover:text-[var(--terracota-500)]">
+          <Link
+            href={cardHref}
+            className="after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
+          >
+            {title}
+          </Link>
+        </h2>
         <p className="text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">
           {category}
         </p>
@@ -76,7 +77,7 @@ export const CourseCard = ({
             <p className="tabular-nums">{progress}%</p>
           </div>
         )}
-        <div className="mt-auto pt-3">
+        <div className="relative z-10 mt-auto pt-3">
           {isEnrolled ? (
             <Button asChild className="w-full" size="sm">
               <Link href={enrolledHref}>{t.common.continue}</Link>

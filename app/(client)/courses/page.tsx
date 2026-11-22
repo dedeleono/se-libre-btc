@@ -22,6 +22,15 @@ export default async function PublicCoursesPage() {
         <h1 className="page-title mt-4">{t.public.coursesTitle}</h1>
         <p className="mt-4 max-w-xl text-lg font-semibold text-muted-foreground">{t.public.coursesSubtitle}</p>
       </div>
+      {courses.length === 0 ? (
+        <div className="paper-card max-w-xl space-y-3 p-6">
+          <h2 className="text-2xl">{t.public.coursesEmptyTitle}</h2>
+          <p className="text-pretty font-semibold text-muted-foreground">{t.public.coursesEmptyBody}</p>
+          <Button asChild>
+            <Link href="/learning-paths">{t.public.coursesEmptyAction}</Link>
+          </Button>
+        </div>
+      ) : (
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {courses.map((course) => {
           const excerpt =
@@ -44,6 +53,7 @@ export default async function PublicCoursesPage() {
           );
         })}
       </div>
+      )}
     </div>
   );
 }
