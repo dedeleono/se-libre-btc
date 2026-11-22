@@ -179,7 +179,7 @@ function MetricChart({
 }
 
 function EmptyChart({ children }: { children: string }) {
-  return <p className={`${TEXT_INSET} flex min-h-24 items-center text-sm text-muted-foreground`}>{children}</p>;
+  return <p className={`${TEXT_INSET} text-sm text-muted-foreground text-pretty`}>{children}</p>;
 }
 
 function OverviewTable({ data }: { data: OverviewRow[] }) {
