@@ -67,6 +67,9 @@ export const CourseSidebarItem = ({
         id: "chapter-locked",
         duration: Infinity,
         closeButton: true,
+        // The mobile course menu is a modal sheet that sets pointer-events: none
+        // on <body>; without this the enroll button cannot be tapped while it is open.
+        style: { pointerEvents: "auto" },
         action: (
           <Button type="button" size="sm" className="ml-auto shrink-0" onClick={enroll}>
             {t.course.enrollForFree}
