@@ -8,7 +8,7 @@ export default async function ErrorPage(
     }
 ) {
     const searchParams = await props.searchParams;
-    const t = getServerMessages();
+    const t = await getServerMessages();
 
     return (
         <div className="h-screen flex flex-col items-center justify-center">

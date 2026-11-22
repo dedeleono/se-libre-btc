@@ -9,7 +9,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function LearningPathDetailPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const learningPath = await prisma.learningPath.findUnique({
     where: { slug: params.slug },
     include: {

@@ -8,7 +8,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 export const dynamic = "force-dynamic";
 
 export default async function LearningPathsPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const learningPaths = await prisma.learningPath.findMany({
     where: { isPublished: true },
     include: { _count: { select: { courses: true, enrollments: true } } },

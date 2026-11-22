@@ -9,7 +9,7 @@ import { Mail, Sparkles } from "lucide-react";
 import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function EmailingPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const session = await auth();
 
   if (!session?.user || session.user.role !== "ADMIN") {

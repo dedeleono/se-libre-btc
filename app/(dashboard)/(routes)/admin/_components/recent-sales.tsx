@@ -44,7 +44,7 @@ async function getRecentSales() {
 }
 
 export async function RecentSales() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const sales = await getRecentSales();
 
   if (!sales.length) {

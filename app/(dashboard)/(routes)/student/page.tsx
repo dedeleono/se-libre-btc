@@ -26,7 +26,7 @@ import { ProfileCompletionBanner } from "./_components/profile-completion-banner
 const PAGE_TITLE_ID = "student-dashboard-title";
 
 const StudentPage = async () => {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const session = await auth();
   if (!session?.user?.id) return redirect("/");
 

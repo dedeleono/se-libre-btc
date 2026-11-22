@@ -1,4 +1,4 @@
-import { cookies, type UnsafeUnwrappedCookies } from "next/headers";
+import { cookies } from "next/headers";
 
 import {
   defaultLocale,
@@ -8,12 +8,11 @@ import {
   type Locale,
 } from "@/lib/i18n/messages";
 
-export function getServerLocale(): Locale {
-  const cookieLocale = (cookies() as unknown as UnsafeUnwrappedCookies).get(localeCookieName)?.value;
+export async function getServerLocale(): Promise<Locale> {
+  const cookieLocale = (await cookies()).get(localeCookieName)?.value;
   return isLocale(cookieLocale) ? cookieLocale : defaultLocale;
 }
 
-export function getServerMessages() {
-  return messages[getServerLocale()];
+export async function getServerMessages() {
+  return messages[await getServerLocale()];
 }
-

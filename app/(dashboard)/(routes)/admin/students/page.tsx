@@ -7,7 +7,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 import { InviteStudentForm } from "./_components/invite-student-form";
 
 export default async function AdminStudentsPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const titleSelect = { id: true, title: true } as const;
   const [students, courses, learningPaths, cohorts] = await Promise.all([
     prisma.user.findMany({

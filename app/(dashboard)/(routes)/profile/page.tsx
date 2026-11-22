@@ -12,7 +12,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function ProfilePage() {
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
 
   if (!session?.user?.id) {
     return redirect("/");

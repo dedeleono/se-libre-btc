@@ -18,7 +18,7 @@ import { Users, DollarSign, BookOpen, Route, LayoutDashboardIcon } from "lucide-
 import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function Home() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const [analytics, overviewData] = await Promise.all([
     getAnalytics(),
     getOverviewData()

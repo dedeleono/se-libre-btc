@@ -1,12 +1,12 @@
 import Image from "next/image";
 import { getServerMessages } from "@/lib/i18n-server";
 
-export default function ContactLayout({
+export default async function ContactLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const t = getServerMessages();
+  const t = await getServerMessages();
 
   return (
     <div className="dl-app min-h-[calc(100vh-5rem)]">

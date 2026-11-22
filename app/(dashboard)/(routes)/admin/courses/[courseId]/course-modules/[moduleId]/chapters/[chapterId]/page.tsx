@@ -24,7 +24,7 @@ export default async function ChapterIdPage(
   }
 ) {
   const params = await props.params;
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const moduleChapter = await prisma.chapter.findFirst({
     where: {
       id: params.chapterId,

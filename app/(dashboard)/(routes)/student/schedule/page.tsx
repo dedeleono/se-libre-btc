@@ -7,7 +7,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 
 export default async function StudentSchedulePage() {
   const session = await auth();
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const liveSessions = session?.user?.id
     ? await prisma.liveSession.findMany({
         where: {

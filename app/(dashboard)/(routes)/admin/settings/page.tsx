@@ -3,8 +3,8 @@ import { Settings } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getServerMessages } from "@/lib/i18n-server";
 
-export default function AdminSettingsPage() {
-  const t = getServerMessages();
+export default async function AdminSettingsPage() {
+  const t = await getServerMessages();
 
   return (
     <div className="space-y-6 p-4 sm:p-6 md:p-8">

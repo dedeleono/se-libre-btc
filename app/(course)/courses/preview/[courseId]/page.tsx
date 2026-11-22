@@ -18,7 +18,7 @@ export default async function CoursePreviewPage(
   }
 ) {
   const params = await props.params;
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
     include: {

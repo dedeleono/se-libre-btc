@@ -9,7 +9,7 @@ import { getServerMessages } from "@/lib/i18n-server";
 export const dynamic = "force-dynamic";
 
 export default async function PublicCoursesPage() {
-  const t = getServerMessages();
+  const t = await getServerMessages();
   const courses = await prisma.course.findMany({
     where: { isPublished: true },
     orderBy: { updatedAt: "desc" },
