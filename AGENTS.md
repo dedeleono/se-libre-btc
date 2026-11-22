@@ -14,6 +14,7 @@ Next.js 15 App Router, React 19, TypeScript strict, Prisma 5 (Postgres on Supaba
 | Typecheck | `yarn typecheck` |
 | Lint | `yarn lint` |
 | Test | `yarn test` |
+| Rendered lesson checks | `yarn check:lesson-layout` (needs `yarn dev` running) |
 | Build | `yarn build` (needs a filled-in `.env`, see `.env.example`) |
 
 ## Verify before you push
@@ -21,6 +22,8 @@ Next.js 15 App Router, React 19, TypeScript strict, Prisma 5 (Postgres on Supaba
 Run `yarn verify` before you push. It runs `yarn typecheck`, `yarn lint`, and `yarn test`.
 
 Vercel runs the tests and `next build`, which typechecks and lints, on every preview deploy. A failing check blocks the deploy.
+
+If you change the lesson page (`app/(course)/courses/[courseId]/chapters/[chapterId]`, the course sidebar, `.lesson-content` or the notes editor) or the admin chapter preview, also run `yarn check:lesson-layout` with `yarn dev` running. It drives the dev-only fixture routes under `app/(dev)/lesson-fixture` (404 in production) in a headless browser at 320 to 1440 px, light and dark. It checks reading layout, notes autosave, tabs, the keyboard path, resources, the sidebar and the admin preview, and it prints `FAILURES: 0` on success. Set `BASE_URL` if the dev server is not on port 3000. Playwright is not a project dependency. The script installs it once into a temp directory, or uses `PLAYWRIGHT_MODULE` and `BROWSER_PATH` if you set them.
 
 ## Where things live
 
